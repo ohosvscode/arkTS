@@ -172,6 +172,51 @@
           "deprecationMessage": "Currently this setting is not used.",
           "default": ""
         },
+        "ets.buildTools.autoDetect": {
+          "type": "boolean",
+          "description": "%configuration.ets.buildTools.autoDetect.description%",
+          "default": true
+        },
+        "ets.buildTools.installationType": {
+          "type": "string",
+          "enum": ["auto", "command-line-tools", "deveco-studio"],
+          "description": "%configuration.ets.buildTools.installationType.description%",
+          "default": "auto"
+        },
+        "ets.buildTools.path": {
+          "type": "string",
+          "description": "%configuration.ets.buildTools.path.description%",
+          "default": ""
+        },
+        "ets.buildTools.manageEnvironment": {
+          "type": "boolean",
+          "description": "%configuration.ets.buildTools.manageEnvironment.description%",
+          "default": true
+        },
+        "ets.buildTools.environmentVariables": {
+          "type": "object",
+          "description": "%configuration.ets.buildTools.environmentVariables.description%",
+          "default": {},
+          "properties": {
+            "DEVECO_SDK_HOME": {
+              "type": "string",
+              "description": "DevEco Studio SDK 路径"
+            },
+            "DevEco Studio": {
+              "type": "string",
+              "description": "DevEco Studio bin 目录路径"
+            }
+          },
+          "additionalProperties": {
+            "type": "string",
+            "description": "额外的环境变量"
+          }
+        },
+        "ets.buildTools.legacyMigrated": {
+          "type": "boolean",
+          "description": "%configuration.ets.buildTools.legacyMigrated.description%",
+          "default": false
+        },
         "ets.ignoreWorkspaceLocalPropertiesFile": {
           "type": "boolean",
           "markdownDescription": "%configuration.ets.ignoreWorkspaceLocalPropertiesFile.description%",

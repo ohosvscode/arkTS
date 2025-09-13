@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
-export const version = "1.0.22"
+export const version = "1.0.28"
 export const displayName = "Naily's ArkTS Support"
 export const description = "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support."
 export const extensionId = `${publisher}.${name}`
@@ -33,6 +33,19 @@ export const commands = {
 } satisfies Record<string, CommandKey>
 
 /**
+ * Type union of all languages
+ */
+export type LanguageKey = 
+  | "ets"
+
+/**
+ * Languages map registed by `NailyZero.vscode-naily-ets`
+ */
+export const languages = {
+  ets: "ets",
+} satisfies Record<string, LanguageKey>
+
+/**
  * Type union of all configs
  */
 export type ConfigKey = 
@@ -41,6 +54,13 @@ export type ConfigKey =
   | "ets.hmsPath"
   | "ets.lspDebugMode"
   | "ets.hdcPath"
+  | "ets.buildTools.autoDetect"
+  | "ets.buildTools.installationType"
+  | "ets.buildTools.path"
+  | "ets.buildTools.manageEnvironment"
+  | "ets.buildTools.environmentVariables"
+  | "ets.buildTools.legacyMigrated"
+  | "ets.ignoreWorkspaceLocalPropertiesFile"
   | "ets.sdkList"
 
 export interface ConfigKeyTypeMap {
@@ -49,6 +69,13 @@ export interface ConfigKeyTypeMap {
   "ets.hmsPath": string,
   "ets.lspDebugMode": boolean,
   "ets.hdcPath": string,
+  "ets.buildTools.autoDetect": boolean,
+  "ets.buildTools.installationType": ("auto" | "command-line-tools" | "deveco-studio"),
+  "ets.buildTools.path": string,
+  "ets.buildTools.manageEnvironment": boolean,
+  "ets.buildTools.environmentVariables": { 'DEVECO_SDK_HOME'?: string; 'DevEco Studio'?: string },
+  "ets.buildTools.legacyMigrated": boolean,
+  "ets.ignoreWorkspaceLocalPropertiesFile": boolean,
   "ets.sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
 }
 
@@ -58,6 +85,13 @@ export interface ConfigShorthandMap {
   etsHmsPath: "ets.hmsPath",
   etsLspDebugMode: "ets.lspDebugMode",
   etsHdcPath: "ets.hdcPath",
+  etsBuildToolsAutoDetect: "ets.buildTools.autoDetect",
+  etsBuildToolsInstallationType: "ets.buildTools.installationType",
+  etsBuildToolsPath: "ets.buildTools.path",
+  etsBuildToolsManageEnvironment: "ets.buildTools.manageEnvironment",
+  etsBuildToolsEnvironmentVariables: "ets.buildTools.environmentVariables",
+  etsBuildToolsLegacyMigrated: "ets.buildTools.legacyMigrated",
+  etsIgnoreWorkspaceLocalPropertiesFile: "ets.ignoreWorkspaceLocalPropertiesFile",
   etsSdkList: "ets.sdkList",
 }
 
@@ -67,6 +101,13 @@ export interface ConfigShorthandTypeMap {
   etsHmsPath: string,
   etsLspDebugMode: boolean,
   etsHdcPath: string,
+  etsBuildToolsAutoDetect: boolean,
+  etsBuildToolsInstallationType: ("auto" | "command-line-tools" | "deveco-studio"),
+  etsBuildToolsPath: string,
+  etsBuildToolsManageEnvironment: boolean,
+  etsBuildToolsEnvironmentVariables: { 'DEVECO_SDK_HOME'?: string; 'DevEco Studio'?: string },
+  etsBuildToolsLegacyMigrated: boolean,
+  etsIgnoreWorkspaceLocalPropertiesFile: boolean,
   etsSdkList: { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
 }
 
@@ -131,6 +172,76 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.hdcPath">,
   /**
+   * %configuration.ets.buildTools.autoDetect.description%
+   * @key `ets.buildTools.autoDetect`
+   * @default `true`
+   * @type `boolean`
+   */
+  etsBuildToolsAutoDetect: {
+    key: "ets.buildTools.autoDetect",
+    default: true,
+  } as ConfigItem<"ets.buildTools.autoDetect">,
+  /**
+   * %configuration.ets.buildTools.installationType.description%
+   * @key `ets.buildTools.installationType`
+   * @default `"auto"`
+   * @type `string`
+   */
+  etsBuildToolsInstallationType: {
+    key: "ets.buildTools.installationType",
+    default: "auto",
+  } as ConfigItem<"ets.buildTools.installationType">,
+  /**
+   * %configuration.ets.buildTools.path.description%
+   * @key `ets.buildTools.path`
+   * @default `""`
+   * @type `string`
+   */
+  etsBuildToolsPath: {
+    key: "ets.buildTools.path",
+    default: "",
+  } as ConfigItem<"ets.buildTools.path">,
+  /**
+   * %configuration.ets.buildTools.manageEnvironment.description%
+   * @key `ets.buildTools.manageEnvironment`
+   * @default `true`
+   * @type `boolean`
+   */
+  etsBuildToolsManageEnvironment: {
+    key: "ets.buildTools.manageEnvironment",
+    default: true,
+  } as ConfigItem<"ets.buildTools.manageEnvironment">,
+  /**
+   * %configuration.ets.buildTools.environmentVariables.description%
+   * @key `ets.buildTools.environmentVariables`
+   * @default `{}`
+   * @type `object`
+   */
+  etsBuildToolsEnvironmentVariables: {
+    key: "ets.buildTools.environmentVariables",
+    default: {},
+  } as ConfigItem<"ets.buildTools.environmentVariables">,
+  /**
+   * %configuration.ets.buildTools.legacyMigrated.description%
+   * @key `ets.buildTools.legacyMigrated`
+   * @default `false`
+   * @type `boolean`
+   */
+  etsBuildToolsLegacyMigrated: {
+    key: "ets.buildTools.legacyMigrated",
+    default: false,
+  } as ConfigItem<"ets.buildTools.legacyMigrated">,
+  /**
+   * 
+   * @key `ets.ignoreWorkspaceLocalPropertiesFile`
+   * @default `false`
+   * @type `boolean`
+   */
+  etsIgnoreWorkspaceLocalPropertiesFile: {
+    key: "ets.ignoreWorkspaceLocalPropertiesFile",
+    default: false,
+  } as ConfigItem<"ets.ignoreWorkspaceLocalPropertiesFile">,
+  /**
    * A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10).
    * @key `ets.sdkList`
    * @default `{}`
@@ -158,6 +269,15 @@ export interface NestedConfigs {
     "hmsPath": string,
     "lspDebugMode": boolean,
     "hdcPath": string,
+    "buildTools": {
+      "autoDetect": boolean,
+      "installationType": ("auto" | "command-line-tools" | "deveco-studio"),
+      "path": string,
+      "manageEnvironment": boolean,
+      "environmentVariables": { 'DEVECO_SDK_HOME'?: string; 'DevEco Studio'?: string },
+      "legacyMigrated": boolean,
+    },
+    "ignoreWorkspaceLocalPropertiesFile": boolean,
     "sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
   },
 }
