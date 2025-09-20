@@ -33,7 +33,11 @@ This is an ArkTS VSCode extension developed based on Volar. 🌹 It appears that
   - All `color.json` files under `resources/element/` for kv value configuration
   - `main_pages.json5`
 - 📦 Starting from version 1.x, supports installation and management of `OpenHarmony SDK`, and automatically detects the `API version` of the currently opened project, showing popup prompts for `download` or `switch`
-- 🆓 `$r`, `$rawfile` completion, code formatting, `hilog` logging and other features are planned for future support. PRs are welcomed 👀
+- 🔗 Supports `$r()` resource reference navigation, click on `$r()` calls in code to directly jump to corresponding resource files or JSON configurations
+- 🔍 Supports `$r()` resource reference diagnostics, real-time detection of non-existent resource references with error, warning, or no prompt diagnostic levels
+- 📁 Supports `$rawfile()` resource reference navigation, click on `$rawfile()` calls in code to directly jump to corresponding rawfile resource files
+- 🔍 Supports `$rawfile()` resource reference diagnostics, real-time detection of non-existent rawfile resources with error, warning, or no prompt diagnostic levels
+- 🆓 code formatting, `hilog` logging and other features are planned for future support. PRs are welcomed 👀
 
 ![Screenshot](./screenshots/edit.gif)
 
