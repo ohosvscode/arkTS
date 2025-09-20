@@ -66,6 +66,24 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
         })
       }
     }
+
+    // 如果 rawfile 诊断配置发生变化，发送配置更新事件
+    if (e.affectsConfiguration('ets.rawfileReferenceDiagnostic')) {
+      const newLevel = vscode.workspace.getConfiguration('ets').get<string>('rawfileReferenceDiagnostic', 'error')
+      this.getConsola().info(`Rawfile diagnostic level changed to: ${newLevel}`)
+
+      // 通知语言服务器配置变更
+      const client = this.getCurrentLanguageClient()
+      if (client?.isRunning()) {
+        await client.sendNotification('workspace/didChangeConfiguration', {
+          settings: {
+            ets: {
+              rawfileReferenceDiagnostic: newLevel,
+            },
+          },
+        })
+      }
+    }
   }
 
   async run(): Promise<LabsInfo | undefined> {

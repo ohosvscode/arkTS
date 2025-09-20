@@ -1,4 +1,5 @@
 import type { ResourceDiagnosticLevel } from './services/resource-diagnostic.service'
+import type { RawfileDiagnosticLevel } from './services/rawfile-diagnostic.service'
 import process from 'node:process'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createConnection, createServer, createTypeScriptProject } from '@volar/language-server/node'
@@ -15,6 +16,7 @@ import { createETSResourceCompletionService } from './services/resource-completi
 import { createETSIntegratedResourceDefinitionService } from './services/resource-definition.service'
 import { createETSIntegratedRawfileDefinitionService } from './services/rawfile-definition.service'
 import { createETSResourceDiagnosticService } from './services/resource-diagnostic.service'
+import { createETSRawfileDiagnosticService } from './services/rawfile-diagnostic.service'
 import { createETSDocumentSymbolService } from './services/symbol.service'
 
 const connection = createConnection()
@@ -30,6 +32,7 @@ connection.onRequest('ets/waitForEtsConfigurationChangedRequested', (e) => {
 
 // 全局配置状态
 let globalResourceDiagnosticLevel: ResourceDiagnosticLevel = 'error'
+let globalRawfileDiagnosticLevel: RawfileDiagnosticLevel = 'error'
 
 // 监听配置变更
 connection.onDidChangeConfiguration((params) => {
@@ -37,6 +40,10 @@ connection.onDidChangeConfiguration((params) => {
   if (settings?.ets?.resourceReferenceDiagnostic) {
     globalResourceDiagnosticLevel = settings.ets.resourceReferenceDiagnostic as ResourceDiagnosticLevel
     logger.getConsola().info('Resource diagnostic level changed to:', globalResourceDiagnosticLevel)
+  }
+  if (settings?.ets?.rawfileReferenceDiagnostic) {
+    globalRawfileDiagnosticLevel = settings.ets.rawfileReferenceDiagnostic as RawfileDiagnosticLevel
+    logger.getConsola().info('Rawfile diagnostic level changed to:', globalRawfileDiagnosticLevel)
   }
 })
 
@@ -56,6 +63,10 @@ connection.onInitialize(async (params) => {
   if (params.initializationOptions?.ets?.resourceReferenceDiagnostic) {
     globalResourceDiagnosticLevel = params.initializationOptions.ets.resourceReferenceDiagnostic as ResourceDiagnosticLevel
     logger.getConsola().info('Initial resource diagnostic level:', globalResourceDiagnosticLevel)
+  }
+  if (params.initializationOptions?.ets?.rawfileReferenceDiagnostic) {
+    globalRawfileDiagnosticLevel = params.initializationOptions.ets.rawfileReferenceDiagnostic as RawfileDiagnosticLevel
+    logger.getConsola().info('Initial rawfile diagnostic level:', globalRawfileDiagnosticLevel)
   }
 
   const tsdk = lspConfiguration.getTypeScriptTsdk()
@@ -92,6 +103,7 @@ connection.onInitialize(async (params) => {
       createETSIntegratedRawfileDefinitionService(projectRoot, lspConfiguration),
       createETSResourceCompletionService(projectRoot, lspConfiguration),
       createETSResourceDiagnosticService(lspConfiguration, projectRoot, () => globalResourceDiagnosticLevel),
+      createETSRawfileDiagnosticService(lspConfiguration, projectRoot, () => globalRawfileDiagnosticLevel),
       createETSLinterDiagnosticService(ets, logger),
       createETSDocumentSymbolService(),
       createETS$$ThisService(lspConfiguration.getLocale()),

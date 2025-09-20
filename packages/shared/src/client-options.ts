@@ -37,5 +37,7 @@ export interface EtsServerClientOptions {
   ets?: {
     /** Resource reference diagnostic level. */
     resourceReferenceDiagnostic?: 'error' | 'warning' | 'none'
+    /** Rawfile reference diagnostic level. */
+    rawfileReferenceDiagnostic?: 'error' | 'warning' | 'none'
   }
 }
