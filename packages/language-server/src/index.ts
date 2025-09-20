@@ -13,6 +13,7 @@ import { createETSLinterDiagnosticService } from './services/diagnostic.service'
 import { createETSFormattingService } from './services/formatting.service'
 import { createETSResourceCompletionService } from './services/resource-completion.service'
 import { createETSIntegratedResourceDefinitionService } from './services/resource-definition.service'
+import { createETSIntegratedRawfileDefinitionService } from './services/rawfile-definition.service'
 import { createETSResourceDiagnosticService } from './services/resource-diagnostic.service'
 import { createETSDocumentSymbolService } from './services/symbol.service'
 
@@ -88,6 +89,7 @@ connection.onInitialize(async (params) => {
     [
       ...createTypeScriptServices(ets as any),
       createETSIntegratedResourceDefinitionService(projectRoot, lspConfiguration),
+      createETSIntegratedRawfileDefinitionService(projectRoot, lspConfiguration),
       createETSResourceCompletionService(projectRoot, lspConfiguration),
       createETSResourceDiagnosticService(lspConfiguration, projectRoot, () => globalResourceDiagnosticLevel),
       createETSLinterDiagnosticService(ets, logger),

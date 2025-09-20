@@ -18,8 +18,28 @@ export interface GlobalRCallInfo {
 }
 
 /**
+ * 全局$rawfile函数调用信息接口（与$r调用信息相同结构）
+ */
+export interface GlobalRawfileCallInfo {
+  /** 函数调用的开始位置 */
+  start: number
+  /** 函数调用的结束位置 */
+  end: number
+  /** 第一个参数（rawfile路径字符串）的开始位置 */
+  resourceStart: number
+  /** 第一个参数（rawfile路径字符串）的结束位置 */
+  resourceEnd: number
+  /** rawfile路径字符串的值 */
+  resourceValue: string
+  /** 行号（从0开始） */
+  line: number
+  /** 列号（从0开始） */
+  character: number
+}
+
+/**
  * 全局$r函数调用查找器
- * 用于在TypeScript/ArkTS源文件中查找所有全局$r函数的调用位置
+ * 用于在TypeScript/ArkTS源文件中查找所有全局$r函数和$rawfile函数的调用位置
  */
 export class GlobalRCallFinder {
   private checker?: ets.TypeChecker
@@ -314,6 +334,126 @@ export class GlobalRCallFinder {
     else {
       // 使用简化版本（更快，但可能不够准确）
       return this.findGlobalRCallsSimple(sourceFile)
+    }
+  }
+
+  /**
+   * 查找所有全局$rawfile函数调用（简化版本）
+   * @param sourceFile 源文件
+   * @returns 全局$rawfile函数调用信息数组
+   */
+  findGlobalRawfileCalls(sourceFile: ets.SourceFile): GlobalRawfileCallInfo[] {
+    const globalRawfileCalls: GlobalRawfileCallInfo[] = []
+    const localRawfileDeclarations = new Set<string>()
+
+    // 第一遍：收集本地$rawfile声明
+    const collectLocalDeclarations = (node: ets.Node): void => {
+      // Import声明
+      if (this.ets.isImportDeclaration(node)) {
+        const importClause = node.importClause
+        if (importClause) {
+          if (importClause.namedBindings && this.ets.isNamedImports(importClause.namedBindings)) {
+            for (const element of importClause.namedBindings.elements) {
+              if (element.name.text === '$rawfile') {
+                localRawfileDeclarations.add('$rawfile')
+              }
+            }
+          }
+          if (importClause.name && importClause.name.text === '$rawfile') {
+            localRawfileDeclarations.add('$rawfile')
+          }
+        }
+      }
+
+      // 变量声明
+      if (this.ets.isVariableStatement(node)) {
+        for (const declaration of node.declarationList.declarations) {
+          if (this.ets.isIdentifier(declaration.name) && declaration.name.text === '$rawfile') {
+            localRawfileDeclarations.add('$rawfile')
+          }
+        }
+      }
+
+      // 函数声明
+      if (this.ets.isFunctionDeclaration(node) && node.name && node.name.text === '$rawfile') {
+        localRawfileDeclarations.add('$rawfile')
+      }
+
+      // 类声明
+      if (this.ets.isClassDeclaration(node) && node.name && node.name.text === '$rawfile') {
+        localRawfileDeclarations.add('$rawfile')
+      }
+
+      this.ets.forEachChild(node, collectLocalDeclarations)
+    }
+
+    // 第二遍：查找全局调用
+    const findGlobalCalls = (node: ets.Node): void => {
+      if (this.ets.isCallExpression(node)) {
+        const expression = node.expression
+
+        if (this.ets.isIdentifier(expression)
+          && expression.text === '$rawfile'
+          && !localRawfileDeclarations.has('$rawfile')) {
+          const callInfo = this.extractRawfileCallInfo(node, sourceFile)
+          if (callInfo) {
+            globalRawfileCalls.push(callInfo)
+          }
+        }
+      }
+
+      this.ets.forEachChild(node, findGlobalCalls)
+    }
+
+    collectLocalDeclarations(sourceFile)
+    findGlobalCalls(sourceFile)
+
+    return globalRawfileCalls
+  }
+
+  /**
+   * 从$rawfile函数调用节点中提取调用信息
+   * @param callExpression 函数调用表达式节点
+   * @param sourceFile 源文件
+   * @returns 调用信息，如果不是有效的$rawfile调用则返回null
+   */
+  private extractRawfileCallInfo(callExpression: ets.CallExpression, sourceFile: ets.SourceFile): GlobalRawfileCallInfo | null {
+    // 获取位置信息
+    const start = callExpression.getStart(sourceFile)
+    const end = callExpression.getEnd()
+    const sourcePos = sourceFile.getLineAndCharacterOfPosition(start)
+
+    // 获取第一个参数（rawfile路径字符串）
+    let resourceValue = ''
+    let resourceStart = start
+    let resourceEnd = end
+
+    if (callExpression.arguments.length > 0) {
+      const firstArg = callExpression.arguments[0]
+      if (this.ets.isStringLiteral(firstArg)) {
+        resourceValue = firstArg.text || ''
+        resourceStart = firstArg.getStart(sourceFile)
+        resourceEnd = firstArg.getEnd()
+      }
+      else if (this.ets.isTemplateLiteral(firstArg)) {
+        // 只处理简单的模板字符串（没有插值的）
+        if (this.ets.isNoSubstitutionTemplateLiteral(firstArg)) {
+          resourceValue = firstArg.text || ''
+          resourceStart = firstArg.getStart(sourceFile)
+          resourceEnd = firstArg.getEnd()
+        }
+        // 对于有插值的模板字符串，我们不提取资源值
+      }
+    }
+
+    return {
+      start,
+      end,
+      resourceStart,
+      resourceEnd,
+      resourceValue,
+      line: sourcePos.line,
+      character: sourcePos.character,
     }
   }
 }

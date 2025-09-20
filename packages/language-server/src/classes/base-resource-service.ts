@@ -1,13 +1,13 @@
 import type { Position } from '@volar/language-server/node'
 import type * as ets from 'ohos-typescript'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import type { GlobalRCallInfo } from './global-call-expression-finder'
+import type { GlobalRCallInfo, GlobalRawfileCallInfo } from './global-call-expression-finder'
 import { logger } from '../logger'
 import { GlobalRCallFinder } from './global-call-expression-finder'
 
 /**
  * 资源服务基类
- * 提供通用的 $r() 调用查找和分析功能
+ * 提供通用的 $r() 和 $rawfile() 调用查找和分析功能
  */
 export abstract class BaseResourceService {
   protected finder?: GlobalRCallFinder
@@ -76,5 +76,32 @@ export abstract class BaseResourceService {
    */
   protected error(operation: string, error: any): void {
     logger.getConsola().error(`[${this.constructor.name}] ${operation}:`, error)
+  }
+
+  /**
+   * 查找文档中所有的 $rawfile() 调用
+   */
+  protected async findAllRawfileCalls(sourceFile: ets.SourceFile): Promise<GlobalRawfileCallInfo[]> {
+    if (!(await this.ensureInitialized())) {
+      logger.getConsola().warn('Failed to initialize ETS for rawfile call finding')
+      return []
+    }
+
+    try {
+      return this.finder!.findGlobalRawfileCalls(sourceFile)
+    }
+    catch (error) {
+      logger.getConsola().warn('Failed to find rawfile calls:', error)
+      return []
+    }
+  }
+
+  /**
+   * 查找指定位置的 $rawfile() 调用
+   */
+  protected async findRawfileCallAtPosition(document: TextDocument, position: Position, sourceFile: ets.SourceFile): Promise<GlobalRawfileCallInfo | null> {
+    const calls = await this.findAllRawfileCalls(sourceFile)
+    const offset = document.offsetAt(position)
+    return calls.find(call => offset >= call.resourceStart && offset <= call.resourceEnd) || null
   }
 }

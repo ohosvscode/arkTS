@@ -18,6 +18,7 @@ export enum ResourceType {
   Profile = 'profile',
   Symbol = 'symbol',
   Plural = 'plural',
+  Rawfile = 'rawfile',
 }
 
 /**
@@ -32,6 +33,38 @@ export interface ResourceReference {
   name: string
   /** 原始引用字符串 */
   raw: string
+}
+
+/**
+ * Rawfile资源引用解析结果
+ */
+export interface RawfileReference {
+  /** 文件路径 */
+  filePath: string
+  /** 原始引用字符串 */
+  raw: string
+}
+
+/**
+ * Rawfile资源位置信息
+ */
+export interface RawfileLocation {
+  /** 文件URI */
+  uri: string
+  /** 文件类型 (file 或 directory) */
+  fileType: 'file' | 'directory'
+  /** 相对路径 */
+  relativePath: string
+}
+
+/**
+ * Rawfile资源索引项
+ */
+export interface RawfileIndexItem {
+  /** 资源引用 */
+  reference: RawfileReference
+  /** 资源位置 */
+  location: RawfileLocation
 }
 
 /**
@@ -87,6 +120,26 @@ export function parseResourceReference(resourceRef: string): ResourceReference |
 }
 
 /**
+ * 解析 $rawfile() 资源引用字符串
+ * @param rawfileRef rawfile引用字符串，如 '1.html' 或 'xxx/2/2.md'
+ * @returns 解析结果
+ */
+export function parseRawfileReference(rawfileRef: string): RawfileReference | null {
+  // 移除引号
+  const cleanRef = rawfileRef.replace(/^['"\`]|['"\`]$/g, '')
+
+  // rawfile引用就是简单的文件路径，不需要复杂验证
+  if (!cleanRef || cleanRef.trim() === '') {
+    return null
+  }
+
+  return {
+    filePath: cleanRef,
+    raw: rawfileRef,
+  }
+}
+
+/**
  * 构建资源文件路径
  * @param projectRoot 项目根路径
  * @param moduleName 模块名（如 'entry', 'sampleLibrary'）
@@ -109,11 +162,27 @@ export function buildResourceFilePath(
 }
 
 /**
+ * 构建rawfile资源文件路径
+ * @param projectRoot 项目根路径
+ * @param moduleName 模块名（如 'entry', 'sampleLibrary'）
+ * @param filePath rawfile相对路径
+ * @returns rawfile完整文件路径
+ */
+export function buildRawfilePath(
+  projectRoot: string,
+  moduleName: string,
+  filePath: string,
+): string {
+  return path.join(projectRoot, moduleName, 'src', 'main', 'resources', 'rawfile', filePath)
+}
+
+/**
  * 资源解析器类
  */
 export class ResourceResolver {
   private projectRoot: string
   private resourceIndex: Map<string, ResourceIndexItem> = new Map()
+  private rawfileIndex: Map<string, RawfileIndexItem> = new Map()
   private sdkPath?: string
 
   getSdkPath(): string | undefined {
@@ -208,6 +277,7 @@ export class ResourceResolver {
    */
   async buildIndex(): Promise<void> {
     this.resourceIndex.clear()
+    this.rawfileIndex.clear()
     this.logger.getConsola().log(`Building resource index for project: ${this.projectRoot}`)
 
     // 索引 app 资源（模块资源）
@@ -222,7 +292,7 @@ export class ResourceResolver {
     // 索引 sys 资源（系统资源）
     await this.indexSystemResources()
 
-    this.logger.getConsola().log(`Resource index built with ${this.resourceIndex.size} resources`)
+    this.logger.getConsola().log(`Resource index built with ${this.resourceIndex.size} resources and ${this.rawfileIndex.size} rawfile resources`)
   }
 
   /**
@@ -236,6 +306,9 @@ export class ResourceResolver {
 
     // 索引 media 文件夹中的媒体资源
     await this.indexMediaResources(basePath, moduleName)
+
+    // 索引 rawfile 资源
+    await this.indexRawfileResources(moduleName)
   }
 
   /**
@@ -491,6 +564,19 @@ export class ResourceResolver {
   }
 
   /**
+   * 解析rawfile资源引用并返回位置
+   */
+  async resolveRawfileReference(rawfileRef: string): Promise<RawfileLocation | null> {
+    const parsed = parseRawfileReference(rawfileRef)
+    if (!parsed) {
+      return null
+    }
+
+    const item = this.rawfileIndex.get(parsed.filePath)
+    return item?.location || null
+  }
+
+  /**
    * 获取所有已索引的资源
    */
   getAllResources(): ResourceIndexItem[] {
@@ -498,9 +584,88 @@ export class ResourceResolver {
   }
 
   /**
+   * 获取所有已索引的rawfile资源
+   */
+  getAllRawfileResources(): RawfileIndexItem[] {
+    return Array.from(this.rawfileIndex.values())
+  }
+
+  /**
    * 清除索引
    */
   clearIndex(): void {
     this.resourceIndex.clear()
+    this.rawfileIndex.clear()
+  }
+
+  /**
+   * 索引rawfile资源
+   */
+  private async indexRawfileResources(moduleName: string): Promise<void> {
+    const rawfilePath = path.join(this.projectRoot, moduleName, 'src', 'main', 'resources', 'rawfile')
+
+    if (!fs.existsSync(rawfilePath)) {
+      return
+    }
+
+    try {
+      await this.indexRawfileRecursive(rawfilePath, '', moduleName)
+    }
+    catch (error) {
+      this.logger.getConsola().error(`Failed to index rawfile resources for ${moduleName}:`, error)
+    }
+  }
+
+  /**
+   * 递归索引rawfile资源
+   */
+  private async indexRawfileRecursive(currentPath: string, relativePath: string, moduleName: string): Promise<void> {
+    try {
+      const entries = await fs.promises.readdir(currentPath, { withFileTypes: true })
+
+      for (const entry of entries) {
+        const entryPath = path.join(currentPath, entry.name)
+        const entryRelativePath = relativePath ? path.join(relativePath, entry.name) : entry.name
+        // 统一使用正斜杠，避免Windows路径问题
+        const normalizedRelativePath = entryRelativePath.replace(/\\/g, '/')
+
+        if (entry.isFile()) {
+          // 索引文件
+          const reference: RawfileReference = {
+            filePath: normalizedRelativePath,
+            raw: normalizedRelativePath,
+          }
+
+          const location: RawfileLocation = {
+            uri: URI.file(entryPath).toString(),
+            fileType: 'file',
+            relativePath: normalizedRelativePath,
+          }
+
+          this.rawfileIndex.set(normalizedRelativePath, { reference, location })
+        }
+        else if (entry.isDirectory()) {
+          // 索引目录
+          const reference: RawfileReference = {
+            filePath: normalizedRelativePath,
+            raw: normalizedRelativePath,
+          }
+
+          const location: RawfileLocation = {
+            uri: URI.file(entryPath).toString(),
+            fileType: 'directory',
+            relativePath: normalizedRelativePath,
+          }
+
+          this.rawfileIndex.set(normalizedRelativePath, { reference, location })
+
+          // 递归索引子目录
+          await this.indexRawfileRecursive(entryPath, entryRelativePath, moduleName)
+        }
+      }
+    }
+    catch (error) {
+      this.logger.getConsola().error(`Cannot access rawfile directory ${currentPath}:`, error)
+    }
   }
 }
