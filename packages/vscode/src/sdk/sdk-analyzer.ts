@@ -1,4 +1,5 @@
 import type { OhosClientOptions } from '@arkts/shared'
+import { UnifiedProjectDetector } from '@arkts/shared'
 import type { AbstractWatcher } from '../abstract-watcher'
 import type { Translator } from '../translate'
 import fs from 'node:fs'
@@ -329,43 +330,23 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
 
   /**
    * 根据配置文件检测项目类型和包管理器
+   * 使用统一的项目检测逻辑
    */
   private detectPackageManagerType(): 'npm' | 'ohpm' {
     try {
       const workspaceFolder = this.fileSystem.getCurrentWorkspaceDir()
       if (!workspaceFolder) {
+        console.warn('工作空间目录为空，使用默认npm')
         return 'npm' // 默认回退
       }
 
-      // 检查ArkTS项目标识
-      const ohPackageJson5Path = vscode.Uri.joinPath(workspaceFolder, 'oh-package.json5')
-      const buildProfilePath = vscode.Uri.joinPath(workspaceFolder, 'build-profile.json5')
-      const ohModulesPath = vscode.Uri.joinPath(workspaceFolder, 'oh_modules')
+      // 使用统一的项目检测逻辑
+      const result = UnifiedProjectDetector.detectProject(workspaceFolder.fsPath)
+      console.info(`VSCode端项目检测结果: ${result.type}, 包管理器: ${result.packageManagerType}`)
       
-      try {
-        // 检查oh-package.json5是否存在
-        if (fs.existsSync(ohPackageJson5Path.fsPath)) {
-          return 'ohpm'
-        }
-        
-        // 检查build-profile.json5是否存在（ArkTS项目）
-        if (fs.existsSync(buildProfilePath.fsPath)) {
-          return 'ohpm'
-        }
-        
-        // 检查oh_modules目录是否存在
-        if (fs.existsSync(ohModulesPath.fsPath)) {
-          return 'ohpm'
-        }
-        
-        // 普通TypeScript项目默认使用npm
-        return 'npm'
-      } catch (fsError) {
-        console.warn('文件系统访问错误:', fsError)
-        return 'npm' // 文件系统错误时的默认回退
-      }
+      return result.packageManagerType
     } catch (error) {
-      console.warn('项目类型检测错误:', error)
+      console.warn('VSCode端项目类型检测错误，使用默认npm:', error)
       return 'npm' // 任何错误的默认回退
     }
   }

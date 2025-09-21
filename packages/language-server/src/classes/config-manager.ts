@@ -1,16 +1,15 @@
 import type { EtsServerClientOptions, LanguageServerLogger } from '@arkts/shared'
+import { ProjectDetectionResult, ProjectType, UnifiedProjectDetector } from '@arkts/shared'
 import fs from 'node:fs'
 import path from 'node:path'
 import { loadTsdkByPath } from '@volar/language-server/node'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
-import { ProjectDetector, ProjectType, type ProjectDetectionResult } from './project-detector'
 
 export class LanguageServerConfigManager {
   constructor(private readonly logger: LanguageServerLogger) {}
 
-  // 项目检测器实例
-  private projectDetector = new ProjectDetector(this.logger)
+  // 项目检测器实例 - 已移除，使用UnifiedProjectDetector
   private currentProjectDetection?: ProjectDetectionResult
 
   private config: EtsServerClientOptions = {
@@ -214,7 +213,7 @@ export class LanguageServerConfigManager {
    */
   detectAndSetProjectType(projectRoot: string): ProjectDetectionResult {
     try {
-      this.currentProjectDetection = this.projectDetector.detectProject(projectRoot)
+      this.currentProjectDetection = UnifiedProjectDetector.detectProject(projectRoot)
       this.logger.getConsola().info(`项目类型检测结果:`, {
         type: this.currentProjectDetection.type,
         packageManagerType: this.currentProjectDetection.packageManagerType,
@@ -232,6 +231,7 @@ export class LanguageServerConfigManager {
         projectRoot,
         hasOhModules: false,
         hasNodeModules: false,
+        detectedAt: Date.now(),
       }
       return this.currentProjectDetection
     }

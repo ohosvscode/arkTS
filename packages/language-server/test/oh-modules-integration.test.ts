@@ -1,21 +1,19 @@
 import path from 'path'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { ProjectType, UnifiedProjectDetector } from '@arkts/shared'
 import { LanguageServerConfigManager } from '../src/classes/config-manager'
-import { ProjectDetector, ProjectType } from '../src/classes/project-detector'
 import { logger } from '../src/logger'
 
 describe('oh_modules项目检测和模块解析测试', () => {
   const testProjectRoot = path.resolve(process.cwd(), 'sample')
   let configManager: LanguageServerConfigManager
-  let projectDetector: ProjectDetector
 
   beforeEach(() => {
     configManager = new LanguageServerConfigManager(logger)
-    projectDetector = new ProjectDetector(logger)
   })
 
   it('应该能检测ArkTS项目类型', () => {
-    const result = projectDetector.detectProject(testProjectRoot)
+    const result = UnifiedProjectDetector.detectProject(testProjectRoot)
     
     // 根据sample项目的实际情况验证
     expect(result.projectRoot).toBe(testProjectRoot)
@@ -37,9 +35,9 @@ describe('oh_modules项目检测和模块解析测试', () => {
     expect(tsConfig.packageManagerType).toBe('ohpm')
   })
 
-  it('ProjectDetector.getRecommendedPackageManagerType应该返回正确值', () => {
-    expect(ProjectDetector.getRecommendedPackageManagerType(ProjectType.ArkTS)).toBe('ohpm')
-    expect(ProjectDetector.getRecommendedPackageManagerType(ProjectType.TypeScript)).toBe('npm')
-    expect(ProjectDetector.getRecommendedPackageManagerType(ProjectType.Unknown)).toBe('npm')
+  it('UnifiedProjectDetector.getRecommendedPackageManagerType应该返回正确值', () => {
+    expect(UnifiedProjectDetector.getRecommendedPackageManagerType(ProjectType.ArkTS)).toBe('ohpm')
+    expect(UnifiedProjectDetector.getRecommendedPackageManagerType(ProjectType.TypeScript)).toBe('npm')
+    expect(UnifiedProjectDetector.getRecommendedPackageManagerType(ProjectType.Unknown)).toBe('npm')
   })
 })
