@@ -26,7 +26,41 @@ const connection = createConnection()
 const server = createServer(connection)
 const lspConfiguration = new LanguageServerConfigManager(logger)
 
+// 全局错误处理机制
+process.on('uncaughtException', (error) => {
+  logger.getConsola().error('Uncaught exception in ETS Language Server:', error)
+  // 不退出进程，让服务继续运行
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.getConsola().error('Unhandled promise rejection in ETS Language Server:', reason)
+  // 不退出进程，让服务继续运行
+})
+
 logger.getConsola().info(`ETS Language Server is running: (pid: ${process.pid})`)
+
+/**
+ * 安全的URI解析函数，处理特殊字符和编码问题
+ * @param uri URI字符串
+ * @returns 文件路径，如果解析失败则返囮undefined
+ */
+function safeParseUri(uri: string): string | undefined {
+  try {
+    const decoded = URI.parse(uri)
+    const fsPath = decoded.fsPath
+    
+    // 检查路径是否有效，避免处理特殊文件
+    if (!fsPath || fsPath.includes('%') || fsPath.length < 3) {
+      logger.getConsola().debug('Invalid file path after URI parsing:', fsPath)
+      return undefined
+    }
+    
+    return fsPath
+  } catch (error) {
+    logger.getConsola().warn('Failed to parse URI:', uri, error)
+    return undefined
+  }
+}
 
 /**
  * 项目重新检测结果接口
@@ -173,8 +207,21 @@ let currentProjectRoot: string | undefined
 connection.onDidOpenTextDocument((params) => {
   try {
     const documentUri = params.textDocument.uri
-    const documentPath = URI.parse(documentUri).fsPath
+    const documentPath = safeParseUri(documentUri)
+    
+    // 如果URI解析失败，直接返回
+    if (!documentPath) {
+      logger.getConsola().debug('Skipping document with invalid URI:', documentUri)
+      return
+    }
+    
     logger.getConsola().debug('Document opened:', documentPath)
+    
+    // 过滤掉oh_modules和node_modules中的文件，避免不必要的检测
+    if (documentPath.includes('oh_modules') || documentPath.includes('node_modules')) {
+      logger.getConsola().debug('Skipping project detection for dependency file:', documentPath)
+      return
+    }
     
     // 检查是否需要重新检测项目类型
     const shouldRedetect = checkIfProjectRedetectionNeeded(documentPath, currentProjectRoot, lspConfiguration)
@@ -204,6 +251,7 @@ connection.onDidOpenTextDocument((params) => {
     }
   } catch (error) {
     logger.getConsola().error('处理文档打开事件时发生错误:', error)
+    // 确保错误不会影响其他功能
   }
 })
 
@@ -250,6 +298,7 @@ connection.onInitialize(async (params) => {
     })
   } catch (error) {
     logger.getConsola().error('项目类型检测失败，继续使用默认配置:', error)
+    // 确保即使检测失败也能继续服务
   }
 
   return server.initialize(
