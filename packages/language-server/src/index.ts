@@ -81,6 +81,19 @@ connection.onInitialize(async (params) => {
   logger.getConsola().info('Server initialization - SDK path:', sdkPath)
   logger.getConsola().info('Server initialization - Workspace folders:', params.workspaceFolders)
 
+  // 检测项目类型并自动配置包管理器类型
+  try {
+    const projectDetection = lspConfiguration.detectAndSetProjectType(projectRoot)
+    logger.getConsola().info('项目类型检测完成:', {
+      type: projectDetection.type,
+      packageManagerType: projectDetection.packageManagerType,
+      hasOhModules: projectDetection.hasOhModules,
+      hasNodeModules: projectDetection.hasNodeModules,
+    })
+  } catch (error) {
+    logger.getConsola().error('项目类型检测失败，继续使用默认配置:', error)
+  }
+
   return server.initialize(
     params,
     createTypeScriptProject(ets as any, tsdk.diagnosticMessages, () => {

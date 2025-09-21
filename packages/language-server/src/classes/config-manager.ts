@@ -4,9 +4,14 @@ import path from 'node:path'
 import { loadTsdkByPath } from '@volar/language-server/node'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
+import { ProjectDetector, ProjectType, type ProjectDetectionResult } from './project-detector'
 
 export class LanguageServerConfigManager {
   constructor(private readonly logger: LanguageServerLogger) {}
+
+  // 项目检测器实例
+  private projectDetector = new ProjectDetector(this.logger)
+  private currentProjectDetection?: ProjectDetectionResult
 
   private config: EtsServerClientOptions = {
     ohos: {
@@ -203,6 +208,49 @@ export class LanguageServerConfigManager {
     return this
   }
 
+  /**
+   * 检测并设置项目类型
+   * @param projectRoot 项目根目录
+   */
+  detectAndSetProjectType(projectRoot: string): ProjectDetectionResult {
+    try {
+      this.currentProjectDetection = this.projectDetector.detectProject(projectRoot)
+      this.logger.getConsola().info(`项目类型检测结果:`, {
+        type: this.currentProjectDetection.type,
+        packageManagerType: this.currentProjectDetection.packageManagerType,
+        configFile: this.currentProjectDetection.configFile,
+        hasOhModules: this.currentProjectDetection.hasOhModules,
+        hasNodeModules: this.currentProjectDetection.hasNodeModules,
+      })
+      return this.currentProjectDetection
+    } catch (error) {
+      this.logger.getConsola().error(`项目类型检测失败，使用默认配置: ${error}`)
+      // 返回默认结果
+      this.currentProjectDetection = {
+        type: ProjectType.Unknown,
+        packageManagerType: 'npm',
+        projectRoot,
+        hasOhModules: false,
+        hasNodeModules: false,
+      }
+      return this.currentProjectDetection
+    }
+  }
+
+  /**
+   * 获取当前项目检测结果
+   */
+  getCurrentProjectDetection(): ProjectDetectionResult | undefined {
+    return this.currentProjectDetection
+  }
+
+  /**
+   * 获取当前项目的包管理器类型
+   */
+  getPackageManagerType(): 'npm' | 'ohpm' {
+    return this.currentProjectDetection?.packageManagerType || 'npm'
+  }
+
   getLocale(): string {
     return this.locale
   }
@@ -281,6 +329,11 @@ export class LanguageServerConfigManager {
     // 将 originalSettings.paths 中的路径转换为相对于 baseUrl 的路径，这样用户就仍然能使用tsconfig配置paths
     originalSettings = defu({ paths: this.getRelativeWithConfigFilePaths() }, originalSettings)
     originalSettings = this.convertPaths(originalSettings)
+    
+    // 根据项目类型设置packageManagerType
+    const packageManagerType = this.getPackageManagerType()
+    this.logger.getConsola().info(`设置包管理器类型为: ${packageManagerType}`)
+    
     const finalCompilerOptions = defu(originalSettings, {
       etsLoaderPath: this.getEtsLoaderPath(),
       typeRoots: this.getTypeRoots(),
@@ -296,6 +349,8 @@ export class LanguageServerConfigManager {
       moduleResolution: ets.ModuleResolutionKind.NodeNext,
       module: ets.ModuleKind.ESNext,
       target: ets.ScriptTarget.ESNext,
+      // 关键：设置包管理器类型以支持oh_modules
+      packageManagerType,
     } satisfies ets.CompilerOptions, this.getEtsLoaderConfigCompilerOptions())
     return this.fixTsConfig(finalCompilerOptions)
   }
