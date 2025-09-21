@@ -24,6 +24,8 @@ export interface OhosClientOptions {
   paths: import('ohos-typescript').MapLike<string[]>
   /** The paths for the typescript compiler, will be converted to relative paths with detected tsconfig file. */
   relativeWithConfigFilePaths?: import('ohos-typescript').MapLike<string[]>
+  /** Package manager type for module resolution. */
+  packageManagerType?: 'npm' | 'ohpm'
 }
 
 export interface EtsServerClientOptions {
