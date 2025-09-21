@@ -328,6 +328,49 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
   }
 
   /**
+   * 根据配置文件检测项目类型和包管理器
+   */
+  private detectPackageManagerType(): 'npm' | 'ohpm' {
+    try {
+      const workspaceFolder = this.fileSystem.getCurrentWorkspaceDir()
+      if (!workspaceFolder) {
+        return 'npm' // 默认回退
+      }
+
+      // 检查ArkTS项目标识
+      const ohPackageJson5Path = vscode.Uri.joinPath(workspaceFolder, 'oh-package.json5')
+      const buildProfilePath = vscode.Uri.joinPath(workspaceFolder, 'build-profile.json5')
+      const ohModulesPath = vscode.Uri.joinPath(workspaceFolder, 'oh_modules')
+      
+      try {
+        // 检查oh-package.json5是否存在
+        if (fs.existsSync(ohPackageJson5Path.fsPath)) {
+          return 'ohpm'
+        }
+        
+        // 检查build-profile.json5是否存在（ArkTS项目）
+        if (fs.existsSync(buildProfilePath.fsPath)) {
+          return 'ohpm'
+        }
+        
+        // 检查oh_modules目录是否存在
+        if (fs.existsSync(ohModulesPath.fsPath)) {
+          return 'ohpm'
+        }
+        
+        // 普通TypeScript项目默认使用npm
+        return 'npm'
+      } catch (fsError) {
+        console.warn('文件系统访问错误:', fsError)
+        return 'npm' // 文件系统错误时的默认回退
+      }
+    } catch (error) {
+      console.warn('项目类型检测错误:', error)
+      return 'npm' // 任何错误的默认回退
+    }
+  }
+
+  /**
    * Convert the `SdkAnalyzer` to client options.
    *
    * @returns {OhosClientOptions} The client options.
@@ -339,6 +382,9 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
     const etsLoaderConfigPath = await this.getEtsLoaderConfigPath(force)
     const etsLoaderPath = vscode.Uri.joinPath(sdkPath, 'ets', 'build-tools', 'ets-loader')
     const workspaceFolder = this.fileSystem.getCurrentWorkspaceDir()
+    
+    // 检测包管理器类型
+    const packageManagerType = this.detectPackageManagerType()
 
     // Force load typescript default libs if tsdk is provided (For ArkTS)
     const typescriptDefaultLibs = [
@@ -416,6 +462,7 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
       hmsSdkPath: this.hmsSdkUri?.fsPath,
       etsComponentPath: etsComponentPath.fsPath,
       etsLoaderConfigPath: etsLoaderConfigPath.fsPath,
+      packageManagerType, // 添加包管理器类型检测
       lib: [
         ...(tsdk ? typescriptDefaultLibs.map(lib => path.join(tsdk, lib)) : []),
         ...fg.sync(declarationsLib, { onlyFiles: true, absolute: true }),
