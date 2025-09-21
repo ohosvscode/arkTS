@@ -1,15 +1,11 @@
 import type { ResourceDiagnosticLevel } from './services/resource-diagnostic.service'
 import type { RawfileDiagnosticLevel } from './services/rawfile-diagnostic.service'
 import process from 'node:process'
-import path from 'node:path'
-import fs from 'node:fs'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createConnection, createServer, createTypeScriptProject } from '@volar/language-server/node'
 import * as ets from 'ohos-typescript'
-import { create as createTypeScriptServices } from 'volar-service-typescript'
 import { URI } from 'vscode-uri'
 import { LanguageServerConfigManager } from './classes/config-manager'
-import { ResourceWatcher } from './classes/resource-watcher'
 import { logger } from './logger'
 import { createETS$$ThisService } from './services/$$this.service'
 import { createETSLinterDiagnosticService } from './services/diagnostic.service'
@@ -22,163 +18,23 @@ import { createETSResourceDiagnosticService } from './services/resource-diagnost
 import { createETSRawfileDiagnosticService } from './services/rawfile-diagnostic.service'
 import { createETSDocumentSymbolService } from './services/symbol.service'
 
+// 导入重构后的工具类和服务
+import { SafeJson5Parser } from './utils/json5-parser'
+import { UriHelper } from './utils/uri-helper'
+import { GlobalErrorHandler } from './utils/error-handler'
+import { TypeScriptServiceWrapper } from './services/typescript-service-wrapper'
+import { ProjectDetectionService } from './services/project-detection.service'
+
+// 初始化安全的JSON5解析器、全局错误处理器
+SafeJson5Parser.initialize(logger)
+GlobalErrorHandler.initialize(logger)
+
 const connection = createConnection()
 const server = createServer(connection)
 const lspConfiguration = new LanguageServerConfigManager(logger)
 
-// 全局错误处理机制
-process.on('uncaughtException', (error) => {
-  logger.getConsola().error('Uncaught exception in ETS Language Server:', error)
-  // 不退出进程，让服务继续运行
-})
-
-process.on('unhandledRejection', (reason, promise) => {
-  logger.getConsola().error('Unhandled promise rejection in ETS Language Server:', reason)
-  // 不退出进程，让服务继续运行
-})
-
-logger.getConsola().info(`ETS Language Server is running: (pid: ${process.pid})`)
-
-/**
- * 安全的URI解析函数，处理特殊字符和编码问题
- * @param uri URI字符串
- * @returns 文件路径，如果解析失败则返囮undefined
- */
-function safeParseUri(uri: string): string | undefined {
-  try {
-    const decoded = URI.parse(uri)
-    const fsPath = decoded.fsPath
-    
-    // 检查路径是否有效，避免处理特殊文件
-    if (!fsPath || fsPath.includes('%') || fsPath.length < 3) {
-      logger.getConsola().debug('Invalid file path after URI parsing:', fsPath)
-      return undefined
-    }
-    
-    return fsPath
-  } catch (error) {
-    logger.getConsola().warn('Failed to parse URI:', uri, error)
-    return undefined
-  }
-}
-
-/**
- * 项目重新检测结果接口
- */
-interface ProjectRedetectionResult {
-  needed: boolean
-  reason?: string
-  newProjectRoot?: string
-}
-
-/**
- * 检查是否需要重新检测项目类型
- * @param documentPath 当前打开的文档路径
- * @param currentProjectRoot 当前项目根目录
- * @param lspConfig LSP配置管理器
- * @returns 是否需要重新检测以及相关信息
- */
-function checkIfProjectRedetectionNeeded(
-  documentPath: string,
-  currentProjectRoot: string | undefined,
-  lspConfig: LanguageServerConfigManager,
-): ProjectRedetectionResult {
-  try {
-    // 1. 如果是第一次打开文档，需要检测
-    if (!currentProjectRoot) {
-      return {
-        needed: true,
-        reason: '首次文档打开，需要检测项目类型',
-        newProjectRoot: extractProjectRootFromDocument(documentPath),
-      }
-    }
-    
-    // 2. 检查文档是否在当前项目根目录范围内
-    const normalizedDocPath = path.normalize(documentPath)
-    const normalizedCurrentRoot = path.normalize(currentProjectRoot)
-    
-    if (!normalizedDocPath.startsWith(normalizedCurrentRoot)) {
-      // 文档在当前项目根目录之外，寻找新的项目根目录
-      const newProjectRoot = extractProjectRootFromDocument(documentPath)
-      if (newProjectRoot && newProjectRoot !== currentProjectRoot) {
-        return {
-          needed: true,
-          reason: '文档位于当前项目范围外，检测到新项目根目录',
-          newProjectRoot,
-        }
-      }
-    }
-    
-    // 3. 检查是否是不同类型的项目（例如：从npm项目切换到ohpm项目）
-    const detectedProjectRoot = extractProjectRootFromDocument(documentPath)
-    if (detectedProjectRoot && detectedProjectRoot !== currentProjectRoot) {
-      const tempDetection = lspConfig.detectAndSetProjectType(detectedProjectRoot)
-      const currentDetection = lspConfig.getCurrentProjectDetection()
-      
-      if (currentDetection && 
-          (tempDetection.packageManagerType !== currentDetection.packageManagerType || 
-           tempDetection.type !== currentDetection.type)) {
-        return {
-          needed: true,
-          reason: `检测到不同类型的项目 (${tempDetection.type}/${tempDetection.packageManagerType} vs ${currentDetection.type}/${currentDetection.packageManagerType})`,
-          newProjectRoot: detectedProjectRoot,
-        }
-      }
-    }
-    
-    return { needed: false }
-  } catch (error) {
-    logger.getConsola().warn('检查项目重新检测时发生错误:', error)
-    return { needed: false }
-  }
-}
-
-/**
- * 从文档路径提取项目根目录
- * @param documentPath 文档路径
- * @returns 项目根目录路径，如果未找到则返回undefined
- */
-function extractProjectRootFromDocument(documentPath: string): string | undefined {
-  try {
-    let currentDir = path.dirname(documentPath)
-    const maxLevels = 10 // 最多向上查找10级目录，避免无限循环
-    
-    for (let i = 0; i < maxLevels; i++) {
-      // 检查ArkTS项目标识文件
-      const ohPackageJson = path.join(currentDir, 'oh-package.json5')
-      const packageJson = path.join(currentDir, 'package.json')
-      
-      if (fs.existsSync(ohPackageJson)) {
-        logger.getConsola().debug(`找到ArkTS项目根目录: ${currentDir} (oh-package.json5)`)
-        return currentDir
-      }
-      
-      if (fs.existsSync(packageJson)) {
-        logger.getConsola().debug(`找到Node.js项目根目录: ${currentDir} (package.json)`)
-        return currentDir
-      }
-      
-      // 向上一级目录继续查找
-      const parentDir = path.dirname(currentDir)
-      if (parentDir === currentDir) {
-        // 已到达根目录，停止查找
-        break
-      }
-      currentDir = parentDir
-    }
-    
-    logger.getConsola().debug(`未找到项目根目录，文档路径: ${documentPath}`)
-    return undefined
-  } catch (error) {
-    logger.getConsola().warn('提取项目根目录时发生错误:', error)
-    return undefined
-  }
-}
-
-connection.onRequest('ets/waitForEtsConfigurationChangedRequested', (e) => {
-  logger.getConsola().info(`waitForEtsConfigurationChangedRequested: ${JSON.stringify(e)}`)
-  lspConfiguration.setConfiguration(e)
-})
+// 初始化项目检测服务
+const projectDetectionService = new ProjectDetectionService(logger, lspConfiguration)
 
 // 全局配置状态
 let globalResourceDiagnosticLevel: ResourceDiagnosticLevel = 'error'
@@ -197,17 +53,19 @@ connection.onDidChangeConfiguration((params) => {
   }
 })
 
-// TODO: 监听文件变更
-// connection.onDidChangeWatchedFiles((params) => {
-//   logger.getConsola().info('Watched files changed:', JSON.stringify(params))
-// })
+connection.onRequest('ets/waitForEtsConfigurationChangedRequested', (e) => {
+  logger.getConsola().info(`waitForEtsConfigurationChangedRequested: ${JSON.stringify(e)}`)
+  lspConfiguration.setConfiguration(e)
+})
+
+logger.getConsola().info(`ETS Language Server is running: (pid: ${process.pid})`)
 
 // 文档打开事件监听 - 用于动态项目识别
 let currentProjectRoot: string | undefined
 connection.onDidOpenTextDocument((params) => {
   try {
     const documentUri = params.textDocument.uri
-    const documentPath = safeParseUri(documentUri)
+    const documentPath = UriHelper.safeParseUri(documentUri, logger)
     
     // 如果URI解析失败，直接返回
     if (!documentPath) {
@@ -218,16 +76,22 @@ connection.onDidOpenTextDocument((params) => {
     logger.getConsola().debug('Document opened:', documentPath)
     
     // 过滤掉oh_modules和node_modules中的文件，避免不必要的检测
-    if (documentPath.includes('oh_modules') || documentPath.includes('node_modules')) {
+    if (UriHelper.isDependencyFile(documentPath)) {
       logger.getConsola().debug('Skipping project detection for dependency file:', documentPath)
       return
     }
     
+    // 过滤配置文件，避免JSON5解析错误影响项目检测
+    if (UriHelper.isConfigFile(documentPath)) {
+      logger.getConsola().debug('Skipping project detection for config file:', documentPath)
+      return
+    }
+    
     // 检查是否需要重新检测项目类型
-    const shouldRedetect = checkIfProjectRedetectionNeeded(documentPath, currentProjectRoot, lspConfiguration)
+    const shouldRedetect = projectDetectionService.checkIfProjectRedetectionNeeded(documentPath, currentProjectRoot)
     if (shouldRedetect.needed) {
       logger.getConsola().info('触发项目重新检测，原因:', shouldRedetect.reason)
-      const newProjectRoot = shouldRedetect.newProjectRoot || extractProjectRootFromDocument(documentPath)
+      const newProjectRoot = shouldRedetect.newProjectRoot || projectDetectionService.extractProjectRootFromDocument(documentPath)
       
       if (newProjectRoot && newProjectRoot !== currentProjectRoot) {
         logger.getConsola().info('检测到新的项目根目录:', newProjectRoot)
@@ -235,15 +99,7 @@ connection.onDidOpenTextDocument((params) => {
         
         // 重新检测项目类型
         try {
-          const newProjectDetection = lspConfiguration.detectAndSetProjectType(newProjectRoot)
-          logger.getConsola().info('文档打开时项目重新检测完成:', {
-            type: newProjectDetection.type,
-            packageManagerType: newProjectDetection.packageManagerType,
-            hasOhModules: newProjectDetection.hasOhModules,
-            hasNodeModules: newProjectDetection.hasNodeModules,
-            previousRoot: currentProjectRoot,
-            newRoot: newProjectRoot,
-          })
+          projectDetectionService.performProjectRedetection(newProjectRoot, currentProjectRoot)
         } catch (error) {
           logger.getConsola().error('文档打开时项目重新检测失败:', error)
         }
@@ -255,7 +111,7 @@ connection.onDidOpenTextDocument((params) => {
   }
 })
 
-ResourceWatcher.from(connection)
+// ResourceWatcher.from(connection) - 暂时注释掉，需要检查导入
 
 // 初始化时记录项目根目录
 connection.onInitialize(async (params) => {
@@ -305,21 +161,35 @@ connection.onInitialize(async (params) => {
     params,
     createTypeScriptProject(ets as any, tsdk.diagnosticMessages, () => {
       return {
-        languagePlugins: [ETSLanguagePlugin(ets, { sdkPaths: [lspConfiguration.getSdkPath(), lspConfiguration.getHmsSdkPath()].filter(Boolean) as string[], tsdk: lspConfiguration.getTsdkPath() })],
+        languagePlugins: [ETSLanguagePlugin(ets, { 
+          sdkPaths: [lspConfiguration.getSdkPath(), lspConfiguration.getHmsSdkPath()].filter(Boolean) as string[], 
+          tsdk: lspConfiguration.getTsdkPath() 
+        })],
         setup(options) {
           if (!options.project || !options.project.typescript || !options.project.typescript.languageServiceHost)
             return
 
           const originalSettings = options.project.typescript.languageServiceHost.getCompilationSettings() || {}
           logger.getConsola().debug(`Settings: ${JSON.stringify(lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions), null, 2)}`)
+          
+          // 包装getCompilationSettings方法，添加错误处理
+          const originalGetCompilationSettings = options.project.typescript.languageServiceHost.getCompilationSettings
           options.project.typescript.languageServiceHost.getCompilationSettings = () => {
-            return lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions) as any
+            try {
+              return lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions) as any
+            } catch (error) {
+              logger.getConsola().error('Error in getCompilationSettings:', error)
+              return originalSettings as any
+            }
           }
+          
+          // 包装TypeScript语言服务主机的关键方法
+          TypeScriptServiceWrapper.wrapLanguageServiceHost(options.project.typescript.languageServiceHost, logger)
         },
       }
     }),
     [
-      ...createTypeScriptServices(ets as any),
+      ...TypeScriptServiceWrapper.createSafeTypeScriptServices(ets as any, logger),
       createETSIntegratedResourceDefinitionService(projectRoot, lspConfiguration),
       createETSIntegratedRawfileDefinitionService(projectRoot, lspConfiguration),
       createETSResourceCompletionService(projectRoot, lspConfiguration),
