@@ -1,10 +1,10 @@
 import type { OhosClientOptions } from '@arkts/shared'
-import { UnifiedProjectDetector } from '@arkts/shared'
 import type { AbstractWatcher } from '../abstract-watcher'
 import type { Translator } from '../translate'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { UnifiedProjectDetector } from '@arkts/shared'
 import fg from 'fast-glob'
 import * as vscode from 'vscode'
 import { SdkAnalyzerException } from './sdk-analyzer-exception'
@@ -343,9 +343,10 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
       // 使用统一的项目检测逻辑
       const result = UnifiedProjectDetector.detectProject(workspaceFolder.fsPath)
       console.info(`VSCode端项目检测结果: ${result.type}, 包管理器: ${result.packageManagerType}`)
-      
+
       return result.packageManagerType
-    } catch (error) {
+    }
+    catch (error) {
       console.warn('VSCode端项目类型检测错误，使用默认npm:', error)
       return 'npm' // 任何错误的默认回退
     }
@@ -363,7 +364,7 @@ export class SdkAnalyzer<TMetadata = Record<string, any>> {
     const etsLoaderConfigPath = await this.getEtsLoaderConfigPath(force)
     const etsLoaderPath = vscode.Uri.joinPath(sdkPath, 'ets', 'build-tools', 'ets-loader')
     const workspaceFolder = this.fileSystem.getCurrentWorkspaceDir()
-    
+
     // 检测包管理器类型
     const packageManagerType = this.detectPackageManagerType()
 

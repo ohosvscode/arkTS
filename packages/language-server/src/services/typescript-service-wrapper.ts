@@ -16,13 +16,14 @@ export class TypeScriptServiceWrapper {
   static createSafeTypeScriptServices(ets: typeof import('ohos-typescript'), logger: LanguageServerLogger) {
     try {
       return createTypeScriptServices(ets as any)
-    } catch (error) {
+    }
+    catch (error) {
       logger.getConsola().error('Failed to create TypeScript services:', error)
       // 返回空数组，确保服务器能继续启动
       return []
     }
   }
-  
+
   /**
    * 包装TypeScript语言服务主机的关键方法
    * 添加JSON5解析错误防护和文件访问拦截
@@ -41,13 +42,14 @@ export class TypeScriptServiceWrapper {
               return false
             }
             return originalFileExists(fileName)
-          } catch (error) {
+          }
+          catch (error) {
             logger.getConsola().warn('Error in fileExists for:', fileName, error)
             return false
           }
         }
       }
-      
+
       // 包装readFile方法，防止读取有问题的JSON5文件
       if (languageServiceHost.readFile) {
         const originalReadFile = languageServiceHost.readFile.bind(languageServiceHost)
@@ -58,41 +60,45 @@ export class TypeScriptServiceWrapper {
               return undefined
             }
             return originalReadFile(fileName, encoding)
-          } catch (error) {
+          }
+          catch (error) {
             logger.getConsola().warn('Error in readFile for:', fileName, error)
             return undefined
           }
         }
       }
-      
+
       // 包装directoryExists方法，防止访问有问题的目录
       if (languageServiceHost.directoryExists) {
         const originalDirectoryExists = languageServiceHost.directoryExists.bind(languageServiceHost)
         languageServiceHost.directoryExists = (directoryName: string) => {
           try {
             return originalDirectoryExists(directoryName)
-          } catch (error) {
+          }
+          catch (error) {
             logger.getConsola().warn('Error in directoryExists for:', directoryName, error)
             return false
           }
         }
       }
-      
+
       // 包装getDirectories方法，过滤有问题的目录
       if (languageServiceHost.getDirectories) {
         const originalGetDirectories = languageServiceHost.getDirectories.bind(languageServiceHost)
         languageServiceHost.getDirectories = (directoryName: string) => {
           try {
             return originalGetDirectories(directoryName)
-          } catch (error) {
+          }
+          catch (error) {
             logger.getConsola().warn('Error in getDirectories for:', directoryName, error)
             return []
           }
         }
       }
-      
+
       logger.getConsola().debug('TypeScript language service host wrapped successfully')
-    } catch (error) {
+    }
+    catch (error) {
       logger.getConsola().error('Failed to wrap language service host:', error)
     }
   }

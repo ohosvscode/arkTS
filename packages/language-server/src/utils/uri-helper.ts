@@ -16,20 +16,21 @@ export class UriHelper {
     try {
       const decoded = URI.parse(uri)
       const fsPath = decoded.fsPath
-      
+
       // 检查路径是否有效，避免处理特殊文件
       if (!fsPath || fsPath.includes('%') || fsPath.length < 3) {
         logger.getConsola().debug('Invalid file path after URI parsing:', fsPath)
         return undefined
       }
-      
+
       return fsPath
-    } catch (error) {
+    }
+    catch (error) {
       logger.getConsola().warn('Failed to parse URI:', uri, error)
       return undefined
     }
   }
-  
+
   /**
    * 检查文件路径是否为依赖文件
    * @param filePath 文件路径
@@ -38,7 +39,7 @@ export class UriHelper {
   static isDependencyFile(filePath: string): boolean {
     return filePath.includes('oh_modules') || filePath.includes('node_modules')
   }
-  
+
   /**
    * 检查文件路径是否为配置文件
    * @param filePath 文件路径

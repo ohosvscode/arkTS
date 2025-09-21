@@ -20,12 +20,13 @@ export function createSafeJson5Parser() {
     if (typeof global !== 'undefined' && global.JSON5 && typeof global.JSON5.parse === 'function') {
       // 保存原始的JSON5.parse方法
       const originalJson5Parse = global.JSON5.parse
-      
+
       // 重写JSON5.parse方法以添加错误处理
-      global.JSON5.parse = function(text: string, reviver?: any) {
+      global.JSON5.parse = function (text: string, reviver?: any) {
         try {
           return originalJson5Parse.call(global.JSON5, text, reviver)
-        } catch (error) {
+        }
+        catch (error) {
           if (error instanceof Error && error.message.includes('invalid character')) {
             logger.getConsola().warn('JSON5解析错误被安全拦截:', error.message)
             logger.getConsola().warn('文件内容可能损坏，返回空对象以保持服务稳定')
@@ -34,12 +35,14 @@ export function createSafeJson5Parser() {
           throw error // 重新抛出其他错误
         }
       }
-      
+
       logger.getConsola().info('JSON5.parse方法已被安全包装')
-    } else {
+    }
+    else {
       logger.getConsola().warn('JSON5对象不存在，无法应用安全包装')
     }
-  } catch (error) {
+  }
+  catch (error) {
     logger.getConsola().error('创建安全JSON5解析器时发生错误:', error)
   }
 }
@@ -51,9 +54,10 @@ export function initSafeJson5() {
   try {
     // 在模块加载时立即应用补丁
     createSafeJson5Parser()
-    
+
     logger.getConsola().info('Safe JSON5 parser initialized')
-  } catch (error) {
+  }
+  catch (error) {
     logger.getConsola().error('初始化安全JSON5解析器时发生错误:', error)
   }
 }

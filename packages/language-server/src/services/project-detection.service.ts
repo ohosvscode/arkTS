@@ -1,7 +1,7 @@
 import type { LanguageServerLogger } from '@arkts/shared'
 import type { LanguageServerConfigManager } from '../classes/config-manager'
-import path from 'node:path'
 import fs from 'node:fs'
+import path from 'node:path'
 
 /**
  * 项目重新检测结果接口
@@ -19,7 +19,7 @@ export interface ProjectRedetectionResult {
 export class ProjectDetectionService {
   constructor(
     private logger: LanguageServerLogger,
-    private lspConfig: LanguageServerConfigManager
+    private lspConfig: LanguageServerConfigManager,
   ) {}
 
   /**
@@ -41,11 +41,11 @@ export class ProjectDetectionService {
           newProjectRoot: this.extractProjectRootFromDocument(documentPath),
         }
       }
-      
+
       // 2. 检查文档是否在当前项目根目录范围内
       const normalizedDocPath = path.normalize(documentPath)
       const normalizedCurrentRoot = path.normalize(currentProjectRoot)
-      
+
       if (!normalizedDocPath.startsWith(normalizedCurrentRoot)) {
         // 文档在当前项目根目录之外，寻找新的项目根目录
         const newProjectRoot = this.extractProjectRootFromDocument(documentPath)
@@ -57,16 +57,16 @@ export class ProjectDetectionService {
           }
         }
       }
-      
+
       // 3. 检查是否是不同类型的项目（例如：从npm项目切换到ohpm项目）
       const detectedProjectRoot = this.extractProjectRootFromDocument(documentPath)
       if (detectedProjectRoot && detectedProjectRoot !== currentProjectRoot) {
         const tempDetection = this.lspConfig.detectAndSetProjectType(detectedProjectRoot)
         const currentDetection = this.lspConfig.getCurrentProjectDetection()
-        
-        if (currentDetection && 
-            (tempDetection.packageManagerType !== currentDetection.packageManagerType || 
-             tempDetection.type !== currentDetection.type)) {
+
+        if (currentDetection
+          && (tempDetection.packageManagerType !== currentDetection.packageManagerType
+            || tempDetection.type !== currentDetection.type)) {
           return {
             needed: true,
             reason: `检测到不同类型的项目 (${tempDetection.type}/${tempDetection.packageManagerType} vs ${currentDetection.type}/${currentDetection.packageManagerType})`,
@@ -74,9 +74,10 @@ export class ProjectDetectionService {
           }
         }
       }
-      
+
       return { needed: false }
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.getConsola().warn('检查项目重新检测时发生错误:', error)
       return { needed: false }
     }
@@ -91,22 +92,22 @@ export class ProjectDetectionService {
     try {
       let currentDir = path.dirname(documentPath)
       const maxLevels = 10 // 最多向上查找10级目录，避免无限循环
-      
+
       for (let i = 0; i < maxLevels; i++) {
         // 检查ArkTS项目标识文件
         const ohPackageJson = path.join(currentDir, 'oh-package.json5')
         const packageJson = path.join(currentDir, 'package.json')
-        
+
         if (fs.existsSync(ohPackageJson)) {
           this.logger.getConsola().debug(`找到ArkTS项目根目录: ${currentDir} (oh-package.json5)`)
           return currentDir
         }
-        
+
         if (fs.existsSync(packageJson)) {
           this.logger.getConsola().debug(`找到Node.js项目根目录: ${currentDir} (package.json)`)
           return currentDir
         }
-        
+
         // 向上一级目录继续查找
         const parentDir = path.dirname(currentDir)
         if (parentDir === currentDir) {
@@ -115,10 +116,11 @@ export class ProjectDetectionService {
         }
         currentDir = parentDir
       }
-      
+
       this.logger.getConsola().debug(`未找到项目根目录，文档路径: ${documentPath}`)
       return undefined
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.getConsola().warn('提取项目根目录时发生错误:', error)
       return undefined
     }
@@ -142,7 +144,8 @@ export class ProjectDetectionService {
         newRoot: newProjectRoot,
       })
       return newProjectDetection
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.getConsola().error('文档打开时项目重新检测失败:', error)
       throw error
     }

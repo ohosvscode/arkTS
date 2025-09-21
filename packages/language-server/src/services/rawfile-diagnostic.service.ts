@@ -1,10 +1,11 @@
 import type { LanguageServicePlugin } from '@volar/language-server'
+import type { Diagnostic } from '@volar/language-server/node'
 import type * as ets from 'ohos-typescript'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { LanguageServerConfigManager } from '../classes/config-manager'
 import type { GlobalRawfileCallInfo } from '../classes/global-call-expression-finder'
 import { parseRawfileReference } from '@arkts/shared'
-import { Diagnostic, DiagnosticSeverity, Range } from '@volar/language-server/node'
+import { DiagnosticSeverity, Range } from '@volar/language-server/node'
 import { BaseResourceService } from '../classes/base-resource-service'
 import { ResourceResolverManager } from '../classes/resource-resolver'
 import { logger } from '../logger'
@@ -130,11 +131,11 @@ export class RawfileDiagnosticService extends BaseResourceService {
     diagnosticLevel: RawfileDiagnosticLevel,
   ): Diagnostic {
     const severity = this.getDiagnosticSeverity(diagnosticLevel)
-    
+
     // 计算诊断范围 - 定位到资源字符串部分
     const startPos = document.positionAt(rawfileCall.resourceStart)
     const endPos = document.positionAt(rawfileCall.resourceEnd)
-    
+
     return {
       range: Range.create(startPos, endPos),
       severity,

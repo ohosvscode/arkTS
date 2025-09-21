@@ -1,7 +1,7 @@
 import type { Position } from '@volar/language-server/node'
 import type * as ets from 'ohos-typescript'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import type { GlobalRCallInfo, GlobalRawfileCallInfo } from './global-call-expression-finder'
+import type { GlobalRawfileCallInfo, GlobalRCallInfo } from './global-call-expression-finder'
 import { logger } from '../logger'
 import { GlobalRCallFinder } from './global-call-expression-finder'
 

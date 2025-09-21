@@ -1,7 +1,6 @@
-import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, describe, expect, it } from 'vitest'
 import * as ets from 'ohos-typescript'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { LanguageServerConfigManager } from '../src/classes/config-manager'
 import { logger } from '../src/logger'
@@ -10,7 +9,7 @@ import { RawfileDiagnosticService } from '../src/services/rawfile-diagnostic.ser
 const root = path.resolve(__dirname, '../../..')
 const projectRoot = path.join(root, 'sample')
 
-describe('Rawfile诊断功能测试', () => {
+describe('rawfile诊断功能测试', () => {
   let service: RawfileDiagnosticService
   let mockLspConfiguration: LanguageServerConfigManager
 

@@ -1,7 +1,7 @@
-import type { EtsServerClientOptions, LanguageServerLogger } from '@arkts/shared'
-import { ProjectDetectionResult, ProjectType, UnifiedProjectDetector } from '@arkts/shared'
+import type { EtsServerClientOptions, LanguageServerLogger, ProjectDetectionResult } from '@arkts/shared'
 import fs from 'node:fs'
 import path from 'node:path'
+import { ProjectType, UnifiedProjectDetector } from '@arkts/shared'
 import { loadTsdkByPath } from '@volar/language-server/node'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
@@ -222,7 +222,8 @@ export class LanguageServerConfigManager {
         hasNodeModules: this.currentProjectDetection.hasNodeModules,
       })
       return this.currentProjectDetection
-    } catch (error) {
+    }
+    catch (error) {
       this.logger.getConsola().error(`项目类型检测失败，使用默认配置: ${error}`)
       // 返回默认结果
       this.currentProjectDetection = {
@@ -329,11 +330,11 @@ export class LanguageServerConfigManager {
     // 将 originalSettings.paths 中的路径转换为相对于 baseUrl 的路径，这样用户就仍然能使用tsconfig配置paths
     originalSettings = defu({ paths: this.getRelativeWithConfigFilePaths() }, originalSettings)
     originalSettings = this.convertPaths(originalSettings)
-    
+
     // 根据项目类型设置packageManagerType
     const packageManagerType = this.getPackageManagerType()
     this.logger.getConsola().info(`设置包管理器类型为: ${packageManagerType}`)
-    
+
     const finalCompilerOptions = defu(originalSettings, {
       etsLoaderPath: this.getEtsLoaderPath(),
       typeRoots: this.getTypeRoots(),

@@ -34,13 +34,13 @@ describe('parseRawfileReference 基础校验', () => {
   })
 
   it('with quotes', () => {
-    const result1 = parseRawfileReference("'1.html'")
+    const result1 = parseRawfileReference('\'1.html\'')
     const result2 = parseRawfileReference('"xxx/2/2.md"')
     const result3 = parseRawfileReference('`xxx`')
 
     expect(result1).toEqual({
       filePath: '1.html',
-      raw: "'1.html'",
+      raw: '\'1.html\'',
     })
     expect(result2).toEqual({
       filePath: 'xxx/2/2.md',
@@ -55,13 +55,13 @@ describe('parseRawfileReference 基础校验', () => {
   it('invalid references', () => {
     expect(parseRawfileReference('')).toBeNull()
     expect(parseRawfileReference('  ')).toBeNull()
-    expect(parseRawfileReference("''")).toBeNull()
+    expect(parseRawfileReference('\'\'')).toBeNull()
     expect(parseRawfileReference('""')).toBeNull()
     expect(parseRawfileReference('``')).toBeNull()
   })
 })
 
-describe('ResourceResolver rawfile 功能', () => {
+describe('resourceResolver rawfile 功能', () => {
   it('能够构建rawfile索引', async () => {
     const tempDir = path.join(__dirname, 'temp-test-rawfile')
     const entryModule = path.join(tempDir, 'entry')

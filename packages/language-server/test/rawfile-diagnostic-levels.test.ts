@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import * as ets from 'ohos-typescript'
 import { DiagnosticSeverity } from '@volar/language-server/node'
+import * as ets from 'ohos-typescript'
+import { describe, expect, it } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { LanguageServerConfigManager } from '../src/classes/config-manager'
 import { logger } from '../src/logger'
@@ -8,7 +8,7 @@ import { RawfileDiagnosticService } from '../src/services/rawfile-diagnostic.ser
 
 const projectRoot = 'c:\\Users\\Administrator\\Desktop\\arkTS\\sample'
 
-describe('Rawfile诊断级别行为验证', () => {
+describe('rawfile诊断级别行为验证', () => {
   const mockLspConfiguration = new LanguageServerConfigManager(logger)
 
   it('error级别应该产生错误诊断', async () => {
@@ -18,7 +18,7 @@ describe('Rawfile诊断级别行为验证', () => {
     const document = TextDocument.create('file://test.ets', 'ets', 1, code)
 
     const diagnostics = await service.provideDiagnostics(document, sourceFile)
-    
+
     if (diagnostics.length > 0) {
       expect(diagnostics[0].severity).toBe(DiagnosticSeverity.Error)
       expect(diagnostics[0].message).toContain('not found in project')
@@ -32,7 +32,7 @@ describe('Rawfile诊断级别行为验证', () => {
     const document = TextDocument.create('file://test.ets', 'ets', 1, code)
 
     const diagnostics = await service.provideDiagnostics(document, sourceFile)
-    
+
     if (diagnostics.length > 0) {
       expect(diagnostics[0].severity).toBe(DiagnosticSeverity.Warning)
       expect(diagnostics[0].message).toContain('not found in project')
@@ -46,13 +46,13 @@ describe('Rawfile诊断级别行为验证', () => {
     const document = TextDocument.create('file://test.ets', 'ets', 1, code)
 
     const diagnostics = await service.provideDiagnostics(document, sourceFile)
-    
+
     expect(diagnostics).toEqual([])
   })
 
   it('存在的rawfile资源在所有级别都不应该产生诊断', async () => {
     const testCases = ['error', 'warning', 'none'] as const
-    
+
     for (const level of testCases) {
       const service = new RawfileDiagnosticService(mockLspConfiguration, projectRoot, () => level)
       const code = 'getContext().resourceManager.getRawFileContent($rawfile("1.html"))'
@@ -60,7 +60,7 @@ describe('Rawfile诊断级别行为验证', () => {
       const document = TextDocument.create('file://test.ets', 'ets', 1, code)
 
       const diagnostics = await service.provideDiagnostics(document, sourceFile)
-      
+
       // 对于存在的资源，所有级别都不应该产生诊断
       expect(diagnostics).toEqual([])
     }
@@ -73,7 +73,7 @@ describe('Rawfile诊断级别行为验证', () => {
     const document = TextDocument.create('file://test.ets', 'ets', 1, code)
 
     const diagnostics = await service.provideDiagnostics(document, sourceFile)
-    
+
     if (diagnostics.length > 0) {
       expect(diagnostics[0].source).toBe('arkts-rawfile-diagnostic')
     }

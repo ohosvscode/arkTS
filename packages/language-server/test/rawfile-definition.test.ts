@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { beforeAll, describe, expect, it } from 'vitest'
-import * as ets from 'ohos-typescript'
 import { Position } from '@volar/language-server/node'
+import * as ets from 'ohos-typescript'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { TextDocument } from 'vscode-languageserver-textdocument'
 import { LanguageServerConfigManager } from '../src/classes/config-manager'
 import { logger } from '../src/logger'
@@ -11,7 +11,7 @@ import { RawfileDefinitionService } from '../src/services/rawfile-definition.ser
 const root = path.resolve(__dirname, '../../..')
 const projectRoot = path.join(root, 'sample')
 
-describe('Rawfile定义跳转相关能力测试', () => {
+describe('rawfile定义跳转相关能力测试', () => {
   let service: RawfileDefinitionService
   let mockLspConfiguration: LanguageServerConfigManager
 
@@ -74,7 +74,7 @@ describe('Rawfile定义跳转相关能力测试', () => {
   })
 })
 
-describe('Rawfile集成测试（使用真实文件）', () => {
+describe('rawfile集成测试（使用真实文件）', () => {
   let service: RawfileDefinitionService
   let mockLspConfiguration: LanguageServerConfigManager
 

@@ -7,7 +7,7 @@ import process from 'node:process'
  */
 export class GlobalErrorHandler {
   private static isInitialized = false
-  
+
   /**
    * 初始化全局错误处理机制
    * @param logger 日志记录器
@@ -16,7 +16,7 @@ export class GlobalErrorHandler {
     if (this.isInitialized) {
       return
     }
-    
+
     // 处理未捕获的异常
     process.on('uncaughtException', (error) => {
       logger.getConsola().error('Uncaught exception in ETS Language Server:', error)
@@ -32,7 +32,7 @@ export class GlobalErrorHandler {
       }
       // 不退出进程，让服务继续运行
     })
-    
+
     this.isInitialized = true
     logger.getConsola().info('Global error handler initialized successfully')
   }

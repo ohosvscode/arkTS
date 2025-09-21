@@ -1,5 +1,5 @@
-import type { ResourceDiagnosticLevel } from './services/resource-diagnostic.service'
 import type { RawfileDiagnosticLevel } from './services/rawfile-diagnostic.service'
+import type { ResourceDiagnosticLevel } from './services/resource-diagnostic.service'
 import process from 'node:process'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createConnection, createServer, createTypeScriptProject } from '@volar/language-server/node'
@@ -10,20 +10,20 @@ import { logger } from './logger'
 import { createETS$$ThisService } from './services/$$this.service'
 import { createETSLinterDiagnosticService } from './services/diagnostic.service'
 import { createETSFormattingService } from './services/formatting.service'
-import { createETSResourceCompletionService } from './services/resource-completion.service'
+import { ProjectDetectionService } from './services/project-detection.service'
 import { createETSRawfileCompletionService } from './services/rawfile-completion.service'
-import { createETSIntegratedResourceDefinitionService } from './services/resource-definition.service'
 import { createETSIntegratedRawfileDefinitionService } from './services/rawfile-definition.service'
-import { createETSResourceDiagnosticService } from './services/resource-diagnostic.service'
 import { createETSRawfileDiagnosticService } from './services/rawfile-diagnostic.service'
-import { createETSDocumentSymbolService } from './services/symbol.service'
+import { createETSResourceCompletionService } from './services/resource-completion.service'
+import { createETSIntegratedResourceDefinitionService } from './services/resource-definition.service'
+import { createETSResourceDiagnosticService } from './services/resource-diagnostic.service'
 
+import { createETSDocumentSymbolService } from './services/symbol.service'
+import { TypeScriptServiceWrapper } from './services/typescript-service-wrapper'
+import { GlobalErrorHandler } from './utils/error-handler'
 // 导入重构后的工具类和服务
 import { SafeJson5Parser } from './utils/json5-parser'
 import { UriHelper } from './utils/uri-helper'
-import { GlobalErrorHandler } from './utils/error-handler'
-import { TypeScriptServiceWrapper } from './services/typescript-service-wrapper'
-import { ProjectDetectionService } from './services/project-detection.service'
 
 // 初始化安全的JSON5解析器、全局错误处理器
 SafeJson5Parser.initialize(logger)
@@ -66,46 +66,48 @@ connection.onDidOpenTextDocument((params) => {
   try {
     const documentUri = params.textDocument.uri
     const documentPath = UriHelper.safeParseUri(documentUri, logger)
-    
+
     // 如果URI解析失败，直接返回
     if (!documentPath) {
       logger.getConsola().debug('Skipping document with invalid URI:', documentUri)
       return
     }
-    
+
     logger.getConsola().debug('Document opened:', documentPath)
-    
+
     // 过滤掉oh_modules和node_modules中的文件，避免不必要的检测
     if (UriHelper.isDependencyFile(documentPath)) {
       logger.getConsola().debug('Skipping project detection for dependency file:', documentPath)
       return
     }
-    
+
     // 过滤配置文件，避免JSON5解析错误影响项目检测
     if (UriHelper.isConfigFile(documentPath)) {
       logger.getConsola().debug('Skipping project detection for config file:', documentPath)
       return
     }
-    
+
     // 检查是否需要重新检测项目类型
     const shouldRedetect = projectDetectionService.checkIfProjectRedetectionNeeded(documentPath, currentProjectRoot)
     if (shouldRedetect.needed) {
       logger.getConsola().info('触发项目重新检测，原因:', shouldRedetect.reason)
       const newProjectRoot = shouldRedetect.newProjectRoot || projectDetectionService.extractProjectRootFromDocument(documentPath)
-      
+
       if (newProjectRoot && newProjectRoot !== currentProjectRoot) {
         logger.getConsola().info('检测到新的项目根目录:', newProjectRoot)
         currentProjectRoot = newProjectRoot
-        
+
         // 重新检测项目类型
         try {
           projectDetectionService.performProjectRedetection(newProjectRoot, currentProjectRoot)
-        } catch (error) {
+        }
+        catch (error) {
           logger.getConsola().error('文档打开时项目重新检测失败:', error)
         }
       }
     }
-  } catch (error) {
+  }
+  catch (error) {
     logger.getConsola().error('处理文档打开事件时发生错误:', error)
     // 确保错误不会影响其他功能
   }
@@ -139,7 +141,7 @@ connection.onInitialize(async (params) => {
   logger.getConsola().info('Server initialization - Project root:', projectRoot)
   logger.getConsola().info('Server initialization - SDK path:', sdkPath)
   logger.getConsola().info('Server initialization - Workspace folders:', params.workspaceFolders)
-  
+
   // 初始化当前项目根目录
   currentProjectRoot = projectRoot
 
@@ -152,7 +154,8 @@ connection.onInitialize(async (params) => {
       hasOhModules: projectDetection.hasOhModules,
       hasNodeModules: projectDetection.hasNodeModules,
     })
-  } catch (error) {
+  }
+  catch (error) {
     logger.getConsola().error('项目类型检测失败，继续使用默认配置:', error)
     // 确保即使检测失败也能继续服务
   }
@@ -161,9 +164,9 @@ connection.onInitialize(async (params) => {
     params,
     createTypeScriptProject(ets as any, tsdk.diagnosticMessages, () => {
       return {
-        languagePlugins: [ETSLanguagePlugin(ets, { 
-          sdkPaths: [lspConfiguration.getSdkPath(), lspConfiguration.getHmsSdkPath()].filter(Boolean) as string[], 
-          tsdk: lspConfiguration.getTsdkPath() 
+        languagePlugins: [ETSLanguagePlugin(ets, {
+          sdkPaths: [lspConfiguration.getSdkPath(), lspConfiguration.getHmsSdkPath()].filter(Boolean) as string[],
+          tsdk: lspConfiguration.getTsdkPath(),
         })],
         setup(options) {
           if (!options.project || !options.project.typescript || !options.project.typescript.languageServiceHost)
@@ -171,18 +174,19 @@ connection.onInitialize(async (params) => {
 
           const originalSettings = options.project.typescript.languageServiceHost.getCompilationSettings() || {}
           logger.getConsola().debug(`Settings: ${JSON.stringify(lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions), null, 2)}`)
-          
+
           // 包装getCompilationSettings方法，添加错误处理
           const originalGetCompilationSettings = options.project.typescript.languageServiceHost.getCompilationSettings
           options.project.typescript.languageServiceHost.getCompilationSettings = () => {
             try {
               return lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions) as any
-            } catch (error) {
+            }
+            catch (error) {
               logger.getConsola().error('Error in getCompilationSettings:', error)
               return originalSettings as any
             }
           }
-          
+
           // 包装TypeScript语言服务主机的关键方法
           TypeScriptServiceWrapper.wrapLanguageServiceHost(options.project.typescript.languageServiceHost, logger)
         },

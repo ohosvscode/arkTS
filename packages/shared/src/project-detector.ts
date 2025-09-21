@@ -1,5 +1,5 @@
-import * as path from 'path'
-import * as fs from 'fs'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 
 /**
  * 项目类型枚举
@@ -44,7 +44,7 @@ const detectionCache = new Map<string, ProjectDetectionResult>()
 
 /**
  * 统一的项目类型检测工具
- * 
+ *
  * 增强的检测策略：
  * 1. 当前目录检测：优先检查当前目录
  * 2. 向上查找：递归向上查找项目根目录
@@ -63,7 +63,7 @@ export class UnifiedProjectDetector {
    */
   static detectProject(initialPath: string, useCache: boolean = true): ProjectDetectionResult {
     console.info(`[UnifiedProjectDetector] 开始增强检测: ${initialPath}`)
-    
+
     // 检查缓存
     if (useCache) {
       const cached = detectionCache.get(initialPath)
@@ -72,7 +72,7 @@ export class UnifiedProjectDetector {
         return cached
       }
     }
-    
+
     // 多策略检测
     const strategies = [
       () => this.detectCurrentDirectory(initialPath),
@@ -115,7 +115,7 @@ export class UnifiedProjectDetector {
 
     while (depth < this.MAX_TRAVERSE_DEPTH) {
       console.debug(`[UnifiedProjectDetector] 检查路径: ${currentPath} (深度: ${depth})`)
-      
+
       const result = this.detectProjectInDirectory(currentPath, 'upward-traversal')
       if (result && result.type !== ProjectType.Unknown) {
         result.workingDirectory = startPath
@@ -129,7 +129,7 @@ export class UnifiedProjectDetector {
         console.debug(`[UnifiedProjectDetector] 到达根目录，停止向上查找`)
         break
       }
-      
+
       currentPath = parentPath
       depth++
     }
@@ -150,13 +150,13 @@ export class UnifiedProjectDetector {
 
     try {
       const entries = fs.readdirSync(rootPath, { withFileTypes: true })
-      
+
       // 搜索子目录中的项目
       for (const entry of entries) {
         if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules' && entry.name !== 'oh_modules') {
           const subPath = path.join(rootPath, entry.name)
           console.debug(`[UnifiedProjectDetector] 检查子目录: ${subPath}`)
-          
+
           const result = this.detectProjectInDirectory(subPath, 'downward-search')
           if (result && result.type !== ProjectType.Unknown) {
             result.workingDirectory = rootPath
@@ -165,7 +165,8 @@ export class UnifiedProjectDetector {
           }
         }
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.debug(`[UnifiedProjectDetector] 向下搜索失败: ${error}`)
     }
 
@@ -196,7 +197,7 @@ export class UnifiedProjectDetector {
       if (!projectRoot || typeof projectRoot !== 'string') {
         return null
       }
-      
+
       if (!this.directoryExists(projectRoot)) {
         return null
       }
@@ -221,7 +222,7 @@ export class UnifiedProjectDetector {
       const buildProfilePath = path.join(projectRoot, 'build-profile.json5')
       if (this.fileExists(buildProfilePath)) {
         console.info(`[UnifiedProjectDetector] 发现build-profile.json5: ${buildProfilePath}`)
-        
+
         // 进一步检查modules目录中的oh-package.json5
         if (this.hasModuleOhPackages(projectRoot)) {
           result.type = ProjectType.ArkTS
@@ -256,8 +257,8 @@ export class UnifiedProjectDetector {
         result.configFile = packageJsonPath
         return result
       }
-
-    } catch (error) {
+    }
+    catch (error) {
       console.error(`[UnifiedProjectDetector] 目录检测失败 ${projectRoot}: ${error}`)
       return null
     }
@@ -278,12 +279,13 @@ export class UnifiedProjectDetector {
 
       const buildProfileContent = fs.readFileSync(buildProfilePath, 'utf-8')
       let buildProfile: any
-      
+
       try {
         // 使用简单的JSON解析，如果失败则返回false
         // JSON5 files are not standard JSON, but for basic cases this might work
         buildProfile = JSON.parse(buildProfileContent.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, ''))
-      } catch (jsonError) {
+      }
+      catch (jsonError) {
         console.debug(`[UnifiedProjectDetector] JSON解析失败，可能是JSON5格式: ${jsonError}`)
         return false
       }
@@ -303,7 +305,8 @@ export class UnifiedProjectDetector {
           }
         }
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.debug(`[UnifiedProjectDetector] 检查模块oh-package.json5时出错: ${error}`)
     }
 
@@ -328,11 +331,11 @@ export class UnifiedProjectDetector {
       const srcMainPath = path.join(projectRoot, 'src', 'main')
       const etsPath = path.join(srcMainPath, 'ets')
       const resourcesPath = path.join(srcMainPath, 'resources')
-      
+
       // 如果存在src/main/ets目录，很可能是ArkTS模块
       if (this.directoryExists(etsPath)) {
         console.info(`[UnifiedProjectDetector] 发现ArkTS模块目录结构: ${etsPath}`)
-        
+
         // 进一步检查父目录是否有build-profile.json5
         const parentDir = path.dirname(projectRoot)
         const parentBuildProfile = path.join(parentDir, 'build-profile.json5')
@@ -340,7 +343,7 @@ export class UnifiedProjectDetector {
           console.info(`[UnifiedProjectDetector] 父目录存在build-profile.json5: ${parentBuildProfile}`)
           return true
         }
-        
+
         // 检查更上层目录（可能是多层嵌套）
         const grandParentDir = path.dirname(parentDir)
         const grandParentBuildProfile = path.join(grandParentDir, 'build-profile.json5')
@@ -354,26 +357,26 @@ export class UnifiedProjectDetector {
       let currentPath = projectRoot
       let depth = 0
       const maxDepth = 5
-      
+
       while (depth < maxDepth) {
         const ohModulesPath = path.join(currentPath, 'oh_modules')
         const buildProfilePath = path.join(currentPath, 'build-profile.json5')
-        
+
         if (this.directoryExists(ohModulesPath) || this.fileExists(buildProfilePath)) {
           console.info(`[UnifiedProjectDetector] 在层级${depth}发现ArkTS项目标识: ${currentPath}`)
           return true
         }
-        
+
         const parentPath = path.dirname(currentPath)
         if (parentPath === currentPath) {
           break // 到达根目录
         }
-        
+
         currentPath = parentPath
         depth++
       }
-      
-    } catch (error) {
+    }
+    catch (error) {
       console.debug(`[UnifiedProjectDetector] ArkTS子模块检测失败: ${error}`)
     }
 
@@ -402,7 +405,7 @@ export class UnifiedProjectDetector {
       let currentPath = initialPath
       let depth = 0
       const maxDepth = 8 // 增加搜索深度
-      
+
       while (depth < maxDepth) {
         // 检查当前目录和子目录中的oh_modules
         const ohModulesPath = path.join(currentPath, 'oh_modules')
@@ -414,7 +417,7 @@ export class UnifiedProjectDetector {
           result.projectRoot = currentPath
           return result
         }
-        
+
         // 检查子目录中的oh_modules
         try {
           const entries = fs.readdirSync(currentPath, { withFileTypes: true })
@@ -431,30 +434,31 @@ export class UnifiedProjectDetector {
               }
             }
           }
-        } catch (error) {
+        }
+        catch (error) {
           // 忽略读取错误，继续向上查找
         }
-        
+
         // 向上查找
         const parentPath = path.dirname(currentPath)
         if (parentPath === currentPath) {
           break // 到达根目录
         }
-        
+
         currentPath = parentPath
         depth++
       }
-      
+
       // 检查node_modules目录
       const nodeModulesPath = path.join(initialPath, 'node_modules')
       if (this.directoryExists(nodeModulesPath)) {
         result.hasNodeModules = true
       }
-      
-    } catch (error) {
+    }
+    catch (error) {
       console.debug(`[UnifiedProjectDetector] 智能回退检测失败: ${error}`)
     }
-    
+
     console.info(`[UnifiedProjectDetector] 智能回退结果: ${result.packageManagerType}, hasOhModules: ${result.hasOhModules}`)
     return result
   }
@@ -465,7 +469,8 @@ export class UnifiedProjectDetector {
   private static fileExists(filePath: string): boolean {
     try {
       return fs.existsSync(filePath) && fs.statSync(filePath).isFile()
-    } catch {
+    }
+    catch {
       return false
     }
   }
@@ -476,7 +481,8 @@ export class UnifiedProjectDetector {
   private static directoryExists(dirPath: string): boolean {
     try {
       return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory()
-    } catch {
+    }
+    catch {
       return false
     }
   }
@@ -487,7 +493,8 @@ export class UnifiedProjectDetector {
   private static isDirectory(dirPath: string): boolean {
     try {
       return fs.statSync(dirPath).isDirectory()
-    } catch {
+    }
+    catch {
       return false
     }
   }
@@ -505,7 +512,8 @@ export class UnifiedProjectDetector {
   static clearCache(projectRoot?: string): void {
     if (projectRoot) {
       detectionCache.delete(projectRoot)
-    } else {
+    }
+    else {
       detectionCache.clear()
     }
   }

@@ -126,7 +126,7 @@ export function parseResourceReference(resourceRef: string): ResourceReference |
  */
 export function parseRawfileReference(rawfileRef: string): RawfileReference | null {
   // 移除引号
-  const cleanRef = rawfileRef.replace(/^['"\`]|['"\`]$/g, '')
+  const cleanRef = rawfileRef.replace(/^['"`]|['"`]$/g, '')
 
   // rawfile引用就是简单的文件路径，不需要复杂验证
   if (!cleanRef || cleanRef.trim() === '') {

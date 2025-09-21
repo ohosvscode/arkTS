@@ -1,9 +1,10 @@
+import type { RawfileIndexItem } from '@arkts/shared'
 import type { LanguageServicePlugin } from '@volar/language-service'
-import { CompletionItem, CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
+import type { CompletionItem, Position, TextDocument } from 'vscode-languageserver'
 import type { LanguageServerConfigManager } from '../classes/config-manager'
+import { CompletionItemKind } from 'vscode-languageserver'
 import { ResourceResolverManager } from '../classes/resource-resolver'
 import { logger } from '../logger'
-import type { RawfileIndexItem } from '@arkts/shared'
 
 /**
  * Rawfile补全上下文
@@ -40,47 +41,47 @@ const FILE_TYPE_MAP: Record<string, FileTypeInfo> = {
   '.webp': { kind: CompletionItemKind.File, detail: 'WebP Image', description: 'WebP image file', icon: '🖼️', priority: 7 },
   '.bmp': { kind: CompletionItemKind.File, detail: 'Bitmap Image', description: 'Bitmap image file', icon: '🖼️', priority: 6 },
   '.ico': { kind: CompletionItemKind.File, detail: 'Icon File', description: 'Icon file', icon: '🖼️', priority: 7 },
-  
+
   // 音频文件（中等优先级）
   '.mp3': { kind: CompletionItemKind.File, detail: 'MP3 Audio', description: 'MP3 audio file', icon: '🎧', priority: 8 },
   '.wav': { kind: CompletionItemKind.File, detail: 'WAV Audio', description: 'WAV audio file', icon: '🎧', priority: 7 },
   '.ogg': { kind: CompletionItemKind.File, detail: 'OGG Audio', description: 'OGG audio file', icon: '🎧', priority: 6 },
   '.aac': { kind: CompletionItemKind.File, detail: 'AAC Audio', description: 'AAC audio file', icon: '🎧', priority: 7 },
   '.flac': { kind: CompletionItemKind.File, detail: 'FLAC Audio', description: 'FLAC audio file', icon: '🎧', priority: 6 },
-  
+
   // 视频文件（中等优先级）
   '.mp4': { kind: CompletionItemKind.File, detail: 'MP4 Video', description: 'MP4 video file', icon: '🎥', priority: 8 },
   '.avi': { kind: CompletionItemKind.File, detail: 'AVI Video', description: 'AVI video file', icon: '🎥', priority: 6 },
   '.mov': { kind: CompletionItemKind.File, detail: 'MOV Video', description: 'MOV video file', icon: '🎥', priority: 7 },
   '.wmv': { kind: CompletionItemKind.File, detail: 'WMV Video', description: 'WMV video file', icon: '🎥', priority: 5 },
   '.mkv': { kind: CompletionItemKind.File, detail: 'MKV Video', description: 'MKV video file', icon: '🎥', priority: 6 },
-  
+
   // 文档文件（中等优先级）
   '.txt': { kind: CompletionItemKind.File, detail: 'Text File', description: 'Plain text file', icon: '📄', priority: 6 },
   '.pdf': { kind: CompletionItemKind.File, detail: 'PDF Document', description: 'PDF document file', icon: '📄', priority: 7 },
   '.doc': { kind: CompletionItemKind.File, detail: 'Word Document', description: 'Microsoft Word document', icon: '📄', priority: 5 },
   '.docx': { kind: CompletionItemKind.File, detail: 'Word Document', description: 'Microsoft Word document', icon: '📄', priority: 5 },
   '.rtf': { kind: CompletionItemKind.File, detail: 'RTF Document', description: 'Rich Text Format document', icon: '📄', priority: 4 },
-  
+
   // 数据文件（中等优先级）
   '.json': { kind: CompletionItemKind.File, detail: 'JSON Data', description: 'JSON data file', icon: '📊', priority: 7 },
   '.xml': { kind: CompletionItemKind.File, detail: 'XML Data', description: 'XML data file', icon: '📊', priority: 6 },
   '.csv': { kind: CompletionItemKind.File, detail: 'CSV Data', description: 'Comma-separated values file', icon: '📊', priority: 6 },
   '.yaml': { kind: CompletionItemKind.File, detail: 'YAML Data', description: 'YAML data file', icon: '📊', priority: 5 },
   '.yml': { kind: CompletionItemKind.File, detail: 'YAML Data', description: 'YAML data file', icon: '📊', priority: 5 },
-  
+
   // 字体文件（低优先级）
   '.ttf': { kind: CompletionItemKind.File, detail: 'TrueType Font', description: 'TrueType font file', icon: '🅰️', priority: 4 },
   '.otf': { kind: CompletionItemKind.File, detail: 'OpenType Font', description: 'OpenType font file', icon: '🅰️', priority: 4 },
   '.woff': { kind: CompletionItemKind.File, detail: 'Web Font', description: 'Web Open Font Format file', icon: '🅰️', priority: 3 },
   '.woff2': { kind: CompletionItemKind.File, detail: 'Web Font 2', description: 'Web Open Font Format 2 file', icon: '🅰️', priority: 3 },
-  
+
   // 其他常见文件（低优先级）
   '.zip': { kind: CompletionItemKind.File, detail: 'Archive File', description: 'ZIP archive file', icon: '🗇', priority: 3 },
   '.rar': { kind: CompletionItemKind.File, detail: 'Archive File', description: 'RAR archive file', icon: '🗇', priority: 3 },
   '.7z': { kind: CompletionItemKind.File, detail: 'Archive File', description: '7-Zip archive file', icon: '🗇', priority: 3 },
   '.tar': { kind: CompletionItemKind.File, detail: 'Archive File', description: 'TAR archive file', icon: '🗇', priority: 2 },
-  '.gz': { kind: CompletionItemKind.File, detail: 'Archive File', description: 'GZIP archive file', icon: '🗇', priority: 2 }
+  '.gz': { kind: CompletionItemKind.File, detail: 'Archive File', description: 'GZIP archive file', icon: '🗇', priority: 2 },
 }
 
 /**
@@ -100,7 +101,7 @@ class RawfileCompletionAnalyzer {
       })
 
       // 查找 $rawfile() 调用的正则表达式
-      const rawfileCallPattern = /\$rawfile\s*\(\s*['"`]?([^'"`)]*?)$/
+      const rawfileCallPattern = /\$rawfile\s*\(\s*['"`]?([^'"`)]*)$/
       const rawfileCallMatch = line.match(rawfileCallPattern)
 
       if (!rawfileCallMatch) {
@@ -109,9 +110,11 @@ class RawfileCompletionAnalyzer {
 
       const currentInput = rawfileCallMatch[1]
       const startCharacter = line.lastIndexOf('$rawfile(') + 10 // '$rawfile('.length
-      const quoteStartIndex = line.indexOf('"', startCharacter) !== -1 ? line.indexOf('"', startCharacter) + 1 : 
-                             line.indexOf("'", startCharacter) !== -1 ? line.indexOf("'", startCharacter) + 1 : 
-                             startCharacter
+      const quoteStartIndex = line.includes('"', startCharacter)
+        ? line.indexOf('"', startCharacter) + 1
+        : line.includes('\'', startCharacter)
+          ? line.indexOf('\'', startCharacter) + 1
+          : startCharacter
 
       return {
         currentInput,
@@ -152,7 +155,7 @@ class RawfileCompletionGenerator {
         logger.getConsola().warn('ResourceResolver not available')
         return []
       }
-      
+
       const allRawfileResources = resolver.getAllRawfileResources()
 
       // 如果前缀为空，提供根目录所有文件和文件夹
@@ -162,11 +165,12 @@ class RawfileCompletionGenerator {
 
       // 分析路径结构
       const isComplete = prefix.endsWith('/')
-      
+
       if (isComplete) {
         // 完整路径，显示该目录下的内容
         return this.generateDirectoryItems(prefix, allRawfileResources)
-      } else {
+      }
+      else {
         // 部分输入，进行前缀匹配
         return this.generatePrefixMatchItems(prefix, allRawfileResources)
       }
@@ -185,19 +189,20 @@ class RawfileCompletionGenerator {
     const rootItems = new Set<string>()
 
     // 找出根目录下的所有文件和文件夹
-    resources.forEach(resource => {
+    resources.forEach((resource) => {
       const path = resource.reference.filePath
-      if (!path) return
+      if (!path)
+        return
 
       const firstSegment = path.split('/')[0]
-      
+
       if (!rootItems.has(firstSegment)) {
         rootItems.add(firstSegment)
-        
+
         // 判断是文件还是目录
-        const isDirectory = resources.some(r => {
+        const isDirectory = resources.some((r) => {
           const rPath = r.reference.filePath
-          return rPath && rPath.startsWith(firstSegment + '/')
+          return rPath && rPath.startsWith(`${firstSegment}/`)
         }) || resource.location.fileType === 'directory'
 
         items.push(this.createCompletionItem(firstSegment, isDirectory))
@@ -214,21 +219,22 @@ class RawfileCompletionGenerator {
     const items: CompletionItem[] = []
     const normalizedPath = directoryPath.replace(/\/$/, '') // 移除末尾斜杠
     const addedItems = new Set<string>()
-    
-    resources.forEach(resource => {
+
+    resources.forEach((resource) => {
       const path = resource.reference.filePath
-      if (!path) return
-      
+      if (!path)
+        return
+
       // 检查是否在指定目录下
-      if (path.startsWith(normalizedPath + '/')) {
+      if (path.startsWith(`${normalizedPath}/`)) {
         const relativePath = path.substring(normalizedPath.length + 1)
         const nextSegment = relativePath.split('/')[0]
-        
+
         // 避免重复添加
         if (!addedItems.has(nextSegment)) {
           addedItems.add(nextSegment)
           const isDirectory = relativePath.includes('/')
-          
+
           items.push(this.createCompletionItem(nextSegment, isDirectory))
         }
       }
@@ -246,27 +252,28 @@ class RawfileCompletionGenerator {
     const lastSegment = pathSegments[pathSegments.length - 1]
     const parentPath = pathSegments.slice(0, -1).join('/')
     const addedItems = new Set<string>()
-    
+
     // 收集候选项
-    const candidates: Array<{item: string, isDirectory: boolean, score: number}> = []
-    
-    resources.forEach(resource => {
+    const candidates: Array<{ item: string, isDirectory: boolean, score: number }> = []
+
+    resources.forEach((resource) => {
       const path = resource.reference.filePath
-      if (!path) return
-      
+      if (!path)
+        return
+
       // 如果有父路径，先检查是否匹配
-      if (parentPath && !path.startsWith(parentPath + '/')) {
+      if (parentPath && !path.startsWith(`${parentPath}/`)) {
         return
       }
-      
+
       const relativePath = parentPath ? path.substring(parentPath.length + 1) : path
       const firstSegment = relativePath.split('/')[0]
-      
+
       if (!addedItems.has(firstSegment)) {
         addedItems.add(firstSegment)
         const isDirectory = relativePath.includes('/')
         const score = this.calculateMatchScore(firstSegment, lastSegment)
-        
+
         if (score > 0) {
           candidates.push({ item: firstSegment, isDirectory, score })
         }
@@ -287,7 +294,7 @@ class RawfileCompletionGenerator {
     })
 
     // 转换为补全项
-    candidates.forEach(candidate => {
+    candidates.forEach((candidate) => {
       items.push(this.createCompletionItem(candidate.item, candidate.isDirectory, candidate.score))
     })
 
@@ -298,32 +305,34 @@ class RawfileCompletionGenerator {
    * 计算匹配分数（智能匹配算法）
    */
   private calculateMatchScore(fileName: string, prefix: string): number {
-    if (!prefix) return 1 // 空前缀匹配所有
-    
+    if (!prefix)
+      return 1 // 空前缀匹配所有
+
     const fileNameLower = fileName.toLowerCase()
     const prefixLower = prefix.toLowerCase()
-    
+
     // 精确匹配（最高分）
-    if (fileNameLower === prefixLower) return 100
-    
+    if (fileNameLower === prefixLower)
+      return 100
+
     // 前缀匹配（高分）
     if (fileNameLower.startsWith(prefixLower)) {
       // 前缀匹配的分数与匹配长度成正比
       return 80 + (prefixLower.length / fileNameLower.length) * 20
     }
-    
+
     // 包含匹配（中等分）
     if (fileNameLower.includes(prefixLower)) {
       const index = fileNameLower.indexOf(prefixLower)
       // 越靠前分数越高
       return 50 - index * 2
     }
-    
+
     // 模糊匹配（首字母匹配）
     if (this.fuzzyMatch(fileNameLower, prefixLower)) {
       return 30
     }
-    
+
     // 无匹配
     return 0
   }
@@ -334,14 +343,14 @@ class RawfileCompletionGenerator {
   private fuzzyMatch(text: string, pattern: string): boolean {
     let textIndex = 0
     let patternIndex = 0
-    
+
     while (textIndex < text.length && patternIndex < pattern.length) {
       if (text[textIndex] === pattern[patternIndex]) {
         patternIndex++
       }
       textIndex++
     }
-    
+
     return patternIndex === pattern.length
   }
 
@@ -353,30 +362,32 @@ class RawfileCompletionGenerator {
     let detail: string
     let documentation: string
     let icon = ''
-    
+
     if (isDirectory) {
       kind = CompletionItemKind.Folder
       detail = 'Directory'
       documentation = `📁 **Directory**: ${label}\n\n点击可查看目录内容`
       icon = '📁 '
-    } else {
+    }
+    else {
       // 获取文件扩展名
       const ext = this.getFileExtension(label)
       const fileTypeInfo = FILE_TYPE_MAP[ext]
-      
+
       if (fileTypeInfo) {
         kind = fileTypeInfo.kind
         detail = `${fileTypeInfo.detail}${score ? ` (匹配度: ${score}%)` : ''}`
         documentation = this.generateFileDocumentation(label, fileTypeInfo, score)
-        icon = fileTypeInfo.icon ? fileTypeInfo.icon + ' ' : '📄 '
-      } else {
+        icon = fileTypeInfo.icon ? `${fileTypeInfo.icon} ` : '📄 '
+      }
+      else {
         kind = CompletionItemKind.File
         detail = `File${score ? ` (匹配度: ${score}%)` : ''}`
         documentation = `📄 **File**: ${label}\n\n未知文件类型`
         icon = '📄 '
       }
     }
-    
+
     const item: CompletionItem = {
       label: icon + label, // 在标签前添加图标
       kind,
@@ -388,8 +399,9 @@ class RawfileCompletionGenerator {
 
     // 如果是目录，添加 '/' 到插入文本
     if (isDirectory) {
-      item.insertText = label + '/'
-    } else {
+      item.insertText = `${label}/`
+    }
+    else {
       item.insertText = label
     }
 
@@ -402,30 +414,34 @@ class RawfileCompletionGenerator {
   private generateFileDocumentation(fileName: string, fileTypeInfo: FileTypeInfo, score?: number): string {
     let doc = `${fileTypeInfo.icon || '📄'} **${fileTypeInfo.detail}**: ${fileName}\n\n`
     doc += `${fileTypeInfo.description}\n\n`
-    
+
     if (score) {
       doc += `🎯 **匹配度**: ${score}%\n`
     }
-    
+
     // 添加优先级信息
     if (fileTypeInfo.priority >= 8) {
       doc += `⭐ **高优先级文件类型**\n`
-    } else if (fileTypeInfo.priority >= 6) {
+    }
+    else if (fileTypeInfo.priority >= 6) {
       doc += `🔸 **常用文件类型**\n`
     }
-    
+
     // 添加使用提示
     const ext = this.getFileExtension(fileName)
     if (['.png', '.jpg', '.jpeg', '.gif', '.svg'].includes(ext)) {
       doc += `\n💡 **提示**: 适用于应用界面和图标显示`
-    } else if (['.mp3', '.wav', '.ogg'].includes(ext)) {
+    }
+    else if (['.mp3', '.wav', '.ogg'].includes(ext)) {
       doc += `\n💡 **提示**: 适用于应用音效和背景音乐`
-    } else if (['.mp4', '.avi', '.mov'].includes(ext)) {
+    }
+    else if (['.mp4', '.avi', '.mov'].includes(ext)) {
       doc += `\n💡 **提示**: 适用于视频播放和动画显示`
-    } else if (['.json', '.xml', '.csv'].includes(ext)) {
+    }
+    else if (['.json', '.xml', '.csv'].includes(ext)) {
       doc += `\n💡 **提示**: 可用于应用配置和数据存储`
     }
-    
+
     return doc
   }
 
@@ -444,32 +460,34 @@ class RawfileCompletionGenerator {
    * 生成排序文本（智能排序增强版）
    */
   private generateSortText(label: string, isDirectory: boolean, score?: number): string {
-    let sortParts: string[] = []
-    
+    const sortParts: string[] = []
+
     if (score !== undefined) {
       // 使用分数进行排序（分数高的在前）
       const scorePrefix = String(1000 - score).padStart(4, '0')
       sortParts.push(scorePrefix)
-    } else {
+    }
+    else {
       // 默认分数
       sortParts.push('0500')
     }
-    
+
     if (isDirectory) {
       // 目录始终排在最前
       sortParts.push('0')
       sortParts.push(label.toLowerCase())
-    } else {
+    }
+    else {
       // 文件按类型优先级排序
       const ext = this.getFileExtension(label)
       const fileTypeInfo = FILE_TYPE_MAP[ext]
       const typePriority = fileTypeInfo ? (10 - fileTypeInfo.priority) : 5 // 转换为排序优先级
-      
+
       sortParts.push('1') // 文件排在目录之后
       sortParts.push(String(typePriority).padStart(2, '0')) // 文件类型优先级
       sortParts.push(label.toLowerCase()) // 文件名字母顺序
     }
-    
+
     return sortParts.join('_')
   }
 
@@ -482,7 +500,7 @@ class RawfileCompletionGenerator {
       if (a.kind !== b.kind) {
         return a.kind === CompletionItemKind.Folder ? -1 : 1
       }
-      
+
       // 按字母顺序
       return a.label.localeCompare(b.label)
     })
@@ -509,7 +527,7 @@ export function createETSRawfileCompletionService(projectRoot: string, lspConfig
     name: 'arkts-rawfile-completion',
     capabilities: {
       completionProvider: {
-        triggerCharacters: ['"', "'", '/'],
+        triggerCharacters: ['"', '\'', '/'],
         resolveProvider: false,
       },
     },
