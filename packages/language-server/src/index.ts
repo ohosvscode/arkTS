@@ -6,6 +6,7 @@ import { createConnection, createServer, createTypeScriptProject } from '@volar/
 import * as ets from 'ohos-typescript'
 import { URI } from 'vscode-uri'
 import { LanguageServerConfigManager } from './classes/config-manager'
+import { CodeLinterConfigManager } from './classes/code-linter-config'
 import { logger } from './logger'
 import { createETS$$ThisService } from './services/$$this.service'
 import { createETSLinterDiagnosticService } from './services/diagnostic.service'
@@ -116,6 +117,9 @@ connection.onDidOpenTextDocument((params) => {
 // ResourceWatcher.from(connection) - 暂时注释掉，需要检查导入
 
 // 初始化时记录项目根目录
+// 初始化代码linter配置管理器
+let codeLinterConfigManager: CodeLinterConfigManager | undefined
+
 connection.onInitialize(async (params) => {
   if (params.locale)
     lspConfiguration.setLocale(params.locale)
@@ -144,6 +148,18 @@ connection.onInitialize(async (params) => {
 
   // 初始化当前项目根目录
   currentProjectRoot = projectRoot
+
+  // 初始化代码linter配置管理器
+  if (projectRoot) {
+    codeLinterConfigManager = new CodeLinterConfigManager(logger, projectRoot)
+    try {
+      await codeLinterConfigManager.loadConfig()
+      logger.getConsola().info('代码linter配置管理器初始化成功')
+    }
+    catch (error) {
+      logger.getConsola().warn('代码linter配置管理器初始化失败:', error)
+    }
+  }
 
   // 检测项目类型并自动配置包管理器类型
   try {
@@ -200,10 +216,10 @@ connection.onInitialize(async (params) => {
       createETSRawfileCompletionService(projectRoot, lspConfiguration),
       createETSResourceDiagnosticService(lspConfiguration, projectRoot, () => globalResourceDiagnosticLevel),
       createETSRawfileDiagnosticService(lspConfiguration, projectRoot, () => globalRawfileDiagnosticLevel),
-      createETSLinterDiagnosticService(ets, logger),
+      createETSLinterDiagnosticService(ets, logger, codeLinterConfigManager),
       createETSDocumentSymbolService(),
       createETS$$ThisService(lspConfiguration.getLocale()),
-      createETSFormattingService(),
+      createETSFormattingService(codeLinterConfigManager),
     ],
   )
 })
@@ -211,6 +227,26 @@ connection.onInitialize(async (params) => {
 connection.listen()
 connection.onInitialized(server.initialized)
 connection.onShutdown(server.shutdown)
+
+// 监听配置文件变更
+connection.onDidChangeWatchedFiles(async (params) => {
+  for (const change of params.changes) {
+    const filePath = URI.parse(change.uri).fsPath
+    if (filePath.endsWith('code-linter.json5') || filePath.endsWith('.eslintrc.json5') || filePath.endsWith('.eslintrc.json')) {
+      logger.getConsola().info('检测到代码linter配置文件变更，重新加载配置')
+      if (codeLinterConfigManager) {
+        try {
+          await codeLinterConfigManager.reloadConfig()
+          logger.getConsola().info('代码linter配置已重新加载')
+        }
+        catch (error) {
+          logger.getConsola().error('重新加载代码linter配置失败:', error)
+        }
+      }
+      break
+    }
+  }
+})
 
 // 调试日志：LSP 服务已启动
 logger.getConsola().info('ETS Language Server fully initialized with resource definition support')
