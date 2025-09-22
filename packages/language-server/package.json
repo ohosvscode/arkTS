@@ -63,5 +63,8 @@
     "volar-service-typescript": "catalog:prod",
     "vscode-html-languageservice": "catalog:prod",
     "vscode-uri": "catalog:prod"
+  },
+  "dependencies": {
+    "json5": "^2.2.3"
   }
 }

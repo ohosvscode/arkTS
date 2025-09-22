@@ -294,10 +294,24 @@ export class CodeLinterConfigManager {
 
     // **/* 匹配任意目录下的任意文件
     if (normalizedPattern.includes('**/')) {
-      const regexPattern = normalizedPattern
-        .replace(/\*\*/g, '.*')
-        .replace(/\*/g, '[^/]*')
-        .replace(/\?/g, '[^/]')
+      // 特殊处理 **/dirname/** 的模式
+      if (normalizedPattern.startsWith('**/') && normalizedPattern.endsWith('/**')) {
+        // 提取中间的目录名
+        const dirName = normalizedPattern.slice(3, -3) // 去掉前后的 **/
+        // 匹配以该目录名开头或包含该目录的路径
+        const patterns = [
+          `^${dirName}/.*$`,        // 直接以目录名开头
+          `.+/${dirName}/.*$`       // 在某个路径中包含该目录
+        ]
+        return patterns.some(p => new RegExp(p).test(normalizedPath))
+      }
+      
+      // 其他 ** 模式的处理
+      let regexPattern = normalizedPattern
+        .replace(/\*\*/g, '.*')  // ** 匹配任意深度目录
+        .replace(/\*/g, '[^/]*')  // * 匹配单层目录中的任意字符
+        .replace(/\?/g, '[^/]')   // ? 匹配单个字符
+      
       return new RegExp(`^${regexPattern}$`).test(normalizedPath)
     }
 
