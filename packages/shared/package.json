@@ -59,7 +59,7 @@
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.19.17",
+    "@types/node": "^22.18.12",
     "@types/vscode": "^1.104.0"
   }
 }
