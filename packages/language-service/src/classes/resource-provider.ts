@@ -233,7 +233,6 @@ export namespace ResourceProvider {
         const endPosition = document.positionAt(stringLiteral.getEnd())
         return startPosition.line <= position.line && endPosition.line >= position.line && startPosition.character <= position.character && endPosition.character >= position.character
       })
-      console.warn(currentStringLiteral)
       const currentStringLiteralText = currentStringLiteral?.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') ?? ''
       if (!currentStringLiteral || !currentStringLiteralText) return []
 
