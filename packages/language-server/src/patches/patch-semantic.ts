@@ -202,6 +202,8 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[]): void
       },
 
       async provideHover(document, position, token) {
+        // 补丁：关闭 json 文件的悬浮提示功能
+        if (document.languageId === 'json' || document.languageId === 'jsonc') return null
         // Hover补丁：提供注解装饰器的悬浮提示 （Decorator For Annotation）
         const annotationDecoratorHover = provideAnnotationDecoratorHover(document, document.offsetAt(position))
         if (annotationDecoratorHover) return annotationDecoratorHover
@@ -215,6 +217,12 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[]): void
         const callExpressionHover = provideCallExpressionHover(document, document.offsetAt(position), await instance.provideHover?.(document, position, token) ?? undefined)
         if (callExpressionHover) return callExpressionHover
         return instance.provideHover?.(document, position, token)
+      },
+
+      async provideDefinition(document, position, token) {
+        // 补丁：关闭 json 文件的跳转定义功能
+        if (document.languageId === 'json' || document.languageId === 'jsonc') return null
+        return instance.provideDefinition?.(document, position, token)
       },
     }
   }
