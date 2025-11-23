@@ -1,6 +1,9 @@
 // Only using type check.
 {
   "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo"
+  },
   "exclude": [
     "node_modules",
     "dist",
