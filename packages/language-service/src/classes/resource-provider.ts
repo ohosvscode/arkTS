@@ -78,7 +78,7 @@ export namespace ResourceProvider {
       const stringLiterals: ets.StringLiteral[] = []
       const walk = (node: ets.Node): void | number => {
         if (!this.ets.isStringLiteral(node)) return node.forEachChild(walk)
-        if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return node.forEachChild(walk)
+        if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return
         stringLiterals.push(node)
         return
       }
