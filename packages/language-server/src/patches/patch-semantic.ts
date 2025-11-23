@@ -101,84 +101,6 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[]): void
       }
     }
 
-    function findStructDeclarationInPosition(currentPositionOffset: number, sourceFile: ets.SourceFile): ets.StructDeclaration | undefined {
-      let foundStructDeclaration: ets.StructDeclaration | undefined
-      sourceFile.forEachChild(function walk(node): void {
-        if (!ets.isStructDeclaration(node)) return node.forEachChild(walk)
-        if (currentPositionOffset >= node.getStart(sourceFile) && currentPositionOffset <= node.getEnd()) {
-          foundStructDeclaration = node
-          return
-        }
-        return node.forEachChild(walk)
-      })
-      return foundStructDeclaration
-    }
-
-    function provideStructDeclarationHover(document: TextDocument, currentPositionOffset: number, originalHover: Hover | undefined): Hover | undefined {
-      const languageService = contextUtil.getLanguageService()
-      if (!languageService) return
-      const sourceFile = contextUtil.decodeSourceFile(document)
-      if (!sourceFile) return
-      const structDeclaration = findStructDeclarationInPosition(currentPositionOffset, sourceFile)
-      if (!structDeclaration) return
-      if (!structDeclaration.name) return
-      if (currentPositionOffset >= structDeclaration.name.getStart(sourceFile) && currentPositionOffset <= structDeclaration.name.getEnd()) {
-        if (!originalHover) return
-        if (Array.isArray(originalHover.contents)) return
-        if (typeof originalHover.contents !== 'object') return
-        if (!('kind' in originalHover.contents)) return
-        return {
-          contents: {
-            kind: originalHover.contents.kind,
-            value: originalHover.contents.value.replace(/```typescript/, '```ets'),
-          },
-          range: Range.create(
-            document.positionAt(structDeclaration.name.getStart(sourceFile)),
-            document.positionAt(structDeclaration.name.getEnd()),
-          ),
-        }
-      }
-    }
-
-    function findCallExpressionInPosition(currentPositionOffset: number, sourceFile: ets.SourceFile): ets.CallExpression | undefined {
-      let foundCallExpression: ets.CallExpression | undefined
-      sourceFile.forEachChild(function walk(node): void {
-        if (!ets.isCallExpression(node)) return node.forEachChild(walk)
-        if (currentPositionOffset >= node.getStart(sourceFile) && currentPositionOffset <= node.getEnd()) {
-          foundCallExpression = node
-          return
-        }
-        return node.forEachChild(walk)
-      })
-      return foundCallExpression
-    }
-
-    function provideCallExpressionHover(document: TextDocument, currentPositionOffset: number, originalHover: Hover | undefined): Hover | undefined {
-      const languageService = contextUtil.getLanguageService()
-      if (!languageService) return
-      const sourceFile = contextUtil.decodeSourceFile(document)
-      if (!sourceFile) return
-      const callExpression = findCallExpressionInPosition(currentPositionOffset, sourceFile)
-      if (!callExpression) return
-      if (!callExpression.expression) return
-      if (currentPositionOffset >= callExpression.expression.getStart(sourceFile) && currentPositionOffset <= callExpression.expression.getEnd()) {
-        if (!originalHover) return
-        if (Array.isArray(originalHover.contents)) return
-        if (typeof originalHover.contents !== 'object') return
-        if (!('kind' in originalHover.contents)) return
-        return {
-          contents: {
-            kind: originalHover.contents.kind,
-            value: originalHover.contents.value.replace(/```typescript/, '```ets'),
-          },
-          range: Range.create(
-            document.positionAt(callExpression.expression.getStart(sourceFile)),
-            document.positionAt(callExpression.expression.getEnd()),
-          ),
-        }
-      }
-    }
-
     return {
       ...instance,
       provideDocumentSemanticTokens: async (document, range, legend) => {
@@ -210,13 +132,13 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[]): void
         // Hover补丁：提供注解装饰器声明的悬浮提示 （AnnotationDeclaration）
         const annotationDeclarationHover = provideAnnotationDeclarationHover(document, document.offsetAt(position))
         if (annotationDeclarationHover) return annotationDeclarationHover
-        // Hover补丁：Struct的悬浮提示 （StructDeclaration）
-        const structDeclarationHover = provideStructDeclarationHover(document, document.offsetAt(position), await instance.provideHover?.(document, position, token) ?? undefined)
-        if (structDeclarationHover) return structDeclarationHover
-        // Hover补丁：CallExpression的悬浮提示 （CallExpression）
-        const callExpressionHover = provideCallExpressionHover(document, document.offsetAt(position), await instance.provideHover?.(document, position, token) ?? undefined)
-        if (callExpressionHover) return callExpressionHover
-        return instance.provideHover?.(document, position, token)
+        const originalHover = await instance.provideHover?.(document, position, token) ?? undefined
+        if (!originalHover) return null
+        if (Array.isArray(originalHover.contents)) return originalHover
+        if (typeof originalHover.contents !== 'object') return originalHover
+        if (!('kind' in originalHover.contents)) return originalHover
+        originalHover.contents.value = originalHover.contents.value.replace(/```typescript/, '```ets')
+        return originalHover
       },
 
       async provideDefinition(document, position, token) {
