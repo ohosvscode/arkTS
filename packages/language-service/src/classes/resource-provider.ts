@@ -76,20 +76,20 @@ export namespace ResourceProvider {
 
     findStringLiterals<SF extends ets.SourceFile>(sourceFile: SF, escapeText?: string): readonly ets.StringLiteral[] {
       const stringLiterals: ets.StringLiteral[] = []
-      const walk = (node: ets.Node): void => {
-        if (!this.ets.isStringLiteral(node)) return node.forEachChild(walk)
-        if (!node.parent) {
-          if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return node.forEachChild(walk)
-          stringLiterals.push(node)
+      const walk = (node: ets.Node): void | number => {
+        if (!this.ets.isStringLiteral(node)) {
           return node.forEachChild(walk)
         }
-        if (!this.ets.isPropertyAssignment(node.parent)) return node.forEachChild(walk)
-        if (!node.parent.initializer) return node.forEachChild(walk)
-        if (!this.ets.isStringLiteral(node.parent.initializer)) return node.forEachChild(walk)
-        if (node.parent.initializer.getStart(sourceFile) !== node.getStart(sourceFile) || node.parent.initializer.getEnd() !== node.getEnd()) return node.forEachChild(walk)
-        if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return node.forEachChild(walk)
-        stringLiterals.push(node)
-        return node.forEachChild(walk)
+        if (!node.parent) {
+          if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return
+          return stringLiterals.push(node)
+        }
+        if (!this.ets.isPropertyAssignment(node.parent)) return
+        if (!node.parent.initializer) return
+        if (!this.ets.isStringLiteral(node.parent.initializer)) return
+        if (node.parent.initializer.getStart(sourceFile) !== node.getStart(sourceFile) || node.parent.initializer.getEnd() !== node.getEnd()) return
+        if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return
+        return stringLiterals.push(node)
       }
       sourceFile.forEachChild(walk)
       return stringLiterals
