@@ -1,5 +1,16 @@
 # @arkts/language-server
 
+## 1.2.4
+
+### Patch Changes
+
+- [#208](https://github.com/ohosvscode/arkTS/pull/208) [`7cf5558`](https://github.com/ohosvscode/arkTS/commit/7cf5558d103c70a00e9dfcbc10689bd5bc9e5251) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat(language-server): 优化原始的 hover 逻辑，将所有 hover 映射为 ets 语言
+
+- [#206](https://github.com/ohosvscode/arkTS/pull/206) [`bf16f7c`](https://github.com/ohosvscode/arkTS/commit/bf16f7cba8871946b6085b78db32c5c1b2802946) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 屏蔽 json/json5 文件中 TS 服务提供的无用跳转和补全 (#206)
+
+- Updated dependencies [[`7cf5558`](https://github.com/ohosvscode/arkTS/commit/7cf5558d103c70a00e9dfcbc10689bd5bc9e5251)]:
+  - @arkts/language-service@1.1.7
+
 ## 1.2.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @arkts/language-service
 
+## 1.1.7
+
+### Patch Changes
+
+- [#208](https://github.com/ohosvscode/arkTS/pull/208) [`7cf5558`](https://github.com/ohosvscode/arkTS/commit/7cf5558d103c70a00e9dfcbc10689bd5bc9e5251) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix(language-server): 修复 module.json5 无跳转问题
+
 ## 1.1.6
 
 ### Patch Changes
