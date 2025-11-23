@@ -80,7 +80,6 @@ export namespace ResourceProvider {
         if (!this.ets.isStringLiteral(node)) return node.forEachChild(walk)
         if (escapeText && node.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '') !== escapeText) return
         stringLiterals.push(node)
-        return
       }
       sourceFile.forEachChild(walk)
       return stringLiterals
