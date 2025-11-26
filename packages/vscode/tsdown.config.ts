@@ -20,7 +20,7 @@ export default defineConfig({
   external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector'],
   tsconfig: './tsconfig.json',
   clean: false,
-  onSuccess: 'vite build',
+  onSuccess: 'mv node_modules/ets-typescript-plugin/index.cjs node_modules/ets-typescript-plugin/index.js && vite build',
   minify: {
     compress: {
       keepNames: {
