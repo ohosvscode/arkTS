@@ -19,21 +19,14 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
     extensionContext.value = context
   }
 
+  private async autoSetLanguage(document: vscode.TextDocument, languageServer?: EtsLanguageServer | null): Promise<vscode.TextDocument | void> {
+    if (document.fileName.endsWith('.json5')) return vscode.languages.setTextDocumentLanguage(document, 'jsonc')
+    const clientOptions = await languageServer?.getClientOptions()
+    if (typeof clientOptions?.initializationOptions?.ohos?.sdkPath !== 'string' || !clientOptions?.initializationOptions?.ohos?.sdkPath) return
+    if (document.fileName.endsWith('.d.ts') && document.fileName.startsWith(clientOptions?.initializationOptions?.ohos?.sdkPath)) vscode.languages.setTextDocumentLanguage(document, 'ets')
+  }
+
   async onActivate(context: ExtensionContext): Promise<LabsInfo | undefined> {
-    context.subscriptions.push(
-      vscode.workspace.onDidOpenTextDocument((document) => {
-        if (document.fileName.endsWith('.json5')) {
-          vscode.languages.setTextDocumentLanguage(document, 'jsonc')
-        }
-      }),
-    )
-
-    vscode.workspace.textDocuments.forEach((document) => {
-      if (document.fileName.endsWith('.json5')) {
-        vscode.languages.setTextDocumentLanguage(document, 'jsonc')
-      }
-    })
-
     const globalContainer = this.getGlobalContainer()
     const projectDetectorManager = ProjectDetectorManager.create(vscode.workspace.workspaceFolders?.map(folder => folder.uri.toString()) ?? [])
     this.createValue(projectDetectorManager, ProjectDetectorManager)
@@ -42,6 +35,10 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
       methodName: 'run',
       arguments: [],
     })
+
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async document => this.autoSetLanguage(document, languageServer?.getInstance())))
+    vscode.workspace.textDocuments.forEach(async document => this.autoSetLanguage(document, languageServer?.getInstance()))
+
     if (runResult?.type === 'result') return await runResult.value
   }
 }

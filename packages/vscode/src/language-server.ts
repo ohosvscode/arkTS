@@ -126,7 +126,6 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
     return {
       documentSelector: [
         { language: 'ets' },
-        { language: 'typescript' },
         { language: 'json' },
         { pattern: '**/*.json5' },
       ],

@@ -1,4 +1,5 @@
 import type { LanguagePlugin, VirtualCode } from '@volar/language-core'
+import type { TypeScriptServiceScript } from '@volar/typescript'
 import type * as ets from 'ohos-typescript'
 import type * as ts from 'typescript'
 import type { URI } from 'vscode-uri'
@@ -6,10 +7,6 @@ import path from 'node:path'
 import { $$thisFixerPlugin } from './$$this-fixer-plugin'
 import { ESObjectPlugin } from './es-object-plugin'
 import { createEmptyVirtualCode, createVirtualCode, ETSVirtualCode } from './ets-code'
-
-function isEts(tsOrEts: typeof ets | typeof ts): tsOrEts is typeof ets {
-  return 'ETS' in tsOrEts.ScriptKind && tsOrEts.ScriptKind.ETS === 8
-}
 
 export interface ETSLanguagePluginOptions {
   /**
@@ -39,97 +36,132 @@ export function ETSLanguagePlugin(tsOrEts: typeof ts, options?: ETSLanguagePlugi
 export function ETSLanguagePlugin(tsOrEts: typeof ets, options?: ETSLanguagePluginOptions): LanguagePlugin<URI | string>
 export function ETSLanguagePlugin(tsOrEts: typeof ets | typeof ts, { excludePaths = [], tsdk = '' }: ETSLanguagePluginOptions = {}): LanguagePlugin<URI | string> {
   const isETSServerMode = isEts(tsOrEts)
-  const isTSPluginMode = !isETSServerMode
 
-  // full feature virtual code
-  const getFullVirtualCode = (snapshot: ts.IScriptSnapshot, languageId: string): VirtualCode => (
-    createVirtualCode(snapshot, languageId, {
-      completion: true,
-      format: true,
-      navigation: true,
-      semantic: true,
-      structure: true,
-      verification: true,
-    })
-  )
+  function getLanguageId(uri: URI | string): string | undefined {
+    const filePath = typeof uri === 'string' ? uri : uri.fsPath
+    if (filePath.endsWith('.ets')) return 'ets'
+    if (filePath.endsWith('.ts')) return 'typescript'
+    if (filePath.endsWith('.json') || filePath.endsWith('.json5') || filePath.endsWith('.jsonc') || filePath.endsWith('.tsbuildinfo')) return 'json'
+    return undefined
+  }
 
-  // disabled virtual code, but still keep the full content
-  const getDisabledVirtualCode = (snapshot: ts.IScriptSnapshot, languageId: string): VirtualCode => (
-    createVirtualCode(snapshot, languageId, {
-      completion: false,
-      format: false,
-      navigation: false,
-      semantic: false,
-      structure: false,
-      verification: false,
-    })
-  )
+  function getScriptKindByFilePath(filePath: string, defaultExtension: string = '.ets'): [ets.ScriptKind, string] {
+    if (!filePath) return [7 satisfies typeof ets.ScriptKind.Deferred, defaultExtension]
+    if (filePath.endsWith('.d.ts')) return [3 satisfies typeof ets.ScriptKind.TS, '.d.ts']
+    if (filePath.endsWith('.d.ets')) return [8 satisfies typeof ets.ScriptKind.ETS, '.d.ets']
+    if (filePath.endsWith('.d.cts')) return [3 satisfies typeof ets.ScriptKind.TS, '.d.cts']
+    if (filePath.endsWith('.d.mts')) return [3 satisfies typeof ets.ScriptKind.TS, '.d.mts']
 
-  // disabled virtual code, and remove the full content to empty string
-  const getFullDisabledVirtualCode = (snapshot: ts.IScriptSnapshot, languageId: string): VirtualCode => (
-    createEmptyVirtualCode(snapshot, languageId, {
-      completion: false,
-      format: false,
-      navigation: false,
-      semantic: false,
-      structure: false,
-      verification: false,
-    })
-  )
+    const extension = path.extname(filePath)
+    switch (extension) {
+      case '.ts':
+      case '.cts':
+      case '.mts':
+        return [3 satisfies typeof ets.ScriptKind.TS, extension]
+      case '.ets':
+        return [8 satisfies typeof ets.ScriptKind.ETS, extension]
+      default:
+        return [7 satisfies typeof ets.ScriptKind.Deferred, extension]
+    }
+  }
+
+  if (isETSServerMode) {
+    return {
+      getLanguageId,
+      createVirtualCode(uri, languageId, snapshot) {
+        const filePath = path.resolve(typeof uri === 'string' ? uri : uri.fsPath)
+        if (languageId === 'ets') {
+          return new ETSVirtualCode(
+            filePath,
+            tsOrEts.createSourceFile(filePath, snapshot.getText(0, snapshot.getLength()), 99 as any) as unknown as ts.SourceFile,
+            'typescript',
+            [$$thisFixerPlugin(), ESObjectPlugin()] as any,
+          )
+        }
+        // json5、json files, directly using full feature virtual code
+        if (filePath.endsWith('.json') || filePath.endsWith('.json5') || filePath.endsWith('.jsonc') || languageId === 'json' || languageId === 'jsonc') return getFullVirtualCode(snapshot, languageId)
+        // tsdk files we must disable the full feature virtual code but still keep the full content
+        if (filePath.startsWith(tsdk)) return getDisabledVirtualCode(snapshot, languageId)
+      },
+      typescript: {
+        extraFileExtensions: [
+          // eslint-disable-next-line ts/ban-ts-comment
+          // @ts-expect-error
+          { extension: 'ets', isMixedContent: false, scriptKind: 8 satisfies ets.ScriptKind.ETS },
+          // eslint-disable-next-line ts/ban-ts-comment
+          // @ts-expect-error
+          { extension: 'd.ets', isMixedContent: false, scriptKind: 8 satisfies ets.ScriptKind.ETS },
+        ],
+        resolveHiddenExtensions: true,
+        getServiceScript(root: VirtualCode & { filePath: string }) {
+          const [scriptKind, extension] = getScriptKindByFilePath(root.filePath)
+          return {
+            code: root,
+            extension,
+            scriptKind,
+          } as unknown as TypeScriptServiceScript
+        },
+      },
+    }
+  }
 
   return {
-    getLanguageId(uri) {
-      const filePath = typeof uri === 'string' ? uri : uri.fsPath
-      if (filePath.endsWith('.ets')) return 'ets'
-      if (filePath.endsWith('.ts')) return 'typescript'
-      if (filePath.endsWith('.json') || filePath.endsWith('.json5') || filePath.endsWith('.jsonc')) return 'json'
-      return undefined
-    },
+    getLanguageId,
     createVirtualCode(uri, languageId, snapshot) {
       const filePath = path.resolve(typeof uri === 'string' ? uri : uri.fsPath)
       const isInExcludePath = excludePaths.some(excludePath => filePath.startsWith(excludePath))
-      const isInTsdkPath = filePath.startsWith(tsdk)
-      const isDTS = filePath.endsWith('.d.ts')
-      const isDETS = filePath.endsWith('.d.ets')
-
-      // json5、json files, directly using full feature virtual code
-      if (filePath.endsWith('.json') || filePath.endsWith('.json5') || filePath.endsWith('.jsonc') || languageId === 'json' || languageId === 'jsonc') return getFullVirtualCode(snapshot, languageId)
-
-      // ets files, using ts-macro to generate the virtual code
-      if (languageId === 'ets') {
-        return new ETSVirtualCode(
-          filePath,
-          tsOrEts.createSourceFile(filePath, snapshot.getText(0, snapshot.getLength()), 99 as any) as ts.SourceFile,
-          'typescript',
-          [$$thisFixerPlugin(), ESObjectPlugin()] as any,
-        )
-      }
-      // ETS Server mode
-      if (isETSServerMode && !(isDTS || isDETS) && !isInExcludePath) return getDisabledVirtualCode(snapshot, languageId)
-      // TS Plugin mode
-      if (isTSPluginMode && (isDTS || isDETS) && isInExcludePath) {
-        return getFullDisabledVirtualCode(snapshot, languageId)
-      }
-      // Proxy ts internal lib files, such as `lib.d.ts`, `lib.es2020.d.ts`, etc.
-      if (isETSServerMode && (isDTS || isDETS) && isInTsdkPath) return getDisabledVirtualCode(snapshot, languageId)
+      if ((filePath.endsWith('.d.ts') || filePath.endsWith('.d.ets')) && isInExcludePath) return getFullDisabledVirtualCode(snapshot, languageId, { filePath })
     },
     typescript: {
-      // eslint-disable-next-line ts/ban-ts-comment
-      // @ts-expect-error
-      extraFileExtensions: isETSServerMode
-        ? [
-            { extension: 'ets', isMixedContent: false, scriptKind: 8 satisfies ets.ScriptKind.ETS },
-            { extension: 'd.ets', isMixedContent: false, scriptKind: 8 satisfies ets.ScriptKind.ETS },
-          ]
-        : [],
-      resolveHiddenExtensions: true,
-      getServiceScript(root) {
+      extraFileExtensions: [],
+      getServiceScript(root: VirtualCode & { filePath: string }) {
+        const [scriptKind, extension] = getScriptKindByFilePath(root.filePath, '.ts')
         return {
           code: root,
-          extension: '.ets',
-          scriptKind: 3 satisfies typeof ets.ScriptKind.TS,
+          extension,
+          scriptKind: scriptKind as ts.ScriptKind,
         }
       },
     },
   }
+}
+
+function isEts(tsOrEts: typeof ets | typeof ts): tsOrEts is typeof ets {
+  return 'ETS' in tsOrEts.ScriptKind && tsOrEts.ScriptKind.ETS === 8
+}
+
+// full feature virtual code
+function getFullVirtualCode(snapshot: ts.IScriptSnapshot, languageId: string): VirtualCode {
+  return createVirtualCode(snapshot, languageId, {
+    completion: true,
+    format: true,
+    navigation: true,
+    semantic: true,
+    structure: true,
+    verification: true,
+  })
+}
+
+// disabled virtual code, but still keep the full content
+function getDisabledVirtualCode(snapshot: ts.IScriptSnapshot, languageId: string): VirtualCode {
+  return createVirtualCode(snapshot, languageId, {
+    completion: false,
+    format: false,
+    navigation: false,
+    semantic: false,
+    structure: false,
+    verification: false,
+  })
+}
+
+// disabled virtual code, and remove the full content to empty string
+function getFullDisabledVirtualCode<T extends Record<string, any>>(snapshot: ts.IScriptSnapshot, languageId: string, options?: T): VirtualCode & T {
+  return createEmptyVirtualCode(snapshot, languageId, {
+    completion: false,
+    format: false,
+    navigation: false,
+    semantic: false,
+    structure: false,
+    verification: false,
+  }, options)
 }

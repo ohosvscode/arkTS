@@ -66,7 +66,7 @@ connection.onInitialize(async (params) => {
     isFormattingEnabled: document => !((document.languageId === 'json' || document.languageId === 'jsonc')),
     disableAutoImportCache: true,
   })
-  patchSemantic(typescriptServices)
+  patchSemantic(typescriptServices, lspConfiguration)
 
   // TODO
   connection.onRequest('ets/onDidChangeTextDocument', () => {})
@@ -89,7 +89,8 @@ connection.onInitialize(async (params) => {
           options.project.typescript.languageServiceHost.getCompilationSettings = () => {
             return lspConfiguration.getTsConfig(originalSettings as ets.CompilerOptions) as any
           }
-          const patchedGetScriptKind = (fileName: string): ets.ScriptKind => {
+
+          options.project.typescript.languageServiceHost.getScriptKind = ((fileName: string): ets.ScriptKind => {
             if (fileName.endsWith('.ets')) return ets.ScriptKind.ETS
             else if (fileName.endsWith('.js')) return ets.ScriptKind.JS
             else if (fileName.endsWith('.jsx')) return ets.ScriptKind.JSX
@@ -97,9 +98,7 @@ connection.onInitialize(async (params) => {
             else if (fileName.endsWith('.tsx')) return ets.ScriptKind.TSX
             else if (fileName.endsWith('.json')) return ets.ScriptKind.JSON
             else return ets.ScriptKind.Unknown
-          }
-          patchedGetScriptKind.patched = true
-          options.project.typescript.languageServiceHost.getScriptKind = patchedGetScriptKind as any
+          }) as any
         },
       }
     }),

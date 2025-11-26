@@ -17,7 +17,7 @@ export function createVirtualCode(snapshot: ts.IScriptSnapshot, languageId: stri
   }
 }
 
-export function createEmptyVirtualCode(snapshot: ts.IScriptSnapshot, languageId: string, data: CodeInformation): VirtualCode {
+export function createEmptyVirtualCode<T extends Record<string, any>>(snapshot: ts.IScriptSnapshot, languageId: string, data: CodeInformation, options?: T): VirtualCode & T {
   return {
     id: 'root',
     languageId,
@@ -32,10 +32,18 @@ export function createEmptyVirtualCode(snapshot: ts.IScriptSnapshot, languageId:
       lengths: [snapshot.getLength()],
       data,
     }],
-  }
+    ...options,
+  } as unknown as VirtualCode & T
 }
 
-export class ETSVirtualCode extends TsmVirtualCode {}
+export class ETSVirtualCode extends TsmVirtualCode {
+  readonly filePath: string
+
+  constructor(filePath: string, sourceFile: ts.SourceFile, languageId: string, plugins: TsmLanguagePlugin[]) {
+    super(filePath, sourceFile, languageId, plugins)
+    this.filePath = filePath
+  }
+}
 
 export type ETSMacroPlugin = Omit<TsmLanguagePlugin, 'resolveVirtualCode'> & {
   resolveVirtualCode?(virtualCode: ETSVirtualCode): void
