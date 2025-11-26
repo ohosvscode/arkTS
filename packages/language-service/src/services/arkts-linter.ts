@@ -1,8 +1,9 @@
+import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { Diagnostic, LanguageServicePlugin } from '@volar/language-server'
-import { DiagnosticSeverity, Range, TextDocument } from '@volar/language-server'
+import { DiagnosticSeverity, Range } from '@volar/language-server'
 import { ContextUtil } from '../utils/context-util'
 
-export function createArkTSLinter(ets: typeof import('ohos-typescript')): LanguageServicePlugin {
+export function createArkTSLinter(ets: typeof import('ohos-typescript'), config: LanguageServerConfigurator): LanguageServicePlugin {
   return {
     name: 'arkts-linter',
     capabilities: {
@@ -30,9 +31,13 @@ export function createArkTSLinter(ets: typeof import('ohos-typescript')): Langua
       return {
         dispose: () => contextUtil.dispose(),
         provideDiagnostics(document) {
-          const languageService = contextUtil.getStandaloneLanguageService(ets)
+          if (!document.getText().trim()) return []
+          const sdkPath = config.getSdkPath()
           const documentUri = contextUtil.decodeTextDocumentUri(document)
-          if (!languageService || !documentUri) return []
+          if (!documentUri || documentUri.fsPath.endsWith('.d.ets')) return []
+          if (sdkPath && (!documentUri || documentUri.fsPath.startsWith(sdkPath))) return []
+          const languageService = contextUtil.getStandaloneLanguageService(ets)
+          if (!documentUri || !languageService) return []
 
           // getBuilderProgram() 在 ArkTS 中其实是支持一个参数: withLinterProgram, 用于指定是否
           // 创建包含 linter 程序的 BuilderProgram （即，使用 ets.createIncrementalProgramForArkTs() 函数
@@ -52,12 +57,11 @@ export function createArkTSLinter(ets: typeof import('ohos-typescript')): Langua
             if (!diagnostic.file) continue
             if (typeof diagnostic.start !== 'number' || typeof diagnostic.length !== 'number') continue
             if (diagnostic.file.fileName !== documentUri.fsPath) continue
-            const textDocument = TextDocument.create(diagnostic.file?.fileName ?? '', 'ets', 0, diagnostic.file?.getText() ?? '')
 
             diagnostics.push({
               range: Range.create(
-                textDocument.positionAt(diagnostic.start),
-                textDocument.positionAt(diagnostic.start + diagnostic.length),
+                document.positionAt(diagnostic.start),
+                document.positionAt(diagnostic.start + diagnostic.length),
               ),
               message: typeof diagnostic.messageText === 'string' ? diagnostic.messageText : diagnostic.messageText.messageText,
               severity: convertDiagnosticCategoryToSeverity(diagnostic.category),

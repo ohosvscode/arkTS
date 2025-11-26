@@ -9,6 +9,6 @@ export async function createArkTServices(projectDetectorManager: ProjectDetector
   return [
     createArkTSResource(projectDetectorManager, ets, config),
     createETS$$ThisService(ets, config),
-    createArkTSLinter(ets),
+    createArkTSLinter(ets, config),
   ]
 }
