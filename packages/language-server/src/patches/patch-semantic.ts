@@ -37,6 +37,19 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
       return foundNode
     }
 
+    function findAnnotationOrDecoratorNodeInPosition(currentPositionOffset: number, sourceFile: ets.SourceFile): ets.Annotation | ets.Decorator | ets.AnnotationDeclaration | undefined {
+      let foundNode: ets.Annotation | ets.Decorator | ets.AnnotationDeclaration | undefined
+      sourceFile.forEachChild(function walk(node): void {
+        if (!ets.isAnnotation(node) && !ets.isDecorator(node) && !ets.isAnnotationDeclaration(node)) return node.forEachChild(walk)
+        if (currentPositionOffset >= node.getStart(sourceFile) && currentPositionOffset <= node.getEnd()) {
+          foundNode = node
+          return
+        }
+        return node.forEachChild(walk)
+      })
+      return foundNode
+    }
+
     function provideAnnotationDeclarationHover(document: TextDocument, currentPositionOffset: number): Hover | undefined {
       const languageService = contextUtil.getLanguageService()
       if (!languageService) return
@@ -130,9 +143,8 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
         for (let i = 0; i < encodedClassifications.spans.length; i += 3) {
           const offset = encodedClassifications.spans[i] // 第1个值:偏移量
           const tsClassification = encodedClassifications.spans[i + 2] // 第3个值:编码的分类
-          const annotationDeclaration = findNodeInPosition(offset, ets.isAnnotationDeclaration, sourceFile)
-          const annotation = findNodeInPosition(offset, ets.isDecoratorOrAnnotation, sourceFile)
-          if ((annotationDeclaration || annotation) && tsClassification === 256) encodedClassifications.spans[i + 2] = 2824
+          const annotationDeclaration = findAnnotationOrDecoratorNodeInPosition(offset, sourceFile)
+          if (annotationDeclaration && tsClassification === 256) encodedClassifications.spans[i + 2] = 2824
         }
         return convertClassificationsToSemanticTokens(document, span, legend, encodedClassifications)
       },
