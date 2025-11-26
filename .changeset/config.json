@@ -3,7 +3,16 @@
   "changelog": ["@changesets/changelog-github", { "repo": "ohosvscode/arkTS" }],
   "commit": false,
   "fixed": [],
-  "linked": [],
+  "linked": [
+    [
+      "@arkts/language-service",
+      "@arkts/language-server",
+      "@arkts/shared",
+      "@arkts/language-plugin",
+      "@arkts/typescript-plugin",
+      "vscode-naily-ets"
+    ]
+  ],
   "access": "public",
   "baseBranch": "next",
   "updateInternalDependencies": "patch",
