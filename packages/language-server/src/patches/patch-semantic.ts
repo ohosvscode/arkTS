@@ -112,7 +112,7 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
         // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
         if (program.isSourceFileDefaultLibrary.patched === true) return program
-        const originalIsSourceFileDefaultLibrary = program.isSourceFileDefaultLibrary
+        const originalIsSourceFileDefaultLibrary = program.isSourceFileDefaultLibrary.bind(program)
         const patchedIsSourceFileDefaultLibrary = (sourceFile: ets.SourceFile): boolean => {
           return sourceFile.fileName.startsWith(config.getSdkPath()) || originalIsSourceFileDefaultLibrary(sourceFile)
         }
@@ -141,10 +141,11 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
         )
         // 补丁：将@interface的高亮类型改为ts装饰器的高亮类型
         for (let i = 0; i < encodedClassifications.spans.length; i += 3) {
-          const offset = encodedClassifications.spans[i] // 第1个值:偏移量
-          const tsClassification = encodedClassifications.spans[i + 2] // 第3个值:编码的分类
+          const offset = encodedClassifications.spans[i] // 第1个值: offset
+          const tsClassification = encodedClassifications.spans[i + 2] // 第3个值: ts classification
+          if (tsClassification !== 256) continue
           const annotationDeclaration = findAnnotationOrDecoratorNodeInPosition(offset, sourceFile)
-          if (annotationDeclaration && tsClassification === 256) encodedClassifications.spans[i + 2] = 2824
+          if (annotationDeclaration) encodedClassifications.spans[i + 2] = 2824
         }
         return convertClassificationsToSemanticTokens(document, span, legend, encodedClassifications)
       },
