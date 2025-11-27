@@ -13,58 +13,118 @@
       "iconPath": "./images/document-light.svg"
     },
     "_typescript_file": {
-      "iconPath": "./images/typescript-file.svg"
+      "iconPath": "./images/typescript.svg"
     },
     "_javascript_file": {
-      "iconPath": "./images/javascript-file.svg"
+      "iconPath": "./images/javascript.svg"
+    },
+    "_toml_file": {
+      "iconPath": "./images/toml.svg"
     },
     "_arkts_file": {
-      "iconPath": "./images/arkts-file.svg"
+      "iconPath": "./images/arkts.svg"
     },
     "_json_file": {
-      "iconPath": "./images/json-file.svg"
+      "iconPath": "./images/json.svg"
     },
     "_markdown_file": {
-      "iconPath": "./images/markdown-file.svg"
+      "iconPath": "./images/markdown.svg"
     },
     "_css_file": {
-      "iconPath": "./images/css-file.svg"
+      "iconPath": "./images/css.svg"
     },
     "_html_file": {
-      "iconPath": "./images/html-file.svg"
+      "iconPath": "./images/html.svg"
     },
     "_text_file": {
-      "iconPath": "./images/text-file.svg"
+      "iconPath": "./images/txt.svg"
     },
     "_image_file": {
-      "iconPath": "./images/png-file.svg"
+      "iconPath": "./images/png.svg"
+    },
+    "_gif_file": {
+      "iconPath": "./images/gif.svg"
     },
     "_svg_file": {
-      "iconPath": "./images/svg-file.svg"
+      "iconPath": "./images/svg.svg"
+    },
+    "_jpg_file": {
+      "iconPath": "./images/jpg.svg"
     },
     "_makefile_file": {
       "iconPath": "./images/makefile.svg"
     },
-    "_folder_file": {
-      "iconPath": "./images/folder.svg"
-    },
-    "_folder_resources_file": {
-      "iconPath": "./images/folder_resources.svg"
-    },
-    "_ets_file": {
-      "iconPath": "./images/ets.svg"
-    },
     "_cpp_file": {
       "iconPath": "./images/cpp.svg"
     },
-    "_cpp_header_file": {
-      "iconPath": "./images/cpp_header.svg"
+    "_h_file": {
+      "iconPath": "./images/h.svg"
     },
-    "_cpp_source_file": {
-      "iconPath": "./images/cpp_file.svg"
+    "_c_file": {
+      "iconPath": "./images/c.svg"
     },
     "_cmake_file": {
       "iconPath": "./images/cmake.svg"
+    },
+    "_hap_file": {
+      "iconPath": "./images/hap.svg"
+    },
+    "_har_file": {
+      "iconPath": "./images/har.svg"
+    },
+    "_hsp_file": {
+      "iconPath": "./images/hsp.svg"
+    },
+    "_go_file": {
+      "iconPath": "./images/go.svg"
+    },
+    "_bin_file": {
+      "iconPath": "./images/bin.svg"
+    },
+    "_app_file": {
+      "iconPath": "./images/app.svg"
+    },
+    "_java_file": {
+      "iconPath": "./images/java.svg"
+    },
+    "_exe_file": {
+      "iconPath": "./images/exe.svg"
+    },
+    "_lib_file": {
+      "iconPath": "./images/lib.svg"
+    },
+    "_rust_file": {
+      "iconPath": "./images/rust.svg"
+    },
+    "_sh_file": {
+      "iconPath": "./images/sh.svg"
+    },
+    "_so_file": {
+      "iconPath": "./images/so.svg"
+    },
+    "_yaml_file": {
+      "iconPath": "./images/yaml.svg"
+    },
+    "_zip_file": {
+      "iconPath": "./images/zip.svg"
+    },
+    "_zip_file_light": {
+      "iconPath": "./images/zip-light.svg"
+    },
+    "_cangjie_file": {
+      "iconPath": "./images/cangjie.svg"
+    },
+    "_r_file": {
+      "iconPath": "./images/r.svg"
+    },
+    "_python_file": {
+      "iconPath": "./images/python.svg"
+    },
+    "_obj_file": {
+      "iconPath": "./images/obj.svg"
+    },
+    "_tts_file": {
+      "iconPath": "./images/tts.svg"
     }
   },
   "folder": "_folder_dark",
@@ -85,96 +145,49 @@
     "html": "_html_file",
     "htm": "_html_file",
     "txt": "_text_file",
+    "toml": "_toml_file",
     "svg": "_svg_file",
     "png": "_image_file",
-    "jpg": "_image_file",
-    "jpeg": "_image_file",
-    "gif": "_image_file",
+    "jpg": "_jpg_file",
+    "jpeg": "_jpg_file",
+    "gif": "_gif_file",
     "webp": "_image_file",
     "ico": "_image_file",
     "bmp": "_image_file",
     "tiff": "_image_file",
-    "c": "_cpp_source_file",
+    "c": "_c_file",
     "cpp": "_cpp_file",
     "cc": "_cpp_file",
     "cxx": "_cpp_file",
-    "h": "_cpp_header_file",
-    "hpp": "_cpp_header_file",
-    "hxx": "_cpp_header_file",
+    "h": "_h_file",
+    "hpp": "_h_file",
+    "hxx": "_h_file",
     "cmake": "_cmake_file",
-    "mk": "_makefile_file"
+    "mk": "_makefile_file",
+    "hap": "_hap_file",
+    "har": "_har_file",
+    "hsp": "_hsp_file",
+    "go": "_go_file",
+    "bin": "_bin_file",
+    "app": "_app_file",
+    "java": "_java_file",
+    "exe": "_exe_file",
+    "lib": "_lib_file",
+    "rs": "_rust_file",
+    "sh": "_sh_file",
+    "so": "_so_file",
+    "yaml": "_yaml_file",
+    "zip": "_zip_file",
+    "cj": "_cangjie_file",
+    "r": "_r_file",
+    "py": "_python_file",
+    "obj": "_obj_file",
+    "tts": "_tts_file"
   },
   "fileNames": {
     "Makefile": "_makefile_file",
-    "module.json5": "_json_file",
-    "oh-package.json5": "_json_file",
-    "build-profile.json5": "_json_file",
-    "hvigor-config.json5": "_json_file",
-    "code-linter.json5": "_json_file",
-    "mock-config.json5": "_json_file",
-    "oh-package-lock.json5": "_json_file",
-    "package.json": "_json_file",
-    "package-lock.json": "_json_file",
-    "tsconfig.json": "_json_file",
-    "tsconfig.base.json": "_json_file",
-    "tsconfig.build.json": "_json_file",
-    "tsconfig.node.json": "_json_file",
-    "tsconfig.app.json": "_json_file",
-    "tsconfig.spec.json": "_json_file",
-    "jsconfig.json": "_json_file",
-    "README.md": "_markdown_file",
-    "CHANGELOG.md": "_markdown_file",
-    "LICENSE": "_text_file",
-    "LICENSE.md": "_text_file",
-    "LICENSE.txt": "_text_file",
     "makefile": "_makefile_file",
     "CMakeLists.txt": "_cmake_file"
-  },
-  "folderNames": {
-    "AppScope": "_folder_dark",
-    "hvigor": "_folder_dark",
-    "ohosTest": "_folder_dark",
-    "ets": "_folder_dark",
-    "node_modules": "_folder_dark",
-    ".git": "_folder_dark",
-    ".vscode": "_folder_dark",
-    "dist": "_folder_dark",
-    "build": "_folder_dark",
-    "public": "_folder_dark",
-    "src": "_folder_dark",
-    "components": "_folder_dark",
-    "pages": "_folder_dark",
-    "app": "_folder_dark",
-    "styles": "_folder_dark",
-    "assets": "_folder_dark",
-    "utils": "_folder_dark",
-    "lib": "_folder_dark",
-    "hooks": "_folder_dark",
-    "context": "_folder_dark",
-    "api": "_folder_dark"
-  },
-  "folderNamesExpanded": {
-    "AppScope": "_folder_dark",
-    "hvigor": "_folder_dark",
-    "ohosTest": "_folder_dark",
-    "ets": "_folder_dark",
-    "node_modules": "_folder_dark",
-    ".git": "_folder_dark",
-    ".vscode": "_folder_dark",
-    "dist": "_folder_dark",
-    "build": "_folder_dark",
-    "public": "_folder_dark",
-    "src": "_folder_dark",
-    "components": "_folder_dark",
-    "pages": "_folder_dark",
-    "app": "_folder_dark",
-    "styles": "_folder_dark",
-    "assets": "_folder_dark",
-    "utils": "_folder_dark",
-    "lib": "_folder_dark",
-    "hooks": "_folder_dark",
-    "context": "_folder_dark",
-    "api": "_folder_dark"
   },
   "languageIds": {
     "ets": "_arkts_file",
@@ -193,114 +206,7 @@
     "folder": "_folder_light",
     "file": "_file_light",
     "fileExtensions": {
-      "ets": "_arkts_file",
-      "hml": "_file_light",
-      "json5": "_json_file",
-      "js": "_javascript_file",
-      "mjs": "_javascript_file",
-      "cjs": "_javascript_file",
-      "ts": "_typescript_file",
-      "md": "_markdown_file",
-      "mdx": "_markdown_file",
-      "markdown": "_markdown_file",
-      "css": "_css_file",
-      "less": "_css_file",
-      "html": "_html_file",
-      "htm": "_html_file",
-      "txt": "_text_file",
-      "c": "_cpp_source_file",
-      "cpp": "_cpp_file",
-      "cc": "_cpp_file",
-      "cxx": "_cpp_file",
-      "h": "_cpp_header_file",
-      "hpp": "_cpp_header_file",
-      "hxx": "_cpp_header_file",
-      "cmake": "_cmake_file",
-      "mk": "_makefile_file"
-    },
-    "fileNames": {
-      "module.json5": "_json_file",
-      "oh-package.json5": "_json_file",
-      "build-profile.json5": "_json_file",
-      "hvigor-config.json5": "_json_file",
-      "code-linter.json5": "_json_file",
-      "mock-config.json5": "_json_file",
-      "oh-package-lock.json5": "_json_file",
-      "package.json": "_json_file",
-      "package-lock.json": "_json_file",
-      "tsconfig.json": "_json_file",
-      "tsconfig.base.json": "_json_file",
-      "tsconfig.build.json": "_json_file",
-      "tsconfig.node.json": "_json_file",
-      "tsconfig.app.json": "_json_file",
-      "tsconfig.spec.json": "_json_file",
-      "jsconfig.json": "_json_file",
-      "README.md": "_markdown_file",
-      "CHANGELOG.md": "_markdown_file",
-      "LICENSE": "_text_file",
-      "LICENSE.md": "_text_file",
-      "LICENSE.txt": "_text_file",
-      "makefile": "_makefile_file",
-      "CMakeLists.txt": "_cmake_file"
-    },
-    "folderNames": {
-      "AppScope": "_folder_light",
-      "hvigor": "_folder_light",
-      "ohosTest": "_folder_light",
-      "ets": "_folder_light",
-      "node_modules": "_folder_light",
-      ".git": "_folder_light",
-      ".vscode": "_folder_light",
-      "dist": "_folder_light",
-      "build": "_folder_light",
-      "public": "_folder_light",
-      "src": "_folder_light",
-      "components": "_folder_light",
-      "pages": "_folder_light",
-      "app": "_folder_light",
-      "styles": "_folder_light",
-      "assets": "_folder_light",
-      "utils": "_folder_light",
-      "lib": "_folder_light",
-      "hooks": "_folder_light",
-      "context": "_folder_light",
-      "api": "_folder_light"
-    },
-    "folderNamesExpanded": {
-      "AppScope": "_folder_light",
-      "hvigor": "_folder_light",
-      "ohosTest": "_folder_light",
-      "ets": "_folder_light",
-      "node_modules": "_folder_light",
-      ".git": "_folder_light",
-      ".vscode": "_folder_light",
-      "dist": "_folder_light",
-      "build": "_folder_light",
-      "public": "_folder_light",
-      "src": "_folder_light",
-      "components": "_folder_light",
-      "pages": "_folder_light",
-      "app": "_folder_light",
-      "styles": "_folder_light",
-      "assets": "_folder_light",
-      "utils": "_folder_light",
-      "lib": "_folder_light",
-      "hooks": "_folder_light",
-      "context": "_folder_light",
-      "api": "_folder_light"
-    },
-    "languageIds": {
-      "ets": "_arkts_file",
-      "typescript": "_typescript_file",
-      "javascript": "_javascript_file",
-      "json": "_json_file",
-      "jsonc": "_json_file",
-      "markdown": "_markdown_file",
-      "css": "_css_file",
-      "less": "_css_file",
-      "html": "_html_file",
-      "hml": "_html_file",
-      "plaintext": "_text_file"
+      "zip": "_zip_file_light"
     }
   }
 }

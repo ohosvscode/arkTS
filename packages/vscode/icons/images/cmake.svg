@@ -1,1 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><rect id="frame" width="16" height="16" fill="none"/><defs><linearGradient id="a" x1="90.095%" x2="0%" y1="5.142%" y2="100%"><stop offset="0%" stop-color="#7777E9"/><stop offset="100%" stop-color="#01009A"/></linearGradient><linearGradient id="b" x1="0%" y1="2.749%" y2="100%"><stop offset="0%" stop-color="#B83535"/><stop offset="100%" stop-color="#FD5B5A"/></linearGradient><linearGradient id="c" x1="100%" x2="16.327%" y1="100%" y2="59.996%"><stop offset="0%" stop-color="#01B202"/><stop offset="100%" stop-color="#0FE90F"/></linearGradient></defs><g fill="none" fill-rule="evenodd"><path fill="url(#a)" d="M8 .63l.862 7.303-8.247 7.178z" transform="translate(0 -.11)"/><path fill="url(#b)" d="M8 .63l7.385 14.481-6.154-2.644z" transform="translate(0 -.11)"/><path fill="url(#c)" d="M5.477 10.867l9.908 4.244H.615z" transform="translate(0 -.11)"/></g></svg>
+<svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<desc>
+			Created with Pixso.
+	</desc>
+	<defs>
+		<clipPath id="clip7051_154915">
+			<rect id="24px/文件类型(树结构)/cmake" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+		</clipPath>
+	</defs>
+	<g clip-path="url(#clip7051_154915)">
+		<path id="矢量 330" d="M7 1.66L12.99 1.66C14.86 1.66 15.79 1.66 16.51 2.03C17.14 2.35 17.65 2.85 17.97 3.48C18.33 4.2 18.33 5.13 18.33 7L18.33 13C18.33 14.86 18.33 15.8 17.97 16.51C17.65 17.14 17.14 17.65 16.51 17.97C15.79 18.33 14.86 18.33 12.99 18.33L7 18.33C5.13 18.33 4.2 18.33 3.48 17.97C2.85 17.65 2.34 17.14 2.02 16.51C1.66 15.8 1.66 14.86 1.66 13L1.66 7C1.66 5.13 1.66 4.2 2.02 3.48C2.34 2.85 2.85 2.35 3.48 2.03C4.2 1.66 5.13 1.66 7 1.66Z" fill="#8C929E" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矢量 233 (边框)" d="M9.27 3.82C9.2 3.89 9.15 3.96 9.11 4.05L3.63 15.05C3.6 15.13 3.57 15.21 3.55 15.29C3.54 15.36 3.53 15.44 3.54 15.52C3.54 15.59 3.56 15.66 3.58 15.73C3.6 15.81 3.63 15.88 3.68 15.95C3.72 16.02 3.77 16.08 3.82 16.13C3.88 16.18 3.93 16.22 4 16.26C4.07 16.3 4.14 16.33 4.21 16.35C4.29 16.37 4.37 16.38 4.46 16.38L15.53 16.38C15.62 16.38 15.7 16.37 15.78 16.35C15.86 16.33 15.93 16.3 15.99 16.26C16.06 16.22 16.12 16.18 16.17 16.13C16.23 16.07 16.27 16.01 16.32 15.94C16.36 15.87 16.39 15.8 16.41 15.73C16.44 15.66 16.45 15.59 16.45 15.51C16.46 15.43 16.45 15.36 16.44 15.28C16.42 15.2 16.39 15.12 16.35 15.04L10.76 4.04C10.71 3.96 10.66 3.88 10.6 3.81C10.54 3.76 10.47 3.7 10.4 3.66C10.33 3.62 10.26 3.59 10.18 3.57C10.1 3.55 10.02 3.54 9.93 3.54C9.84 3.54 9.76 3.55 9.68 3.57C9.6 3.59 9.53 3.63 9.46 3.67C9.39 3.71 9.32 3.76 9.27 3.82Z" fill="#FFFFFF" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矢量 255" d="M4.48 15.1L10.33 10.08L9.82 4.4L4.48 15.1Z" fill="#0A59F7" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矢量 256" d="M10.17 4.62L10.99 13.63L15.71 15.58L10.17 4.62Z" fill="#E64566" fill-opacity="1.000000" fill-rule="evenodd"/>
+		<path id="矢量 257" d="M4.41 15.6L14.89 15.6L7.72 12.71L4.41 15.6Z" fill="#37992E" fill-opacity="1.000000" fill-rule="evenodd"/>
+	</g>
+</svg>
