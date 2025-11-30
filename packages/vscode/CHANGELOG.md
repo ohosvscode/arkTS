@@ -1,5 +1,15 @@
 # vscode-naily-ets
 
+## 1.2.8
+
+### Patch Changes
+
+- [#213](https://github.com/ohosvscode/arkTS/pull/213) [`1fdfcd3`](https://github.com/ohosvscode/arkTS/commit/1fdfcd35e1557783435c01f7ff63a88029607db5) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: 修复 TS 插件构建问题
+
+- [#213](https://github.com/ohosvscode/arkTS/pull/213) [`1fdfcd3`](https://github.com/ohosvscode/arkTS/commit/1fdfcd35e1557783435c01f7ff63a88029607db5) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 使 patch Annotation 语义高亮更精确；添加 `OpenHarmony SDK` 的 `defaultLibrary` 语义高亮
+
+- [#209](https://github.com/ohosvscode/arkTS/pull/209) [`911995e`](https://github.com/ohosvscode/arkTS/commit/911995e738753d230e27d792c98f89c16a38525a) Thanks [@kristianmandrup](https://github.com/kristianmandrup)! - feat: add more arkTS icons and icon mapping
+
 ## 1.2.7
 
 ### Patch Changes

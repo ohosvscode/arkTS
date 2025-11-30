@@ -1,5 +1,14 @@
 # @arkts/language-server
 
+## 1.2.8
+
+### Patch Changes
+
+- [#213](https://github.com/ohosvscode/arkTS/pull/213) [`1fdfcd3`](https://github.com/ohosvscode/arkTS/commit/1fdfcd35e1557783435c01f7ff63a88029607db5) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 使 patch Annotation 语义高亮更精确；添加 `OpenHarmony SDK` 的 `defaultLibrary` 语义高亮
+
+- Updated dependencies [[`954c7d4`](https://github.com/ohosvscode/arkTS/commit/954c7d4fd049ff8b5c880d08ffdeb143f2329afc)]:
+  - @arkts/language-service@1.2.8
+
 ## 1.2.4
 
 ### Patch Changes

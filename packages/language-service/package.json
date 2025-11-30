@@ -1,6 +1,6 @@
 {
   "name": "@arkts/language-service",
-  "version": "1.1.7",
+  "version": "1.2.8",
   "description": "ArkTS Language Service.",
   "author": "Naily Zero <zero@naily.cc>",
   "license": "MIT",

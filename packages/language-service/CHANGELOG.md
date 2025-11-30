@@ -1,5 +1,11 @@
 # @arkts/language-service
 
+## 1.2.8
+
+### Patch Changes
+
+- [#210](https://github.com/ohosvscode/arkTS/pull/210) [`954c7d4`](https://github.com/ohosvscode/arkTS/commit/954c7d4fd049ff8b5c880d08ffdeb143f2329afc) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 关闭 `.d.ets` 的 ArkTS Linter 检查；关闭空文件内容的检查，防止出现无用错误
+
 ## 1.1.7
 
 ### Patch Changes

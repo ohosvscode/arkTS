@@ -1,5 +1,11 @@
 # @arkts/language-plugin
 
+## 1.2.8
+
+### Patch Changes
+
+- [#213](https://github.com/ohosvscode/arkTS/pull/213) [`1fdfcd3`](https://github.com/ohosvscode/arkTS/commit/1fdfcd35e1557783435c01f7ff63a88029607db5) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 使 patch Annotation 语义高亮更精确；添加 `OpenHarmony SDK` 的 `defaultLibrary` 语义高亮
+
 ## 1.1.6
 
 ### Patch Changes
