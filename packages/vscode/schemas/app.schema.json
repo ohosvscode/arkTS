@@ -1,0 +1,508 @@
+{
+  "title": "JSON schema for app.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": true,
+  "definitions": {
+    "default": {
+      "description": "The configuration in the default tag is applicable to all devices. If the configuration is different for other device types, you need to configure the configuration under the configuration tag of the device type.",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "minAPIVersion",
+          "distributedNotificationEnabled",
+          "keepAlive",
+          "removable",
+          "singleton",
+          "userDataClearable",
+          "accessible"
+        ]
+      },
+      "properties": {
+        "minAPIVersion": {
+          "description": "Indicates the minimum API version required for running an application. This label is an integer and can be defaulted.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "distributedNotificationEnabled": {
+          "description": "Describes whether the application has distributed notifications.",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "keepAlive": {
+          "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "removable": {
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": true
+        },
+        "singleton": {
+          "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "userDataClearable": {
+          "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": true
+        },
+        "accessible": {
+          "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    }
+  },
+  "required": [
+    "app"
+  ],
+  "propertyNames": {
+    "enum": [
+      "app"
+    ]
+  },
+  "properties": {
+    "app": {
+      "description": "Indicates the global configuration of an application. Different .hap files of the same application must use the same app configuration.",
+      "type": "object",
+      "required": [
+        "bundleName",
+        "icon",
+        "label",
+        "versionCode",
+        "versionName"
+      ],
+      "if": {
+        "properties": {
+          "bundleType": {
+            "const": "app"
+          }
+        }
+      },
+      "then": {
+        "propertyNames": {
+          "enum": [
+            "bundleName",
+            "debug",
+            "bundleType",
+            "icon",
+            "label",
+            "description",
+            "vendor",
+            "versionCode",
+            "versionName",
+            "minCompatibleVersionCode",
+            "minAPIVersion",
+            "targetAPIVersion",
+            "apiReleaseType",
+            "distributedNotificationEnabled",
+            "entityType",
+            "keepAlive",
+            "removable",
+            "singleton",
+            "userDataClearable",
+            "accessible",
+            "multiProjects",
+            "asanEnabled",
+            "default",
+            "tablet",
+            "tv",
+            "wearable",
+            "car",
+            "targetBundleName",
+            "targetPriority",
+            "generateBuildHash",
+            "2in1",
+            "GWPAsanEnabled",
+            "tsanEnabled",
+            "ubsanEnabled",
+            "appEnvironments",
+            "maxChildProcess",
+            "multiAppMode",
+            "hwasanEnabled",
+            "configuration",
+            "cloudFileSyncEnabled",
+            "assetAccessGroups",
+            "startMode"
+          ]
+        }
+      },
+      "else": {
+        "propertyNames": {
+          "enum": [
+            "bundleName",
+            "debug",
+            "bundleType",
+            "icon",
+            "label",
+            "description",
+            "vendor",
+            "versionCode",
+            "versionName",
+            "minCompatibleVersionCode",
+            "minAPIVersion",
+            "targetAPIVersion",
+            "apiReleaseType",
+            "distributedNotificationEnabled",
+            "entityType",
+            "keepAlive",
+            "removable",
+            "singleton",
+            "userDataClearable",
+            "accessible",
+            "multiProjects",
+            "asanEnabled",
+            "default",
+            "tablet",
+            "tv",
+            "wearable",
+            "car",
+            "targetBundleName",
+            "targetPriority",
+            "generateBuildHash",
+            "2in1",
+            "GWPAsanEnabled",
+            "tsanEnabled",
+            "ubsanEnabled",
+            "appEnvironments",
+            "maxChildProcess",
+            "hwasanEnabled",
+            "configuration",
+            "cloudFileSyncEnabled",
+            "assetAccessGroups",
+            "startMode"
+          ]
+        }
+      },
+      "properties": {
+        "bundleName": {
+          "description": "Indicates the bundle name of the application. It uniquely identifies the application. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 7,
+          "pattern": "^(?:[a-zA-Z](?:\\w*[0-9a-zA-Z])?)(?:\\.[0-9a-zA-Z](?:\\w*[0-9a-zA-Z])?){2,}$"
+        },
+        "bundleType": {
+          "description": "Indicates the type of bundle",
+          "type": "string",
+          "enum": [
+            "app",
+            "atomicService",
+            "shared",
+            "appService",
+            "appPlugin"
+          ]
+        },
+        "debug": {
+          "description": "Identify whether the application can be debugged.",
+          "type": "boolean",
+          "default": false
+        },
+        "label": {
+          "description": "Indicates the label of the application.",
+          "type": "string",
+          "maxLength": 63,
+          "pattern": "^[$]string:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+        },
+        "icon": {
+          "description": "Indicates the index to the application icon file, in the format of \"$media:application_icon\".This label can be left blank by default.",
+          "type": "string",
+          "pattern": "^[$]media:[0-9a-zA-Z_.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]$"
+        },
+        "description": {
+          "description": "Describes the application",
+          "type": "string",
+          "maxLength": 255
+        },
+        "vendor": {
+          "description": "Describes the application vendor.",
+          "type": "string",
+          "maxLength": 255
+        },
+        "versionCode": {
+          "description": "Indicates the versionCode number of the application. The value is an integer greater than 0. A larger value generally represents a later version.The system determines the application version based on the tag value.This label cannot be left blank.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "versionName": {
+          "description": "Indicates the text description of the application version.Used for displaying to users.A string can contain a maximum of 127 bytes.This label cannot be left blank.",
+          "type": "string",
+          "maxLength": 127,
+          "pattern": "^[0-9.]+|(?=.*[{])(?=.*[}])[0-9a-zA-Z_.{}]+$"
+        },
+        "minCompatibleVersionCode": {
+          "description": "Indicates the lowest compatible historical version number, used for cross-device compatibility judgment",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "minAPIVersion": {
+          "description": "Indicates the minimum API version required for running an application.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "targetAPIVersion": {
+          "description": "This tag identifies the target API version required for application running. The value is an integer.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "apiReleaseType": {
+          "description": "This tag identifies the type of the target API version required for application running. The tag is a string.",
+          "type": "string",
+          "pattern": "^(Canary[1-9]\\d*)|(Beta[1-9]\\d*)|(Release[1-9]\\d*)$"
+        },
+        "distributedNotificationEnabled": {
+          "description": "Describes whether the application has distributed notifications.",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "entityType": {
+          "description": "Describes the application type.",
+          "type": "string",
+          "deprecationMessage": "Deprecated since api 9.",
+          "enum": [
+            "game",
+            "media",
+            "communication",
+            "news",
+            "travel",
+            "utility",
+            "shopping",
+            "education",
+            "kids",
+            "business",
+            "photography",
+            "unspecified"
+          ],
+          "default": "unspecified"
+        },
+        "keepAlive": {
+          "description": "Specifies whether the application will keep alive. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "removable": {
+          "description": "Describes the application can remove or not. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": true
+        },
+        "singleton": {
+          "description": "Describes whether the application is singleton mode. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": false
+        },
+        "userDataClearable": {
+          "description": "Describes whether to allow the application to clear user data. This attribute takes effect only when the system application or privilege application is used.@deprecated",
+          "type": "boolean",
+          "deprecationMessage": "Deprecated since api 9.",
+          "default": true
+        },
+        "accessible": {
+          "description": "Describes whether to visit the application install catalogue. This attribute takes effect only when the system application or privilege application is used. And the aplpication must be a stage module",
+          "type": "boolean",
+          "default": false
+        },
+        "multiProjects": {
+          "description": "Indicates whether current project supports multiple project.",
+          "type": "boolean",
+          "default": false
+        },
+        "asanEnabled": {
+          "description": "Indicates whether to support asan. Release version is not configurable",
+          "type": "boolean",
+          "default": false
+        },
+        "default": {
+          "$ref": "#/definitions/default"
+        },
+        "phone": {
+          "$ref": "#/definitions/default"
+        },
+        "tablet": {
+          "$ref": "#/definitions/default"
+        },
+        "tv": {
+          "$ref": "#/definitions/default"
+        },
+        "wearable": {
+          "$ref": "#/definitions/default"
+        },
+        "car": {
+          "$ref": "#/definitions/default"
+        },
+        "2in1": {
+          "$ref": "#/definitions/default"
+        },
+        "targetBundleName": {
+          "description": "Indicates the target bundle name of an overlay application. It uniquely identifies the application. The value is a string with 7 to 128 bytes of a reverse domain name, for example, com.huawei.himusic. It is recommended that the first label of this attribute is the top-level domain com, the second label is the vendor or individual name, and the third label is the application name. This label is a string type and cannot be defaulted.",
+          "type": "string",
+          "maxLength": 128,
+          "minLength": 7,
+          "pattern": "^(?:[a-zA-Z](?:\\w*[0-9a-zA-Z])?)(?:\\.[0-9a-zA-Z](?:\\w*[0-9a-zA-Z])?){2,}$"
+        },
+        "targetPriority": {
+          "description": "Indicates the priority of the overlay module. 1 to 100, default value is 1.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "generateBuildHash": {
+          "description": "Indicates whether the hash value of hap or hsp is filed with in module.json.",
+          "type": "boolean",
+          "default": false
+        },
+        "GWPAsanEnabled": {
+          "description": "Indicates whether to support GWP asan.",
+          "type": "boolean",
+          "default": false
+        },
+        "tsanEnabled": {
+          "description": "Indicates whether to support tsan.",
+          "type": "boolean",
+          "default": false
+        },
+        "ubsanEnabled": {
+          "description": "Indicates whether to support ubsan.",
+          "type": "boolean",
+          "default": false
+        },
+        "appEnvironments": {
+          "description": "Indicates the environment value of app.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "enum": [
+                "name",
+                "value"
+              ]
+            },
+            "properties": {
+              "name": {
+                "description": "Indicates the key of a environment element. The value is a string with a maximum of 4096 bytes.",
+                "type": "string",
+                "maxLength": 4096
+              },
+              "value": {
+                "description": "Indicates the value of a environment element. The value is a string with a maximum of 4096 bytes.",
+                "type": "string",
+                "maxLength": 4096
+              }
+            }
+          }
+        },
+        "maxChildProcess": {
+          "description": "Indicates the max number of child process that can be created. 0 to 512.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        },
+        "multiAppMode": {
+          "description": "Indicates the application multiple open mode.",
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "multiAppModeType",
+              "maxCount"
+            ]
+          },
+          "required": [
+            "multiAppModeType",
+            "maxCount"
+          ],
+          "properties": {
+            "multiAppModeType": {
+              "description": "Indicates the type of application multiple open mode.",
+              "type": "string",
+              "enum": [
+                "multiInstance",
+                "appClone"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "multiAppModeType": {
+                "const": "multiInstance"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "maxCount": {
+                "description": "Indicates the max count of multiple open application.",
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              }
+            }
+          }
+        },
+        "hwasanEnabled": {
+          "description": "Indicates whether to support hwasan.",
+          "type": "boolean",
+          "default": false
+        },
+        "configuration": {
+          "description": "Indicates the configuration of the application, in the format of \"$profile:configuration\".This configuration can be left blank by default.",
+          "type": "string",
+          "pattern": "^[$]profile:[0-9a-zA-Z_.]+$",
+          "maxLength": 255
+        },
+        "cloudFileSyncEnabled": {
+          "description": "Indicates whether the application enables cloud file sync.",
+          "type": "boolean",
+          "default": false
+        },
+        "assetAccessGroups": {
+          "description": "Indicates the asset access groups of the application.",
+          "type": "array",
+          "maxItems": 512,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 127,
+            "minLength": 7,
+            "pattern": "^[a-zA-Z][0-9a-zA-Z_.]+$"
+          }
+        },
+        "startMode": {
+          "description": "Describes the application start mode.",
+          "type": "string",
+          "enum": [
+            "mainTask",
+            "recentTask"
+          ],
+          "default": "mainTask"
+        }
+      }
+    }
+  }
+}

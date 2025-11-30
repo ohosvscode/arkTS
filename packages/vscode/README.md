@@ -33,6 +33,7 @@
   - `mock-config.json5`配置
   - `hvigor-config.json5`配置
   - `main_pages.json5`配置
+  - `AppScope/app.json5`配置
 - 📦 1.x版本开始支持安装和管理`OpenHarmony SDK`，并且支持根据当前打开的项目自动探测`API版本`，发出弹窗提示`下载`或`切换`
 - ✨ 1.x版本开始支持`.ets`文件的`代码格式化`和`大纲`展示功能
 - ✂️ 支持和`TypeScript`一样的`snippets`，并且添加了`Struct Declaration`等`ArkTS`独有的`Snippets`

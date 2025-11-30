@@ -86,6 +86,10 @@
           "jsconfig-*.json"
         ],
         "url": "./schemas/ets-tsconfig.schema.json"
+      },
+      {
+        "fileMatch": "app.json5",
+        "url": "./schemas/app.schema.json"
       }
     ],
     "iconThemes": [
