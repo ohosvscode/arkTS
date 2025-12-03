@@ -266,6 +266,7 @@
             "beta1",
             "beta2",
             "beta3",
+            "beta4",
             "beta5",
             "beta6",
             "release"
@@ -273,7 +274,7 @@
         },
         "etsLoaderPath": {
           "type": "string",
-          "description": "Set the OpenHarmony ETS loader path mausally. By default, Naily's ArkTS Support extension will automatically set this value detected from your vscode's configuration (ets.sdkPath)."
+          "description": "Set the OpenHarmony ETS loader path manually. By default, Naily's ArkTS Support extension will automatically set this value detected from your vscode's configuration (ets.sdkPath)."
         }
       }
     }
