@@ -5,7 +5,7 @@
 
 feat: 修复多项问题:
 
-- pref: 语义 `patch` 性能问题 (packages/language-server/src/patches/patch-semantic.ts)
+- perf: 语义 `patch` 性能问题 (packages/language-server/src/patches/patch-semantic.ts)
 - feat: 添加 `tsconfig.json` 的下列选项: (packages/vscode/schemas/ets-tsconfig.schema.json)
   - `etsAnnotationsEnable`
   - `compatibleSdkVersion`
