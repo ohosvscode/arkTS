@@ -241,7 +241,7 @@
         },
         "etsAnnotationsEnable": {
           "type": "boolean",
-          "description": "Whether to enable OpenHarmony ETS annotations `@interface` declaration.",
+          "description": "Whether to enable OpenHarmony ETS annotations `@interface` declarations.",
           "default": true
         },
         "compatibleSdkVersion": {
