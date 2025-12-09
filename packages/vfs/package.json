@@ -17,21 +17,25 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": {
+        "import": "./dist/index.d.mts",
+        "require": "./dist/index.d.ts",
+        "default": "./dist/index.d.ts"
+      },
       "import": "./dist/index.mjs",
-      "default": "./dist/index.cjs"
+      "require": "./dist/index.js"
     }
   },
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown --format cjs,esm"
+    "build": "tsdown"
   }
 }

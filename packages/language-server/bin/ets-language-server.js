@@ -7,5 +7,5 @@ if (process.argv.includes('--version')) {
   console.log(`${pkgJSON.version}`)
 }
 else {
-  require('../out/index.cjs')
+  require('../out/index.js')
 }

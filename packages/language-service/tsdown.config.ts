@@ -11,4 +11,5 @@ export default defineConfig({
   clean: true,
   shims: true,
   dts: true,
+  fixedExtension: false,
 })

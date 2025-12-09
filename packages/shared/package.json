@@ -4,11 +4,11 @@
   "description": "ArkTS common utilities package.",
   "author": "Naily Zero <zero@naily.cc>",
   "license": "MIT",
-  "homepage": "https://github.com/Groupguanfang/arkTS/tree/main/packages/language-server",
+  "homepage": "https://github.com/Groupguanfang/arkTS/tree/main/packages/shared",
   "repository": {
     "type": "git",
     "url": "https://github.com/Groupguanfang/arkTS",
-    "directory": "packages/language-server"
+    "directory": "packages/shared"
   },
   "bugs": {
     "url": "https://github.com/Groupguanfang/arkTS/issues",
@@ -26,7 +26,7 @@
         "require": "./out/index.d.ts"
       },
       "import": "./out/index.mjs",
-      "require": "./out/index.cjs"
+      "require": "./out/index.js"
     },
     "./vscode": {
       "types": {
@@ -34,14 +34,14 @@
         "require": "./out/vscode.d.ts"
       },
       "import": "./out/vscode.mjs",
-      "require": "./out/vscode.cjs"
+      "require": "./out/vscode.js"
     },
     "./out/*": "./out/*"
   },
   "publishConfig": {
     "access": "public"
   },
-  "main": "./out/index.cjs",
+  "main": "./out/index.js",
   "module": "./out/index.mjs",
   "types": "./out/index.d.ts",
   "files": [

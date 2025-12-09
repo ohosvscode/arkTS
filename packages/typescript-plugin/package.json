@@ -9,16 +9,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Groupguanfang/arkTS",
-    "directory": "packages/language-plugin"
+    "directory": "packages/typescript-plugin"
   },
   "bugs": {
     "url": "https://github.com/Groupguanfang/arkTS/issues",
     "email": "zero@naily.cc"
   },
   "keywords": [
-    "language-server",
-    "language-server-protocol",
-    "harmonyos",
+    "typescript",
+    "plugin",
     "arkts",
     "ets"
   ],
@@ -26,14 +25,15 @@
     ".": {
       "types": {
         "import": "./out/index.d.mts",
-        "require": "./out/index.d.cts"
+        "require": "./out/index.d.ts",
+        "default": "./out/index.d.ts"
       },
       "import": "./out/index.mjs",
-      "require": "./out/index.cjs"
+      "require": "./out/index.js"
     },
     "./out/*": "./out/*"
   },
-  "main": "./out/index.cjs",
+  "main": "./out/index.js",
   "module": "./out/index.mjs",
   "types": "./out/index.d.ts",
   "files": [

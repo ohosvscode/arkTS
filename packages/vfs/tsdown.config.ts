@@ -2,13 +2,10 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: './src/index.ts',
-  outDir: './out',
+  outDir: './dist',
   format: ['cjs', 'esm'],
   sourcemap: true,
   dts: true,
   clean: true,
-  shims: true,
-  tsconfig: './tsconfig.build.json',
-  external: [],
-  fixedExtension: false,
+  platform: 'neutral',
 })

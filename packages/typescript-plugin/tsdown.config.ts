@@ -10,4 +10,5 @@ export default defineConfig({
   external: [],
   noExternal: [],
   shims: true,
+  fixedExtension: false,
 })

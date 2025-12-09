@@ -25,20 +25,18 @@
     ".": {
       "types": {
         "import": "./out/index.d.mts",
-        "require": "./out/index.d.cts"
+        "require": "./out/index.d.ts"
       },
       "import": "./out/index.mjs",
-      "require": "./out/index.cjs"
+      "require": "./out/index.js"
     },
     "./out/*": "./out/*"
   },
-  "main": "./out/index.cjs",
+  "main": "./out/index.js",
   "module": "./out/index.mjs",
   "types": "./out/index.d.ts",
   "files": [
-    "bin",
-    "out",
-    "src"
+    "out"
   ],
   "engines": {
     "node": ">=16.0.0"

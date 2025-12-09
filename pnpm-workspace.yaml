@@ -3,7 +3,7 @@ packages:
   - ohos-typescript
 catalogs:
   build:
-    tsdown: 0.16.4
+    tsdown: 0.16.5
   dev:
     fast-glob: ^3.3.3
     reactive-vscode: ^0.3.2
