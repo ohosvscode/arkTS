@@ -18,19 +18,19 @@
   "exports": {
     ".": {
       "types": {
-        "import": "./dist/index.d.mts",
-        "require": "./dist/index.d.ts",
+        "import": "./dist/index.d.ts",
+        "require": "./dist/index.d.cts",
         "default": "./dist/index.d.ts"
       },
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
   "publishConfig": {
     "access": "public"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
