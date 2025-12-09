@@ -35,10 +35,39 @@
   },
   "activationEvents": [],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ets-image-explorer",
+          "title": "图片资源管理器",
+          "icon": "$(file-media)"
+        }
+      ]
+    },
+    "views": {
+      "ets-image-explorer": [
+        {
+          "id": "ets.imageExplorer",
+          "name": "图片文件",
+          "icon": "$(folder)",
+          "contextualTitle": "图片资源管理器"
+        },
+        {
+          "id": "ets.imagePreview",
+          "name": "图片预览",
+          "type": "webview",
+          "contextualTitle": "图片预览"
+        }
+      ]
+    },
     "viewsWelcome": [
       {
         "view": "explorer",
         "contents": "%viewWelcome.createProject%"
+      },
+      {
+        "view": "ets.imageExplorer",
+        "contents": "在工作区中未找到图片文件。\n[刷新](command:ets.refreshImageExplorer)"
       }
     ],
     "jsonValidation": [
@@ -162,8 +191,28 @@
         "command": "ets.createProject",
         "title": "%command.createProject%",
         "category": "ETS"
+      },
+      {
+        "command": "ets.refreshImageExplorer",
+        "title": "刷新图片列表",
+        "category": "ETS",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ets.previewImage",
+        "title": "预览图片",
+        "category": "ETS"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "ets.refreshImageExplorer",
+          "when": "view == ets.imageExplorer",
+          "group": "navigation"
+        }
+      ]
+    },
     "configuration": {
       "title": "%extension.name%",
       "type": "object",

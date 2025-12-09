@@ -9,6 +9,7 @@ import type { IClassWrapper } from 'unioc'
 import * as vscode from 'vscode'
 import { ProjectDetectorManager } from '@arkts/language-service'
 import './project/command'
+import { registerImageExplorer } from './image-preview/image-explorer-provider'
 import { registerImageHoverProvider } from './image-preview/image-hover-provider'
 
 class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
@@ -42,6 +43,9 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
 
     // 注册图片悬停预览功能
     registerImageHoverProvider(context)
+
+    // 注册图片资源管理器侧边栏
+    registerImageExplorer(context)
 
     if (runResult?.type === 'result') return await runResult.value
   }
