@@ -38,6 +38,7 @@
         "default": "./out/permission.d.ts"
       },
       "import": "./out/permission.mjs",
+      "require": "./out/permission.js",
       "default": "./out/permission.js"
     },
     "./dist/*": "./dist/*"
