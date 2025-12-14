@@ -18,6 +18,42 @@ function tryParseEnv(): Record<string, any> {
   }
 }
 
+interface ConfigFileDiagMessage extends ts.server.protocol.Message {
+  type: 'event'
+  event: 'configFileDiag'
+  body: {
+    diagnostics: {
+      code: 5023
+      text: string
+      fileName: string
+      category: 'error'
+    }[]
+  }
+}
+
+function isConfigFileDiagMessage(msg: ts.server.protocol.Message): msg is ConfigFileDiagMessage {
+  return msg.type === 'event'
+    && 'event' in msg
+    && msg.event === 'configFileDiag'
+    && 'body' in msg
+    && typeof msg.body === 'object'
+    && msg.body !== null
+    && 'diagnostics' in msg.body
+    && Array.isArray(msg.body.diagnostics)
+    && msg.body.diagnostics.every((diagnostic) => {
+      return typeof diagnostic === 'object'
+        && diagnostic !== null
+        && 'code' in diagnostic
+        && diagnostic.code === 5023
+        && 'text' in diagnostic
+        && typeof diagnostic.text === 'string'
+        && 'fileName' in diagnostic
+        && typeof diagnostic.fileName === 'string'
+        && 'category' in diagnostic
+        && diagnostic.category === 'error'
+    })
+}
+
 /**
  * ### 这个插件做了什么？
  *
@@ -39,6 +75,31 @@ const plugin: ts.server.PluginModuleFactory = createLanguageServicePlugin((ts, i
 
   console.warn(`ETS typescript plugin loaded! sdkPath: ${sdkPath}, hmsSdkPath: ${hmsSdkPath}`)
   console.warn(`Current config: ${JSON.stringify(info.config)}`)
+
+  const originalGetCompilerOptionsDiagnostics = info.languageService.getCompilerOptionsDiagnostics.bind(info.languageService)
+  info.languageService.getCompilerOptionsDiagnostics = () => {
+    const env = tryParseEnv()
+    // 过滤掉因为SDK路径不存在而产生的警告（位于 tsconfig.json 中）
+    const diagnostics = originalGetCompilerOptionsDiagnostics()
+    return diagnostics.filter((diagnostic) => {
+      // 过滤掉 `importsNotUsedAsValues"已删除。请从配置中删除它` 在 OpenHarmony SDK 中的警告
+      if (diagnostic.code === 5102 && diagnostic.file?.fileName.startsWith(env?.lspOptions?.ohos?.sdkPath ?? '')) return false
+      // 非字符串文本，不处理；非5055代码，不处理
+      if (typeof diagnostic.messageText !== 'string' || diagnostic.code !== 5055) return true
+      // 没有SDK路径，不处理
+      if (!env?.lspOptions?.ohos?.sdkPath) return true
+      // 如果SDK路径存在，则检查是否包含SDK路径, 不包含则保留, 包含则过滤掉
+      return !diagnostic.messageText.includes(env.lspOptions.ohos.sdkPath)
+    })
+  }
+
+  if (info.session) {
+    const originalSend = info.session.send.bind(info.session)
+    info.session.send = (msg) => {
+      if (!isConfigFileDiagMessage(msg)) return originalSend(msg)
+      if (!msg.body.diagnostics.some(value => value.text.includes('ets'))) return originalSend(msg)
+    }
+  }
 
   // 如果没有传递这个配置，则不启用插件
   if (!info.config?.lspOptions?.ohos) {
