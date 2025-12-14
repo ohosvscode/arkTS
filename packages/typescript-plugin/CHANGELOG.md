@@ -1,5 +1,11 @@
 # @arkts/typescript-plugin
 
+## 1.2.9
+
+### Patch Changes
+
+- [#220](https://github.com/ohosvscode/arkTS/pull/220) [`4f910c5`](https://github.com/ohosvscode/arkTS/commit/4f910c5d33e3b61129979183d223c01c42b24da7) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: 修复当打开 `OpenHarmony SDK` 时, `ets-loader` 内声明文件所属的 `tsconfig.json` 文件报错的问题
+
 ## 1.1.4
 
 ### Patch Changes

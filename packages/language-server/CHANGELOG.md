@@ -1,5 +1,24 @@
 # @arkts/language-server
 
+## 1.2.9
+
+### Patch Changes
+
+- [#222](https://github.com/ohosvscode/arkTS/pull/222) [`4aca4fe`](https://github.com/ohosvscode/arkTS/commit/4aca4fe3aceb1b88db2355d14470b7bae972bff5) Thanks [@renovate](https://github.com/apps/renovate)! - chore(deps): update ohos-typescript digest to 0b986ad
+
+- [#220](https://github.com/ohosvscode/arkTS/pull/220) [`4f910c5`](https://github.com/ohosvscode/arkTS/commit/4f910c5d33e3b61129979183d223c01c42b24da7) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: set useUnknownInCatchVariables compiler options to `false` by default
+
+- [#220](https://github.com/ohosvscode/arkTS/pull/220) [`4f910c5`](https://github.com/ohosvscode/arkTS/commit/4f910c5d33e3b61129979183d223c01c42b24da7) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 修复多项问题:
+
+  - perf: 语义 `patch` 性能问题 (packages/language-server/src/patches/patch-semantic.ts)
+  - feat: 添加 `tsconfig.json` 的下列选项: (packages/vscode/schemas/ets-tsconfig.schema.json)
+    - `etsAnnotationsEnable`
+    - `compatibleSdkVersion`
+    - `packageManagerType`
+    - `compatibleSdkVersionStage`
+    - `etsLoaderPath`
+  - feat: 添加创建项目时选择卡片的倾斜效果 (packages/vscode/src/project/components/project-choice.vue)
+
 ## 1.2.8
 
 ### Patch Changes
