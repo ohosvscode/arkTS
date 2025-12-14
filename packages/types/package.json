@@ -25,45 +25,73 @@
   ],
   "exports": {
     ".": {
-      "types": "./out/index.d.ts",
+      "types": {
+        "import": "./out/index.d.mts",
+        "require": "./out/index.d.ts",
+        "default": "./out/index.d.ts"
+      },
       "import": "./out/index.mjs",
-      "default": "./out/index.cjs"
+      "require": "./out/index.js"
     },
     "./build-profile": {
-      "types": "./out/build-profile.d.ts",
+      "types": {
+        "import": "./out/build-profile.d.mts",
+        "require": "./out/build-profile.d.ts",
+        "default": "./out/build-profile.d.ts"
+      },
       "import": "./out/build-profile.mjs",
-      "default": "./out/build-profile.cjs"
+      "require": "./out/build-profile.js"
     },
     "./module-json": {
-      "types": "./out/module-json.d.ts",
+      "types": {
+        "import": "./out/module-json.d.mts",
+        "require": "./out/module-json.d.ts",
+        "default": "./out/module-json.d.ts"
+      },
       "import": "./out/module-json.mjs",
-      "default": "./out/module-json.cjs"
+      "require": "./out/module-json.js"
     },
     "./oh-package": {
-      "types": "./out/oh-package.d.ts",
+      "types": {
+        "import": "./out/oh-package.d.mts",
+        "require": "./out/oh-package.d.ts",
+        "default": "./out/oh-package.d.ts"
+      },
       "import": "./out/oh-package.mjs",
-      "default": "./out/oh-package.cjs"
+      "require": "./out/oh-package.js"
     },
     "./resource-element-file": {
-      "types": "./out/resource-element-file.d.ts",
+      "types": {
+        "import": "./out/resource-element-file.d.mts",
+        "require": "./out/resource-element-file.d.ts",
+        "default": "./out/resource-element-file.d.ts"
+      },
       "import": "./out/resource-element-file.mjs",
-      "default": "./out/resource-element-file.cjs"
+      "require": "./out/resource-element-file.js"
     },
     "./workspace-build-profile": {
-      "types": "./out/workspace-build-profile.d.ts",
+      "types": {
+        "import": "./out/workspace-build-profile.d.mts",
+        "require": "./out/workspace-build-profile.d.ts",
+        "default": "./out/workspace-build-profile.d.ts"
+      },
       "import": "./out/workspace-build-profile.mjs",
-      "default": "./out/workspace-build-profile.cjs"
+      "require": "./out/workspace-build-profile.js"
     },
     "./workspace-oh-package": {
-      "types": "./out/workspace-oh-package.d.ts",
+      "types": {
+        "import": "./out/workspace-oh-package.d.mts",
+        "require": "./out/workspace-oh-package.d.ts",
+        "default": "./out/workspace-oh-package.d.ts"
+      },
       "import": "./out/workspace-oh-package.mjs",
-      "default": "./out/workspace-oh-package.cjs"
+      "require": "./out/workspace-oh-package.js"
     },
     "./dist/*": "./dist/*"
   },
-  "main": "out/index.cjs",
-  "module": "out/index.mjs",
-  "types": "out/index.d.ts",
+  "main": "./out/index.js",
+  "module": "./out/index.mjs",
+  "types": "./out/index.d.ts",
   "files": [
     "out"
   ],

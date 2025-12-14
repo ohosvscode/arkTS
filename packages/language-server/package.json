@@ -23,13 +23,19 @@
   ],
   "exports": {
     ".": {
-      "types": "./out/index.d.ts",
+      "types": {
+        "import": "./out/index.d.mts",
+        "require": "./out/index.d.ts",
+        "default": "./out/index.d.ts"
+      },
       "import": "./out/index.mjs",
-      "default": "./out/index.cjs"
+      "default": "./out/index.js"
     },
     "./dist/*": "./dist/*"
   },
-  "main": "out/index.cjs",
+  "main": "./out/index.js",
+  "module": "./out/index.mjs",
+  "types": "./out/index.d.ts",
   "bin": {
     "ets-language-server": "./bin/ets-language-server.js"
   },

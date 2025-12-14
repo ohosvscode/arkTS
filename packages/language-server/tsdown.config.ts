@@ -13,4 +13,5 @@ export default defineConfig({
       eval: false,
     },
   },
+  fixedExtension: false,
 })

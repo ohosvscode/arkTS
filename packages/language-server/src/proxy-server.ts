@@ -5,7 +5,7 @@ import { LanguageServerLogger } from '@arkts/shared'
 
 const logger = new LanguageServerLogger()
 
-const cp = child_process.fork(path.join(__dirname, 'server.cjs'), ['--node-ipc'], {
+const cp = child_process.fork(path.join(__dirname, 'server.js'), ['--node-ipc'], {
   execArgv: [],
   stdio: ['inherit', 'pipe', 'pipe', 'ipc'],
 })

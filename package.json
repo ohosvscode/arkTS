@@ -7,10 +7,10 @@
     "url": "https://github.com/ohosvscode/arkTS.git"
   },
   "scripts": {
-    "build": "cd ./packages/vscode && npm run build",
-    "watch": "cd ./packages/vscode && npm run watch",
-    "pack": "cd ./packages/vscode && npm run pack",
-    "generate": "cd ./packages/vscode && npm run update",
+    "build": "pnpm -F vscode-naily-ets build",
+    "watch": "pnpm -F vscode-naily-ets watch",
+    "pack": "pnpm -F vscode-naily-ets pack",
+    "generate": "pnpm -F vscode-naily-ets update",
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
     "test": "vitest --coverage --ui",
     "test:compatible": "vitest run e2e/compatible.test.ts",

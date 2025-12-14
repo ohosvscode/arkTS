@@ -4,7 +4,7 @@
       "properties": {
         "ets": {
           "type": "object",
-          "description": "OpenHarmony ETS (ArkTS) configuration.",
+          "description": "OpenHarmony ETS (ArkTS) language configuration.",
           "properties": {
             "render": {
               "type": "object",
@@ -238,6 +238,43 @@
               ]
             }
           }
+        },
+        "etsAnnotationsEnable": {
+          "type": "boolean",
+          "description": "Whether to enable OpenHarmony ETS annotations `@interface` declarations.",
+          "default": true
+        },
+        "compatibleSdkVersion": {
+          "type": "number",
+          "description": "Set the OpenHarmony compatible SDK version.",
+          "default": 20
+        },
+        "packageManagerType": {
+          "type": "string",
+          "description": "Set the OpenHarmony package manager type. `ohpm` is the default value.",
+          "default": "ohpm",
+          "enum": [
+            "ohpm",
+            "npm"
+          ]
+        },
+        "compatibleSdkVersionStage": {
+          "type": "string",
+          "description": "Set the OpenHarmony compatible SDK version stage. `beta2` is the default value.",
+          "default": "beta2",
+          "enum": [
+            "beta1",
+            "beta2",
+            "beta3",
+            "beta4",
+            "beta5",
+            "beta6",
+            "release"
+          ]
+        },
+        "etsLoaderPath": {
+          "type": "string",
+          "description": "Set the OpenHarmony ETS loader path manually. By default, Naily's ArkTS Support extension will automatically set this value detected from your vscode's configuration (ets.sdkPath)."
         }
       }
     }

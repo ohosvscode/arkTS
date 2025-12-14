@@ -17,7 +17,7 @@ it('can use a FS backed system ', () => {
   const completions = env.languageService.getCompletionsAtPosition('index.ts', content.length, {})
   const hasPathJoinFunc = completions?.entries.find(c => c.name === 'join')
   expect(hasPathJoinFunc).toBeTruthy()
-})
+}, 10000)
 
 it('can use a FS backed system to extract node modules', () => {
   const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }

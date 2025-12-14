@@ -10,17 +10,17 @@ logger.info(`Current NODE_ENV: ${process.env.NODE_ENV}`)
 
 export default defineConfig({
   entry: {
-    'dist/client': './src/extension.ts',
-    'dist/server': '../language-server/src/index.ts',
-    'dist/proxy-server': '../language-server/src/proxy-server.ts',
-    'node_modules/ets-typescript-plugin/index': '../typescript-plugin/src/index.ts',
+    'client': './src/extension.ts',
+    'server': '../language-server/src/index.ts',
+    'proxy-server': '../language-server/src/proxy-server.ts',
+    '../node_modules/ets-typescript-plugin/index': '../typescript-plugin/src/index.ts',
   },
   format: 'cjs',
   sourcemap: isDev,
   external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector'],
   tsconfig: './tsconfig.json',
   clean: false,
-  onSuccess: 'mv node_modules/ets-typescript-plugin/index.cjs node_modules/ets-typescript-plugin/index.js && vite build',
+  onSuccess: 'vite build',
   minify: {
     compress: {
       keepNames: {
@@ -35,16 +35,13 @@ export default defineConfig({
       },
     },
   },
-  outDir: '.',
+  fixedExtension: false,
   inputOptions: {
     checks: {
       eval: false,
     },
   },
   dts: false,
-  outputOptions: {
-    chunkFileNames: `dist/[name].js`,
-  },
   alias: {
     '@arkts/shared': path.join(process.cwd(), '../shared/src/index.ts'),
     '@arkts/shared/vscode': path.join(process.cwd(), '../shared/src/vscode.ts'),

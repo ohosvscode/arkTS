@@ -15,8 +15,10 @@ function getMarkdownJSDoc(node: ets.HasJSDoc): string[] {
 }
 
 /**
- * 补丁：为`@interface`声明的注解提供正确的悬浮提示，以及正确的语义高亮。
- * 语义高亮将其由原本的类似class声明的高亮转为ts装饰器一样的高亮。
+ * 补丁：
+ * - 为`@interface`声明的注解提供正确的悬浮提示，以及正确的语义高亮。语义高亮将其由原本的类似class声明的高亮转为ts装饰器一样的高亮。
+ * - 关闭TS服务器提供的 json 文件的悬浮提示和跳转定义功能。
+ * - patch default library的逻辑，使 OpenHarmony 的源码文件也被识别为默认库。
  */
 export function patchSemantic(typescriptServices: LanguageServicePlugin[], config: LanguageServerConfigurator): void {
   const originalCreate = typescriptServices[0].create
@@ -153,18 +155,18 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
       async provideHover(document, position, token) {
         // 补丁：关闭 json 文件的悬浮提示功能
         if (document.languageId === 'json' || document.languageId === 'jsonc') return null
-        // Hover补丁：提供注解装饰器的悬浮提示 （Decorator For Annotation）
-        const annotationDecoratorHover = provideAnnotationDecoratorHover(document, document.offsetAt(position))
-        if (annotationDecoratorHover) return annotationDecoratorHover
-        // Hover补丁：提供注解装饰器声明的悬浮提示 （AnnotationDeclaration）
-        const annotationDeclarationHover = provideAnnotationDeclarationHover(document, document.offsetAt(position))
-        if (annotationDeclarationHover) return annotationDeclarationHover
         const originalHover = await instance.provideHover?.(document, position, token) ?? undefined
         if (!originalHover) return null
         if (Array.isArray(originalHover.contents)) return originalHover
         if (typeof originalHover.contents !== 'object') return originalHover
         if (!('kind' in originalHover.contents)) return originalHover
         originalHover.contents.value = originalHover.contents.value.replace(/```typescript/, '```ets')
+        // Hover补丁：提供注解装饰器的悬浮提示 （Decorator For Annotation）
+        const annotationDecoratorHover = provideAnnotationDecoratorHover(document, document.offsetAt(position))
+        if (annotationDecoratorHover) return annotationDecoratorHover
+        // Hover补丁：提供注解装饰器声明的悬浮提示 （AnnotationDeclaration）
+        const annotationDeclarationHover = provideAnnotationDeclarationHover(document, document.offsetAt(position))
+        if (annotationDeclarationHover) return annotationDeclarationHover
         return originalHover
       },
 

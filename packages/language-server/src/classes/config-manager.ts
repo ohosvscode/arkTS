@@ -271,6 +271,7 @@ export class LanguageServerConfigManager implements LanguageServerConfigurator {
       alwaysStrict: true,
       mixCompile: true,
       tsImportSendableEnable: true,
+      useUnknownInCatchVariables: false,
     } satisfies ets.CompilerOptions, this.getEtsLoaderConfigCompilerOptions())
     return this.fixTsConfig(finalCompilerOptions)
   }

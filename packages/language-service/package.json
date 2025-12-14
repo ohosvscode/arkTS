@@ -23,24 +23,29 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "types": "./out/index.d.mts",
-        "default": "./out/index.mjs"
+      "types": {
+        "import": "./out/index.d.mts",
+        "require": "./out/index.d.ts",
+        "default": "./out/index.d.ts"
       },
-      "require": {
-        "types": "./out/index.d.ts",
-        "default": "./out/index.cjs"
-      }
+      "import": "./out/index.mjs",
+      "require": "./out/index.js"
     },
     "./permission": {
-      "types": "./out/permission.d.ts",
+      "types": {
+        "import": "./out/permission.d.mts",
+        "require": "./out/permission.d.ts",
+        "default": "./out/permission.d.ts"
+      },
       "import": "./out/permission.mjs",
-      "default": "./out/permission.cjs"
+      "require": "./out/permission.js",
+      "default": "./out/permission.js"
     },
     "./dist/*": "./dist/*"
   },
-  "main": "out/index.cjs",
-  "module": "out/index.mjs",
+  "main": "./out/index.js",
+  "module": "./out/index.mjs",
+  "types": "./out/index.d.ts",
   "files": [
     "out"
   ],
