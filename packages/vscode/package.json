@@ -33,7 +33,11 @@
     "theme": "dark",
     "color": "#37337a"
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "workspaceContains:**/*.ets",
+    "workspaceContains:**/build-profile.json5",
+    "workspaceContains:**/oh-package.json5"
+  ],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
