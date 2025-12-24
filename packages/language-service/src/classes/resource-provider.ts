@@ -8,6 +8,7 @@ import path from 'node:path'
 import { CompletionItemKind, DiagnosticSeverity, FileType, MarkupKind, Position, Range } from '@volar/language-server'
 import { URI } from 'vscode-uri'
 import { permissions } from '../auth/permission'
+import { MediaReference } from '../interfaces/media-reference'
 import { Reference } from '../interfaces/reference'
 import { SysResource } from '../interfaces/sys-resource'
 import { LEADING_TRAILING_QUOTE_REGEX } from '../utils/regex'
@@ -676,7 +677,7 @@ export namespace ResourceProvider {
   }
 
   class HoverProviderImpl extends ResourceProviderImpl implements HoverProvider {
-    provideHover(document: TextDocument, position: Position): NullableProviderResult<Hover> {
+    provideHoverForRequestPermissions(document: TextDocument, position: Position): NullableProviderResult<Hover> {
       const decodedUri = this.contextUtil.decodeTextDocumentUri(document)
       if (!decodedUri) return null
       const product = this.findProductByUri(decodedUri)
@@ -723,6 +724,59 @@ export namespace ResourceProvider {
       }
 
       return null
+    }
+
+    buildDollarResourceHoverText(reference: MediaReference): string {
+      const qualifiers = reference.getMediaDirectory()
+        .getResourceDirectory()
+        .getUnderlyingResourceDirectory()
+        .getQualifiers()
+
+      return `**🖼️ [${reference.getRawFileName()}](${reference.getUri().fsPath})**\n\n`
+        .concat(`| 属性 | 值 |\n`)
+        .concat(`|------|----|\n`)
+        .concat(`| 文件名 | \`${reference.getFileName()}\` |\n`)
+        .concat(`| 大小 | \`${reference.getFileSize()}\` |\n`)
+        .concat(`| 资源组限定词 | ${typeof qualifiers === 'string' ? `\`${qualifiers}\`` : qualifiers.map(q => `\`${Object.values(q).join(' ')}\``).join(' ')} |\n\n`)
+        .concat(reference.getMarkdownPreview())
+    }
+
+    provideHoverForDollarResource(document: TextDocument, position: Position): NullableProviderResult<Hover> {
+      const decodedSourceFile = this.contextUtil.decodeSourceFile(document)
+      if (!decodedSourceFile) return null
+      const resourceCallExpressions = this.globalCallExpressionFinder.findGlobalCallExpression(decodedSourceFile, '$r')
+      if (resourceCallExpressions.length === 0) return null
+      const currentCallExpression = this.globalCallExpressionFinder.isInCallExpression(resourceCallExpressions, decodedSourceFile, document, position)
+      if (!currentCallExpression) return null
+      const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, decodedSourceFile)
+      if (!firstArgumentText) return null
+      if (!firstArgumentText.startsWith('app.media.')) return null
+      const decodedUri = this.contextUtil.decodeTextDocumentUri(document)
+      if (!decodedUri) return null
+      const product = this.findProductByUri(decodedUri)
+      const references = product?.findReference()
+        .filter(reference => MediaReference.is(reference))
+        .filter(reference => reference.toEtsFormat() === firstArgumentText) ?? []
+      if (!references.length) return null
+      const value = references.map(reference => this.buildDollarResourceHoverText(reference)).join('---\n')
+      return {
+        contents: {
+          kind: MarkupKind.Markdown,
+          value,
+        },
+        range: Reference.toRange(currentCallExpression.arguments[0], decodedSourceFile, true),
+      }
+    }
+
+    provideHover(document: TextDocument, position: Position): NullableProviderResult<Hover> {
+      switch (document.languageId) {
+        case 'json':
+        case 'jsonc':
+        case 'json5':
+          return this.provideHoverForRequestPermissions(document, position)
+        default:
+          return this.provideHoverForDollarResource(document, position)
+      }
     }
   }
 }

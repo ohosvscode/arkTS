@@ -10,7 +10,6 @@ import * as vscode from 'vscode'
 import { ProjectDetectorManager } from '@arkts/language-service'
 import './project/command'
 import { registerImageExplorer } from './image-preview/image-explorer-provider'
-import { registerImageHoverProvider } from './image-preview/image-hover-provider'
 
 class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
   beforeInitialize(context: ExtensionContext): Promise<void> | void {
@@ -40,9 +39,6 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
 
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async document => this.autoSetLanguage(document, languageServer?.getInstance())))
     vscode.workspace.textDocuments.forEach(async document => this.autoSetLanguage(document, languageServer?.getInstance()))
-
-    // 注册图片悬停预览功能
-    registerImageHoverProvider(context)
 
     // 注册图片资源管理器侧边栏
     registerImageExplorer(context)

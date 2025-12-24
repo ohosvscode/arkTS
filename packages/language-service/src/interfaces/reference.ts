@@ -46,11 +46,11 @@ export namespace Reference {
    * (reading 'text')` error, we must pass the original {@linkcode SourceFile}
    * to the function.
    */
-  export function toRange(node: Node, document?: TextDocument | SourceFile, withoutQuotes?: true): Range
+  export function toRange<T extends Node>(node: T, document?: TextDocument | SourceFile, withoutQuotes?: true): Range
   /**
    * Convert the {@linkcode Reference} or ohos-typescript {@linkcode Node} to a {@linkcode Range}.
    */
-  export function toRange(node: Node, withoutQuotes?: true): Range
+  export function toRange<T extends Node>(node: T, withoutQuotes?: true): Range
   export function toRange(reference: Reference | Node, documentOrSourceFileOrWithoutQuotes?: TextDocument | SourceFile | true, withoutQuotes?: true): Range {
     if (is(reference)) {
       const document = isTextDocument(documentOrSourceFileOrWithoutQuotes)
