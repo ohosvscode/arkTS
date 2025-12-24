@@ -289,7 +289,8 @@ export namespace ResourceProvider {
       if (resourceCallExpressions.length === 0) return null
       const currentCallExpression = this.globalCallExpressionFinder.isInCallExpression(resourceCallExpressions, sourceFile, document, position)
       if (!currentCallExpression) return null
-      const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, sourceFile) ?? ''
+      const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, sourceFile)
+      if (!firstArgumentText) return null
       const [scope, type, name] = firstArgumentText.split('.')
       if (!scope || !type || !name) return null
 
@@ -456,7 +457,8 @@ export namespace ResourceProvider {
       if (resourceCallExpressions.length === 0) return []
       const currentCallExpression = this.globalCallExpressionFinder.isInCallExpression(resourceCallExpressions, sourceFile, document, position)
       if (!currentCallExpression) return []
-      const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, sourceFile) ?? ''
+      const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, sourceFile)
+      if (!firstArgumentText) return []
       const sysResource = this.config.getSysResource()
       const sysEtsFormats = sysResource ? SysResource.toEtsFormat(sysResource) : []
       const product = this.findProductByUri(decodedUri)
