@@ -49,4 +49,8 @@ export namespace ElementDirectory {
     }
     return new ElementDirectoryImpl(resourceDirectory, rustElementDirectory)
   }
+
+  export function is(value: unknown): value is ElementDirectory {
+    return value instanceof ElementDirectoryImpl
+  }
 }

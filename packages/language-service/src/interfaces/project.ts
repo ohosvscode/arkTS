@@ -47,4 +47,8 @@ export namespace Project {
   export function create(projectDetector: ProjectDetector, rustProject: RustProject): Project {
     return new ProjectImpl(projectDetector, rustProject)
   }
+
+  export function is(value: unknown): value is Project {
+    return value instanceof ProjectImpl
+  }
 }

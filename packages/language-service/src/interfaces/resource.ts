@@ -60,4 +60,8 @@ export namespace Resource {
   export function create(product: Product, rustResource: RustResource): Resource {
     return new ResourceImpl(product, rustResource)
   }
+
+  export function is(value: unknown): value is Resource {
+    return value instanceof ResourceImpl
+  }
 }

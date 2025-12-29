@@ -28,4 +28,8 @@ export namespace MediaDirectory {
     }
     return new MediaDirectoryImpl(resourceDirectory, rustMediaDirectory)
   }
+
+  export function is(value: unknown): value is MediaDirectory {
+    return value instanceof MediaDirectoryImpl
+  }
 }

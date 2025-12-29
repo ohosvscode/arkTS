@@ -104,4 +104,8 @@ export namespace Product {
   export function create(module: Module, rustProduct: RustProduct): Product {
     return new ProductImpl(module, rustProduct)
   }
+
+  export function is(value: unknown): value is Product {
+    return value instanceof ProductImpl
+  }
 }

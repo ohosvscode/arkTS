@@ -12,7 +12,7 @@ declare global {
     /** Global vscode protocol API. */
     vscode: vscode
     /** Global birpc connection API. */
-    connection: import('birpc').BirpcReturn<import('./interfaces/connection-protocol').ConnectionProtocol.ServerFunction, import('./interfaces/connection-protocol').ConnectionProtocol.ClientFunction>
+    connection: import('birpc').BirpcReturn<import('./interfaces/connection-protocol').ProjectConnectionProtocol.ServerFunction, import('./interfaces/connection-protocol').ProjectConnectionProtocol.ClientFunction>
   }
 }
 

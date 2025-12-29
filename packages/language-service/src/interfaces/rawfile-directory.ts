@@ -28,4 +28,8 @@ export namespace RawfileDirectory {
     }
     return new RawfileDirectoryImpl(resource, rustRawfileDirectory)
   }
+
+  export function is(value: unknown): value is RawfileDirectory {
+    return value instanceof RawfileDirectoryImpl
+  }
 }

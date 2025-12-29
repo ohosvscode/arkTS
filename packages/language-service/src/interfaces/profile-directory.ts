@@ -28,4 +28,8 @@ export namespace ProfileDirectory {
     }
     return new ProfileDirectoryImpl(resourceDirectory, rustProfileDirectory)
   }
+
+  export function is(value: unknown): value is ProfileDirectory {
+    return value instanceof ProfileDirectoryImpl
+  }
 }

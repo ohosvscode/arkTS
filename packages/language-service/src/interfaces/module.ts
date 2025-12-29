@@ -66,4 +66,8 @@ export namespace Module {
   export function create(project: Project, rustModule: RustModule): Module {
     return new ModuleImpl(project, rustModule)
   }
+
+  export function is(value: unknown): value is Module {
+    return value instanceof ModuleImpl
+  }
 }

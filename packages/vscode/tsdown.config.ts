@@ -20,7 +20,7 @@ export default defineConfig({
   external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector'],
   tsconfig: './tsconfig.json',
   clean: false,
-  onSuccess: 'vite build',
+  onSuccess: 'vite build && cross-env NODE_ENV=qualifier-editor vite build',
   minify: {
     compress: {
       keepNames: {

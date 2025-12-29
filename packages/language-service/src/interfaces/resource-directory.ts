@@ -65,4 +65,8 @@ export namespace ResourceDirectory {
   export function create(resource: Resource, rustResourceDirectory: RustResourceDirectory): ResourceDirectory {
     return new ResourceDirectoryImpl(resource, rustResourceDirectory)
   }
+
+  export function is(value: unknown): value is ResourceDirectory {
+    return value instanceof ResourceDirectoryImpl
+  }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ConnectionProtocol } from '../interfaces/connection-protocol'
+import type { ProjectConnectionProtocol } from '../interfaces/connection-protocol'
 import MarkdownIt from 'markdown-it'
 
 const route = useRoute()
@@ -9,7 +9,7 @@ if (typeof productId !== 'string') throw new Error('productId is required.')
 const isLoading = ref(false)
 const error = ref<Error | null>(null)
 const isDark = usePreferredDark()
-const data = ref<ConnectionProtocol.ServerFunction.RequestTemplateMarketDetail.Response.Result | null>(null)
+const data = ref<ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketDetail.Response.Result | null>(null)
 
 async function fetchData() {
   try {
@@ -31,7 +31,7 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true,
 })
-const detailFiles = computed<ConnectionProtocol.ServerFunction.RequestTemplateMarketDetail.Response.Result.DetailFile>(() => {
+const detailFiles = computed<ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketDetail.Response.Result.DetailFile>(() => {
   try {
     return JSON.parse(data.value?.productEntity.detailFiles ?? '{}')
   }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ConnectionProtocol } from '../interfaces/connection-protocol'
+import type { ProjectConnectionProtocol } from '../interfaces/connection-protocol'
 
 const props = defineProps<{
-  data: ConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response.Result
+  data: ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response.Result
   viewMode: 'list' | 'grid'
 }>()
 

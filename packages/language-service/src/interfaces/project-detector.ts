@@ -48,4 +48,8 @@ export namespace ProjectDetector {
   export function create(projectDetectorManager: ProjectDetectorManager, workspaceFolder: string): ProjectDetector {
     return new ProjectDetectorImpl(projectDetectorManager, workspaceFolder)
   }
+
+  export function is(value: unknown): value is ProjectDetector {
+    return value instanceof ProjectDetectorImpl
+  }
 }

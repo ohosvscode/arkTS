@@ -1,14 +1,15 @@
 import type { ProjectDetector as RustProjectDetector } from '@arkts/project-detector'
-import type { Emitter } from 'mitt'
 import { UriUtil } from '../utils/uri-util'
 import { ProjectDetector } from './project-detector'
 
 /** Empty function, provide a symbol to be used as a dependency injection token for IoC container framework. */
 export function ProjectDetectorManager(_v: never): void {}
 
-export interface ProjectDetectorManager extends Pick<Emitter<RustProjectDetector.EventMap>, 'emit'> {
+export interface ProjectDetectorManager {
+  emit(type: keyof RustProjectDetector.EventMap, event?: RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]): this
   delete(workspaceFolder: string): void
   add(workspaceFolder: string): void
+  on(type: keyof RustProjectDetector.EventMap, listener: (event: RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]) => void): this
   findAll(): ProjectDetector[]
   findByUri(uri: string): ProjectDetector | undefined
 }
@@ -48,15 +49,28 @@ export namespace ProjectDetectorManager {
       })
     }
 
-    emit(type: keyof RustProjectDetector.EventMap, event?: RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]): void {
+    emit(type: keyof RustProjectDetector.EventMap, event?: RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]): this {
       this.projectDetectors.forEach(projectDetector =>
         projectDetector.getUnderlyingProjectDetector()
           .emit(type, event as RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]),
       )
+      return this
+    }
+
+    on(type: keyof RustProjectDetector.EventMap, listener: (event: RustProjectDetector.EventMap[keyof RustProjectDetector.EventMap]) => void): this {
+      this.projectDetectors.forEach(projectDetector =>
+        projectDetector.getUnderlyingProjectDetector()
+          .on(type, listener),
+      )
+      return this
     }
   }
 
   export function create(workspaceFolders: string[]): ProjectDetectorManager {
     return new ProjectDetectorManagerImpl(workspaceFolders)
+  }
+
+  export function is(value: unknown): value is ProjectDetectorManager {
+    return value instanceof ProjectDetectorManagerImpl
   }
 }

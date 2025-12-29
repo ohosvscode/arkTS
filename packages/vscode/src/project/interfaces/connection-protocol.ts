@@ -1,6 +1,7 @@
 import type * as vscode from 'vscode'
+import type { WebviewContext } from '../../context/webview-context'
 
-export namespace ConnectionProtocol {
+export namespace ProjectConnectionProtocol {
   export namespace File {
     export interface Stat {
       isFile: boolean
@@ -8,7 +9,7 @@ export namespace ConnectionProtocol {
     }
   }
 
-  export interface ServerFunction {
+  export interface ServerFunction extends WebviewContext.ServerFunction<ClientFunction, ServerFunction> {
     /**
      * Check if the path exists
      *
@@ -80,13 +81,13 @@ export namespace ConnectionProtocol {
     /**
      * The request template market list namespace.
      *
-     * @see {@linkcode ConnectionProtocol.ServerFunction.RequestTemplateMarketList}
+     * @see {@linkcode ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList}
      */
     export namespace RequestTemplateMarketList {
       /**
        * The `requestTemplateMarketList` request object.
        *
-       * @see {@linkcode ConnectionProtocol.ServerFunction.requestTemplateMarketList}
+       * @see {@linkcode ProjectConnectionProtocol.ServerFunction.requestTemplateMarketList}
        */
       export interface Request {
         /**

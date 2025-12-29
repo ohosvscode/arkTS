@@ -38,25 +38,45 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "ets-image-explorer",
-          "title": "图片资源管理器",
+          "id": "ets-resource-explorer",
+          "title": "Hvigor 资源管理器",
           "icon": "$(file-media)"
         }
       ]
     },
     "views": {
-      "ets-image-explorer": [
+      "ets-resource-explorer": [
         {
-          "id": "ets.imageExplorer",
-          "name": "图片文件",
+          "id": "ets.resourceExplorer",
+          "name": "Hvigor 资源管理器",
           "icon": "$(folder)",
-          "contextualTitle": "图片资源管理器"
+          "contextualTitle": "资源管理器"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "ets.resourceExplorer.refresh",
+          "group": "navigation",
+          "when": "view == ets.resourceExplorer"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ets.resourceExplorer.openFile",
+          "group": "inline",
+          "when": "view == ets.resourceExplorer && viewItem == ElementJsonFile"
         },
         {
-          "id": "ets.imagePreview",
-          "name": "图片预览",
-          "type": "webview",
-          "contextualTitle": "图片预览"
+          "command": "ets.resourceExplorer.openFile",
+          "group": "inline",
+          "when": "view == ets.resourceExplorer && (viewItem == ElementJsonFile || viewItem == MediaFile)"
+        },
+        {
+          "command": "ets.resourceExplorer.openResourceQualifierEditor",
+          "group": "inline",
+          "when": "view == ets.resourceExplorer && viewItem == Resource"
         }
       ]
     },
@@ -64,10 +84,6 @@
       {
         "view": "explorer",
         "contents": "%viewWelcome.createProject%"
-      },
-      {
-        "view": "ets.imageExplorer",
-        "contents": "在工作区中未找到图片文件。\n[刷新](command:ets.refreshImageExplorer)"
       }
     ],
     "jsonValidation": [
@@ -193,26 +209,24 @@
         "category": "ETS"
       },
       {
-        "command": "ets.refreshImageExplorer",
-        "title": "刷新图片列表",
-        "category": "ETS",
-        "icon": "$(refresh)"
+        "command": "ets.resourceExplorer.refresh",
+        "title": "%command.resourceExplorer.refresh%",
+        "icon": "$(refresh)",
+        "category": "ETS"
       },
       {
-        "command": "ets.previewImage",
-        "title": "预览图片",
+        "command": "ets.resourceExplorer.openFile",
+        "title": "%command.resourceExplorer.openFile%",
+        "icon": "$(link-external)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.resourceExplorer.openResourceQualifierEditor",
+        "title": "%command.resourceExplorer.openResourceQualifierEditor%",
+        "icon": "$(plus)",
         "category": "ETS"
       }
     ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "ets.refreshImageExplorer",
-          "when": "view == ets.imageExplorer",
-          "group": "navigation"
-        }
-      ]
-    },
     "configuration": {
       "title": "%extension.name%",
       "type": "object",

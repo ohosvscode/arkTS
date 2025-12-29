@@ -40,4 +40,8 @@ export namespace ElementJsonFile {
   export function create(elementDirectory: ElementDirectory, rustElementJsonFile: RustElementJsonFile): ElementJsonFile {
     return new ElementJsonFileImpl(elementDirectory, rustElementJsonFile)
   }
+
+  export function is(value: unknown): value is ElementJsonFile {
+    return value instanceof ElementJsonFileImpl
+  }
 }

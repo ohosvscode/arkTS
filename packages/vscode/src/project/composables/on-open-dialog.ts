@@ -1,4 +1,4 @@
-import type { ConnectionProtocol } from '../interfaces/connection-protocol'
+import type { ProjectConnectionProtocol } from '../interfaces/connection-protocol'
 
 export function onOpenDialog(callback: (uri: string[] | undefined, dialogId: string) => void, filterDialogId: (dialogId: string) => boolean): void {
   onOpenDialog.callbacks.add((uri, dialogId) => {
@@ -11,7 +11,7 @@ export namespace onOpenDialog {
   export const callbacks = new Set<(uri: string[] | undefined, dialogId: string) => void>()
 }
 
-export interface CreateOpenDialogOptions extends ConnectionProtocol.ServerFunction.CreateOpenDialog.Options {
+export interface CreateOpenDialogOptions extends ProjectConnectionProtocol.ServerFunction.CreateOpenDialog.Options {
   onClose(uri: string[] | undefined): void | Promise<void>
 }
 

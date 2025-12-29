@@ -28,4 +28,8 @@ export namespace ResfileDirectory {
     }
     return new ResfileDirectoryImpl(resource, rustResfileDirectory)
   }
+
+  export function is(value: unknown): value is ResfileDirectory {
+    return value instanceof ResfileDirectoryImpl
+  }
 }

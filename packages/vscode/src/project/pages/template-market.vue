@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { UseOffsetPaginationReturn } from '@vueuse/core'
 import type { UnwrapNestedRefs } from 'vue'
-import type { ConnectionProtocol } from '../interfaces/connection-protocol'
+import type { ProjectConnectionProtocol } from '../interfaces/connection-protocol'
 
 const totalCount = ref(0)
-const resultList = ref<ConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response.Result[]>([])
+const resultList = ref<ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response.Result[]>([])
 const viewMode = ref<'list' | 'grid'>('list')
 const isLoading = ref(false)
 const error = ref<Error | null>(null)
