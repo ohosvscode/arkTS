@@ -1,9 +1,13 @@
+import type { Router, RouteRecordRaw } from 'vue-router'
 import { createBirpc } from 'birpc'
+import NProgress from 'nprogress'
 import { createPinia } from 'pinia'
+import { setupLayouts } from 'virtual:generated-layouts'
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import { routes } from 'vue-router/auto-routes'
 import Root from './Root.vue'
-import { router } from './routers'
 import 'uno.css'
 
 export async function bootstrap<RemoteFunctions = Record<string, never>, LocalFunctions extends object = Record<string, never>>(localFunctions: LocalFunctions = {} as LocalFunctions): Promise<void> {
@@ -18,7 +22,7 @@ export async function bootstrap<RemoteFunctions = Record<string, never>, LocalFu
   })
 
   const app = createApp(Root)
-  app.use(router)
+  app.use(createVueRouter())
   const currentLanguage = await window.connection.getCurrentLanguage()
   app.provide('vscode:currentLanguage', currentLanguage)
   app.provide('naiveui:locale', await loadCurrentNaiveUILocale(currentLanguage))
@@ -37,6 +41,23 @@ export async function bootstrap<RemoteFunctions = Record<string, never>, LocalFu
   app.use(createPinia())
   await new Promise(resolve => setTimeout(resolve, 500))
   app.mount('#app')
+}
+
+function createVueRouter(): Router {
+  const router = createRouter({
+    history: createWebHashHistory(),
+    routes: setupLayouts(routes as RouteRecordRaw[]),
+  })
+
+  router.beforeEach((to, from) => {
+    if (to.path !== from.path) NProgress.start()
+  })
+
+  router.afterEach(() => {
+    NProgress.done()
+  })
+
+  return router
 }
 
 async function loadCurrentNaiveUILocale(language: string): Promise<object | undefined> {
