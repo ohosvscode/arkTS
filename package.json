@@ -14,7 +14,7 @@
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
     "test": "vitest --coverage --ui",
     "test:compatible": "vitest run e2e/compatible.test.ts",
-    "lint": "eslint && oxlint && tsc --build --noEmit && vitest --coverage",
+    "lint": "eslint && oxlint && tsc --noEmit && tsc --noEmit --project packages/vscode/src/project/tsconfig.json && tsc --noEmit --project packages/vscode/src/qualifier-editor/tsconfig.json && vitest --coverage",
     "prepare": "pnpm -F \"{packages/*}\" build"
   },
   "dependencies": {

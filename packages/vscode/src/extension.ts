@@ -8,17 +8,26 @@ import { EtsLanguageServer } from './language-server'
 import type { IClassWrapper } from 'unioc'
 import * as vscode from 'vscode'
 import { ProjectDetectorManager } from '@arkts/language-service'
-import './project/command'
-import { ResourceExplorer } from './resource-preview'
 import { Uri } from '@arkts/project-detector'
+import './project/command'
+import './resource-preview'
 
 class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
-  beforeInitialize(context: ExtensionContext): Promise<void> | void {
+  async beforeInitialize(context: ExtensionContext): Promise<void> {
     this.use(CommandPlugin)
     this.use(LanguageProviderPlugin)
     this.use(DisposablePlugin)
     this.use(WatchConfigurationPlugin)
     extensionContext.value = context
+    await this.createExtensionSideProjectDetectorManager(context)
+  }
+
+  async onActivate(context: ExtensionContext): Promise<LabsInfo | undefined> {
+    const languageServer = this.getGlobalContainer().findOne(EtsLanguageServer) as IClassWrapper<typeof EtsLanguageServer> | undefined
+    const runResult = await languageServer?.getClassExecutor().execute({ methodName: 'run', arguments: [] })
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => this.autoSetLanguage(document, languageServer?.getInstance())))
+    vscode.workspace.textDocuments.forEach(document => this.autoSetLanguage(document, languageServer?.getInstance()))
+    if (runResult?.type === 'result') return await runResult.value
   }
 
   private async autoSetLanguage(document: vscode.TextDocument, languageServer?: EtsLanguageServer | null): Promise<vscode.TextDocument | void> {
@@ -38,16 +47,6 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
       projectDetectorManagerWatcher.onDidDelete(e => projectDetectorManager.emit('file-deleted', Uri.file(e.toString()))),
     )
     await this.createValue(projectDetectorManager, ProjectDetectorManager).resolve()
-  }
-
-  async onActivate(context: ExtensionContext): Promise<LabsInfo | undefined> {
-    await this.createExtensionSideProjectDetectorManager(context)
-    this.getGlobalContainer().findOne(ResourceExplorer)?.resolve()
-    const languageServer = this.getGlobalContainer().findOne(EtsLanguageServer) as IClassWrapper<typeof EtsLanguageServer> | undefined
-    const runResult = await languageServer?.getClassExecutor().execute({ methodName: 'run', arguments: [] })
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => this.autoSetLanguage(document, languageServer?.getInstance())))
-    vscode.workspace.textDocuments.forEach(document => this.autoSetLanguage(document, languageServer?.getInstance()))
-    if (runResult?.type === 'result') return await runResult.value
   }
 }
 

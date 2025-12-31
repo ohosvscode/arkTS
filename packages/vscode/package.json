@@ -27,7 +27,7 @@
   "main": "./dist/client.js",
   "icon": "assets/icon.png",
   "engines": {
-    "vscode": "^1.22.0"
+    "vscode": "^1.61.0"
   },
   "galleryBanner": {
     "theme": "dark",
@@ -360,7 +360,7 @@
   "scripts": {
     "build": "tsdown",
     "watch": "cross-env NODE_ENV=development tsdown",
-    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package && tsx scripts/clean-process.ts",
+    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package --target darwin-x64 && tsx scripts/clean-process.ts",
     "release": "tsx scripts/pre-process.ts && pnpm run build && vsce publish && ovsx publish && tsx scripts/clean-process.ts",
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "ovsx": "ovsx",

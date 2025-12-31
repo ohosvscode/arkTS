@@ -1,11 +1,21 @@
+import type { QualifierEditorConnectionProtocol } from './interfaces/connection-protocol'
+import { createBirpc } from 'birpc'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
+import Root from '../Root.vue'
 import { router } from '../routers'
-import Root from './Root.vue'
 import 'uno.css'
 
 async function main(): Promise<void> {
+  window.vscode = acquireVsCodeApi()
+  window.connection = createBirpc<QualifierEditorConnectionProtocol.ServerFunction, QualifierEditorConnectionProtocol.ClientFunction>({}, {
+    on: fn => window.addEventListener('message', msg => fn(msg.data)),
+    post: data => window.vscode.postMessage(data),
+    serialize: data => JSON.stringify(data),
+    deserialize: data => JSON.parse(data),
+  })
+
   const app = createApp(Root)
   app.use(router)
   const i18n = createI18n({

@@ -1,5 +1,6 @@
 import type { BirpcReturn } from 'birpc'
 import type { IOnActivate } from 'unioc/vscode'
+import type { ProtocolContext } from './protocol-context'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createBirpc } from 'birpc'
@@ -25,6 +26,8 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
      * @requires
      */
     private readonly htmlName: string,
+    private readonly viewType: string,
+    private readonly title: string,
   ) {}
 
   public async createWebviewPanel(): Promise<void> {
@@ -32,8 +35,8 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
       return this._currentWebviewPanel.reveal(vscode.ViewColumn.One)
     }
     this._currentWebviewPanel = vscode.window.createWebviewPanel(
-      'ets-create-project-view',
-      'ETS Create Project',
+      this.viewType,
+      this.title,
       vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -63,7 +66,7 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
 }
 
 export namespace WebviewContext {
-  export interface ServerFunction<RemoteFunctions, LocalFunctions extends object = Record<string, never>> {
+  export interface ServerFunction<RemoteFunctions, LocalFunctions extends object = Record<string, never>> extends ProtocolContext {
     /**
      * Called when the RPC connection is initialized.
      *

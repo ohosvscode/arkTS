@@ -38,6 +38,7 @@ export async function createViteConfig(projectSourceRoot: string, htmlPath: stri
       components({
         dirs: [
           path.resolve(projectSourceRoot, 'components'),
+          path.resolve(EXTENSION_ROOT, 'src/components'),
         ],
         dts: path.resolve(projectSourceRoot, 'components.d.ts'),
         resolvers: [

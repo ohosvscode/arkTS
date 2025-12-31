@@ -12,6 +12,26 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ColorMode: typeof import('./components/color-mode.vue')['default']
+    Density: typeof import('./components/density.vue')['default']
+    Device: typeof import('./components/device.vue')['default']
+    Heading: typeof import('./../components/heading.vue')['default']
+    Locale: typeof import('./components/locale.vue')['default']
+    MccMnc: typeof import('./components/mcc-mnc.vue')['default']
+    NButton: typeof import('naive-ui')['NButton']
+    NCheckbox: typeof import('naive-ui')['NCheckbox']
+    NCode: typeof import('naive-ui')['NCode']
+    NCollapse: typeof import('naive-ui')['NCollapse']
+    NCollapseItem: typeof import('naive-ui')['NCollapseItem']
+    NEmpty: typeof import('naive-ui')['NEmpty']
+    NForm: typeof import('naive-ui')['NForm']
+    NFormItem: typeof import('naive-ui')['NFormItem']
+    NH1: typeof import('naive-ui')['NH1']
+    NInputOtp: typeof import('naive-ui')['NInputOtp']
+    NRadio: typeof import('naive-ui')['NRadio']
+    NSelect: typeof import('naive-ui')['NSelect']
+    NSwitch: typeof import('naive-ui')['NSwitch']
+    Orientation: typeof import('./components/orientation.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
@@ -19,6 +39,26 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const ColorMode: typeof import('./components/color-mode.vue')['default']
+  const Density: typeof import('./components/density.vue')['default']
+  const Device: typeof import('./components/device.vue')['default']
+  const Heading: typeof import('./../components/heading.vue')['default']
+  const Locale: typeof import('./components/locale.vue')['default']
+  const MccMnc: typeof import('./components/mcc-mnc.vue')['default']
+  const NButton: typeof import('naive-ui')['NButton']
+  const NCheckbox: typeof import('naive-ui')['NCheckbox']
+  const NCode: typeof import('naive-ui')['NCode']
+  const NCollapse: typeof import('naive-ui')['NCollapse']
+  const NCollapseItem: typeof import('naive-ui')['NCollapseItem']
+  const NEmpty: typeof import('naive-ui')['NEmpty']
+  const NForm: typeof import('naive-ui')['NForm']
+  const NFormItem: typeof import('naive-ui')['NFormItem']
+  const NH1: typeof import('naive-ui')['NH1']
+  const NInputOtp: typeof import('naive-ui')['NInputOtp']
+  const NRadio: typeof import('naive-ui')['NRadio']
+  const NSelect: typeof import('naive-ui')['NSelect']
+  const NSwitch: typeof import('naive-ui')['NSwitch']
+  const Orientation: typeof import('./components/orientation.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
   const RouterView: typeof import('vue-router')['RouterView']
 }

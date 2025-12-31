@@ -10,7 +10,7 @@ export class CreateProjectCommand extends WebviewContext<ProjectConnectionProtoc
   protected readonly serverFunction: ServerFunctionImpl
 
   constructor() {
-    super('project.html')
+    super('project.html', 'ets-create-project-view', 'ETS Create Project')
   }
 
   onExecuteCommand(): void {

@@ -28,6 +28,8 @@ const themeOverrides: GlobalThemeOverrides = {
     tabColorSegment: 'var(--vscode-button-background)',
     colorSegment: 'var(--vscode-input-background)',
     colorSegmentActive: 'var(--vscode-button-hoverBackground)',
+    tabColor: 'var(--vscode-input-background)',
+    tabBorderColor: 'var(--vscode-button-background)',
   },
   Tag: {
     border: '1px solid var(--vscode-button-background)',
@@ -77,6 +79,15 @@ const themeOverrides: GlobalThemeOverrides = {
         colorActiveWarning: 'var(--vscode-warningForeground)',
       },
     },
+  },
+  Collapse: {
+    dividerColor: 'var(--vscode-button-background)',
+  },
+  Switch: {
+    railColorActive: 'var(--vscode-button-background)',
+  },
+  Radio: {
+    color: 'var(--vscode-input-background)',
   },
 }
 </script>

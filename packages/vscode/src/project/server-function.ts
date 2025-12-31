@@ -1,7 +1,6 @@
 import * as fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { ExtensionLogger } from '@arkts/shared/vscode'
 import { effect, signal } from 'alien-signals'
 import axios, { AxiosError } from 'axios'
 import { BirpcReturn } from 'birpc'
@@ -11,15 +10,16 @@ import { nanoid } from 'nanoid'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { ProtocolContext } from '../context/protocol-context'
 import { Translator } from '../translate'
 import { ProjectConnectionProtocol } from './interfaces/connection-protocol'
 
 hbs.registerHelper('equal', (a: number | string, b: number | string) => Number(a) === Number(b) || String(a) === String(b))
 
 @Service
-export class ServerFunctionImpl extends ExtensionLogger implements ProjectConnectionProtocol.ServerFunction {
+export class ServerFunctionImpl extends ProtocolContext implements ProjectConnectionProtocol.ServerFunction {
   @Autowired
-  private readonly translator: Translator
+  protected readonly translator: Translator
 
   @Autowired(ExtensionContext)
   private readonly extensionContext: vscode.ExtensionContext
@@ -43,10 +43,6 @@ export class ServerFunctionImpl extends ExtensionLogger implements ProjectConnec
 
   async getHomeDirectory(): Promise<string> {
     return os.homedir()
-  }
-
-  async findAllL10nByCurrentLanguage(): Promise<Record<string, string>> {
-    return this.translator.findAllByCurrentLanguage()
   }
 
   async requestTemplateMarketList(request: ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Request): Promise<ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response> {

@@ -1,0 +1,12 @@
+{
+  "extends": "../../../../tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/.cache/tsconfig.tsbuildinfo",
+    "lib": ["DOM"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["./**/*", "../**/*", "../../shims.d.ts"],
+  "exclude": ["**/ohos-typescript/**/*", "**/out/**/*", "**/node_modules/**/*", "**/dist/**/*", "../qualifier-editor/**/*", "../resource-preview.ts", "../extension.ts"]
+}

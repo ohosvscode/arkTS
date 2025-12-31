@@ -11,6 +11,8 @@
     "ohos-typescript",
     "oh_modules",
     "samples",
-    "sample"
+    "sample",
+    "packages/vscode/src/qualifier-editor/main.ts",
+    "packages/vscode/src/project/main.ts"
   ]
 }

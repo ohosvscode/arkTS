@@ -12,7 +12,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Heading: typeof import('./components/heading.vue')['default']
+    Heading: typeof import('./../components/heading.vue')['default']
     LoadingSpinner: typeof import('./components/loading-spinner.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
@@ -47,7 +47,7 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
-  const Heading: typeof import('./components/heading.vue')['default']
+  const Heading: typeof import('./../components/heading.vue')['default']
   const LoadingSpinner: typeof import('./components/loading-spinner.vue')['default']
   const NButton: typeof import('naive-ui')['NButton']
   const NCard: typeof import('naive-ui')['NCard']

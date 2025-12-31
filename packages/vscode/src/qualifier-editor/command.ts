@@ -10,6 +10,6 @@ export class QualifierEditorWebviewPanel extends WebviewContext<QualifierEditorC
   protected readonly serverFunction: QualifierEditorServerFunctionImpl
 
   constructor() {
-    super('qualifier-editor.html')
+    super('qualifier-editor.html', 'ets-qualifier-editor-view', 'Create Resource Qualifier Directory')
   }
 }

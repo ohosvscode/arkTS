@@ -1,0 +1,133 @@
+<script setup lang="ts">
+const mccAndMnc = reactive({ mcc: [], mnc: [] })
+const locale = reactive({ language: '', region: '' })
+const orientation = reactive({ value: 'vertical' })
+const device = reactive({ device: 'phone' })
+const colorMode = reactive({ colorMode: 'light' })
+const density = reactive({ density: 'sdpi' })
+const qualifiers = reactive({
+  mccAndMnc: {
+    checked: false,
+    value: computed(() => `mcc${mccAndMnc.mcc.join('')}_mnc${mccAndMnc.mnc.join('')}`),
+  },
+  locale: {
+    checked: false,
+    value: computed(() => locale.region ? `${locale.language}_${locale.region}` : locale.language),
+  },
+  orientation: {
+    checked: false,
+    value: computed(() => orientation.value),
+  },
+  device: {
+    checked: false,
+    value: computed(() => device.device),
+  },
+  colorMode: {
+    checked: false,
+    value: computed(() => colorMode.colorMode),
+  },
+  density: {
+    checked: false,
+    value: computed(() => density.density),
+  },
+})
+const value = computed(() => Object.entries(qualifiers)
+  .filter(([_, value]) => value.checked)
+  .map(([_, value]) => value.value)
+  .join('-'))
+const willCreateDirectories = reactive({
+  element: true,
+  media: true,
+  profile: true,
+})
+
+const containerRef = ref<HTMLDivElement | null>(null)
+const headerRef = ref<HTMLDivElement | null>(null)
+const { width: containerWidth } = useElementSize(containerRef)
+const isFixed = useElementVisibility(headerRef)
+</script>
+
+<template>
+  <div ref="containerRef">
+    <div ref="headerRef">
+      <Heading :title="$t('qualifierEditor.title')">
+        <NButton type="primary">
+          <template #icon>
+            <div class="i-ph-floppy-disk-duotone" />
+          </template>
+          {{ $t('save') }}/{{ $t('create') }}
+        </NButton>
+      </Heading>
+      <div class="op-70" v-html="$t('qualifierEditor.description')" />
+    </div>
+
+    <!-- This mt-5 is for the padding of the container. -->
+    <div mt-5 flex="~ justify-center gap-5">
+      <NCollapse w-full arrow-placement="right" :trigger-areas="['arrow', 'main']">
+        <NCollapseItem :title="$t('qualifierEditor.mccAndMnc')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.mccAndMnc.checked" />
+          </template>
+          <MccMnc v-model="mccAndMnc" />
+        </NCollapseItem>
+        <NCollapseItem :title="$t('qualifierEditor.locale')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.locale.checked" />
+          </template>
+          <Locale v-model="locale" />
+        </NCollapseItem>
+        <NCollapseItem :title="$t('qualifierEditor.orientation')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.orientation.checked" />
+          </template>
+          <Orientation v-model="orientation" />
+        </NCollapseItem>
+        <NCollapseItem :title="$t('qualifierEditor.device')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.device.checked" />
+          </template>
+          <Device v-model="device" />
+        </NCollapseItem>
+        <NCollapseItem :title="$t('qualifierEditor.colorMode')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.colorMode.checked" />
+          </template>
+          <ColorMode v-model="colorMode" />
+        </NCollapseItem>
+        <NCollapseItem :title="$t('qualifierEditor.density')">
+          <template #header-extra>
+            <NSwitch v-model:value="qualifiers.density.checked" />
+          </template>
+          <Density v-model="density" />
+        </NCollapseItem>
+      </NCollapse>
+
+      <div w-full relative transition="all">
+        <div transition="all duration-300" :style="{ width: `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
+          <div mb-5>
+            <NCheckbox v-model="willCreateDirectories.element">Element</NCheckbox>
+            <NCheckbox v-model="willCreateDirectories.media">Media</NCheckbox>
+            <NCheckbox v-model="willCreateDirectories.profile">Profile</NCheckbox>
+          </div>
+          <div w-full h-fit transition="all duration-300" mb-5 flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
+            <div v-if="value" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
+            <NEmpty v-else flex="~ row justify-center gap1" class="empty">请至少选择一个筛选器</NEmpty>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.empty :deep(.n-empty__description) {
+  margin-top: 0 !important;
+}
+
+.empty :deep(.n-empty__icon) {
+  font-size: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  line-height: 24px !important;
+}
+</style>
