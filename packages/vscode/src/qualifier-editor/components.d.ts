@@ -12,6 +12,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CollapseSection: typeof import('./components/collapse-section.vue')['default']
     ColorMode: typeof import('./components/color-mode.vue')['default']
     Density: typeof import('./components/density.vue')['default']
     Device: typeof import('./components/device.vue')['default']
@@ -40,6 +41,7 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const CollapseSection: typeof import('./components/collapse-section.vue')['default']
   const ColorMode: typeof import('./components/color-mode.vue')['default']
   const Density: typeof import('./components/density.vue')['default']
   const Device: typeof import('./components/device.vue')['default']

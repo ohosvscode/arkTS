@@ -15,10 +15,11 @@ const densities: SelectMixedOption[] = [
 </script>
 
 <template>
-  <div class="op-70" v-html="$t('qualifierEditor.density.description')" />
-  <NForm mt-5>
-    <NFormItem :show-label="false">
-      <NSelect v-model:value="model.density" :options="densities" />
-    </NFormItem>
-  </NForm>
+  <CollapseSection :description="$t('qualifierEditor.density.description')">
+    <NForm mt-5>
+      <NFormItem :show-label="false">
+        <NSelect v-model:value="model.density" :options="densities" />
+      </NFormItem>
+    </NForm>
+  </CollapseSection>
 </template>

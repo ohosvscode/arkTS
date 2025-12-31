@@ -15,10 +15,11 @@ const devices: SelectMixedOption[] = [
 </script>
 
 <template>
-  <div class="op-70" v-html="$t('qualifierEditor.device.description')" />
-  <NForm mt-5>
-    <NFormItem :show-label="false">
-      <NSelect v-model:value="model.device" :options="devices" />
-    </NFormItem>
-  </NForm>
+  <CollapseSection :description="$t('qualifierEditor.device.description')">
+    <NForm mt-5>
+      <NFormItem :show-label="false">
+        <NSelect v-model:value="model.device" :options="devices" />
+      </NFormItem>
+    </NForm>
+  </CollapseSection>
 </template>

@@ -6,8 +6,7 @@ const model = defineModel<{
 </script>
 
 <template>
-  <div>
-    <div class="op-70" v-html="$t('qualifierEditor.mccAndMnc.description')" />
+  <CollapseSection :description="$t('qualifierEditor.mccAndMnc.description')">
     <NForm mt-5 label-placement="left">
       <NFormItem :label="$t('qualifierEditor.mccAndMnc.mcc')">
         <NInputOtp
@@ -24,5 +23,5 @@ const model = defineModel<{
         />
       </NFormItem>
     </NForm>
-  </div>
+  </CollapseSection>
 </template>

@@ -4,8 +4,7 @@ const handleChange = (e: Event) => model.value.value = (e.target as HTMLInputEle
 </script>
 
 <template>
-  <div>
-    <div class="op-70" v-html="$t('qualifierEditor.orientation.description')" />
+  <CollapseSection :description="$t('qualifierEditor.orientation.description')">
     <NForm mt-5 label-placement="left">
       <NFormItem :show-label="false">
         <NRadio name="orientation" :checked="model.value === 'vertical'" value="vertical" @change="handleChange">
@@ -16,5 +15,5 @@ const handleChange = (e: Event) => model.value.value = (e.target as HTMLInputEle
         </NRadio>
       </NFormItem>
     </NForm>
-  </div>
+  </CollapseSection>
 </template>

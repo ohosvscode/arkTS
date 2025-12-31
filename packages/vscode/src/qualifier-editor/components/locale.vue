@@ -20,8 +20,7 @@ function renderLanguageLabel(option: SelectMixedOption & { flags?: string[] }, s
 </script>
 
 <template>
-  <div>
-    <div class="op-70" v-html="$t('qualifierEditor.locale.description')" />
+  <CollapseSection :description="$t('qualifierEditor.locale.description')">
     <NForm mt-5>
       <NFormItem :label="$t('qualifierEditor.locale.language')">
         <NSelect v-model:value="model.language" :render-label="renderLanguageLabel" :options="languages" />
@@ -48,5 +47,5 @@ function renderLanguageLabel(option: SelectMixedOption & { flags?: string[] }, s
         </NRadio>
       </NFormItem>
     </NForm>
-  </div>
+  </CollapseSection>
 </template>
