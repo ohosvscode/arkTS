@@ -5,6 +5,7 @@ import { provide } from 'vue'
 
 provide('vscode', window.vscode)
 provide('connection', window.connection)
+const locale = inject<any | undefined>('naiveui:locale')
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {
@@ -93,7 +94,7 @@ const themeOverrides: GlobalThemeOverrides = {
 </script>
 
 <template>
-  <NConfigProvider :theme-overrides inline-theme-disabled>
+  <NConfigProvider :theme-overrides inline-theme-disabled :locale>
     <RouterView />
   </NConfigProvider>
 </template>

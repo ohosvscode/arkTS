@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const mccAndMnc = reactive({ mcc: [], mnc: [] })
-const locale = reactive({ language: '', region: '' })
+const locale = reactive({ language: '', region: undefined })
 const orientation = reactive({ value: 'vertical' })
 const device = reactive({ device: 'phone' })
 const colorMode = reactive({ colorMode: 'light' })
@@ -44,7 +44,10 @@ const willCreateDirectories = reactive({
 const containerRef = ref<HTMLDivElement | null>(null)
 const headerRef = ref<HTMLDivElement | null>(null)
 const { width: containerWidth } = useElementSize(containerRef)
-const isFixed = useElementVisibility(headerRef)
+const isHeaderVisible = useElementVisibility(headerRef)
+const { width: windowWidth } = useWindowSize()
+const lessThanSm = computed(() => windowWidth.value <= 640)
+const isFixed = computed(() => lessThanSm.value ? true : isHeaderVisible.value)
 </script>
 
 <template>
@@ -62,7 +65,7 @@ const isFixed = useElementVisibility(headerRef)
     </div>
 
     <!-- This mt-5 is for the padding of the container. -->
-    <div mt-5 flex="~ justify-center gap-5">
+    <div mt-5 flex="~ col-reverse sm:row justify-center gap-5">
       <NCollapse w-full arrow-placement="right" :trigger-areas="['arrow', 'main']">
         <NCollapseItem :title="$t('qualifierEditor.mccAndMnc')">
           <template #header-extra>
@@ -103,15 +106,23 @@ const isFixed = useElementVisibility(headerRef)
       </NCollapse>
 
       <div w-full relative transition="all">
-        <div transition="all duration-300" :style="{ width: `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
-          <div mb-5>
+        <div transition="all duration-300" :style="{ width: lessThanSm ? '100%' : `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
+          <NH2 text="4" font="500" mb="1 sm:2">{{ $t('qualifierEditor.willCreateDirectories') }}</NH2>
+          <div mb="5">
             <NCheckbox v-model="willCreateDirectories.element">Element</NCheckbox>
             <NCheckbox v-model="willCreateDirectories.media">Media</NCheckbox>
             <NCheckbox v-model="willCreateDirectories.profile">Profile</NCheckbox>
           </div>
-          <div w-full h-fit transition="all duration-300" mb-5 flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
+          <NH2 text="4" font="500" mb="1 sm:2" mt-0>{{ $t('qualifierEditor.preview') }}</NH2>
+          <div w-full h-fit transition="all duration-300" mb="2 sm:4" flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
             <div v-if="value" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
             <NEmpty v-else flex="~ row justify-center gap1" class="empty">请至少选择一个筛选器</NEmpty>
+          </div>
+          <div op-70 text="2.5 sm:3.2">
+            <a :href="$t('qualifierEditor.docs.resource-link')" target="_blank" flex="~ items-center gap-1">
+              <div i-ph-share-fat-duotone />
+              {{ $t('qualifierEditor.docs.resource') }}
+            </a>
           </div>
         </div>
       </div>

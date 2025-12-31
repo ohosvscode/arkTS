@@ -12,13 +12,13 @@ import { InternalTransformHtmlPlugin } from './compiled-html-plugin'
 
 const EXTENSION_ROOT = path.resolve(__dirname, '..')
 
-export async function createViteConfig(projectSourceRoot: string, htmlPath: string, emptyOutDir: boolean = false): Promise<UserConfig> {
+export async function createViteConfig(projectSourceRoot: string, htmlPath: string, emptyOutDir: boolean = false, dts: boolean = true): Promise<UserConfig> {
   const unoCSS = await import('unocss/vite')
 
   return {
     plugins: [
       vueRouter({
-        dts: path.resolve(projectSourceRoot, 'typed-router.d.ts'),
+        dts: dts ? path.resolve(projectSourceRoot, 'typed-router.d.ts') : false,
         routesFolder: path.resolve(projectSourceRoot, 'pages'),
       }),
       vue(),
@@ -33,14 +33,14 @@ export async function createViteConfig(projectSourceRoot: string, htmlPath: stri
         dirs: [
           path.resolve(projectSourceRoot, 'composables'),
         ],
-        dts: path.resolve(projectSourceRoot, 'auto-imports.d.ts'),
+        dts: dts ? path.resolve(projectSourceRoot, 'auto-imports.d.ts') : false,
       }),
       components({
         dirs: [
           path.resolve(projectSourceRoot, 'components'),
           path.resolve(EXTENSION_ROOT, 'src/components'),
         ],
-        dts: path.resolve(projectSourceRoot, 'components.d.ts'),
+        dts: dts ? path.resolve(projectSourceRoot, 'components.d.ts') : false,
         resolvers: [
           NaiveUiResolver(),
         ],

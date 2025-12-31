@@ -8,5 +8,5 @@
     "strictPropertyInitialization": false
   },
   "include": ["./**/*", "../**/*", "../../shims.d.ts"],
-  "exclude": ["**/ohos-typescript/**/*", "**/out/**/*", "**/node_modules/**/*", "**/dist/**/*", "../qualifier-editor/**/*", "../resource-preview.ts", "../extension.ts"]
+  "exclude": ["**/ohos-typescript/**/*", "**/out/**/*", "**/node_modules/**/*", "**/dist/**/*", "../qualifier-editor/**/*", "../resource-preview.ts", "../extension.ts", "../entry.ts"]
 }

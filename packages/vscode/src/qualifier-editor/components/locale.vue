@@ -1,14 +1,9 @@
 <script lang="tsx" setup>
 import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 
-const model = defineModel<{
-  language: string
-  region: string
-}>({ default: () => ({ language: '', region: '' }) })
-
+const model = defineModel<{ language: string, region?: string }>({ default: () => ({ language: '', region: undefined }) })
 const regionMode = ref<'all' | 'specific'>('specific')
 const handleChange = (e: Event) => regionMode.value = (e.target as HTMLInputElement).value as 'all' | 'specific'
-
 const localeData = useLocaleData()
 const languages = computed((): SelectMixedOption[] => localeData.getLanguages().map(item => ({ label: `${item.name} (${item.iso_639_1})`, value: item.iso_639_1, flags: item.flags })))
 const regions = computed((): SelectMixedOption[] => localeData.getRegions(regionMode.value === 'specific' ? model.value.language : undefined).map(item => ({ label: `${item.flag ? `${item.flag} ` : ''}${item.name} (${item.code})`, value: item.code })))
