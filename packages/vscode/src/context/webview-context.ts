@@ -1,5 +1,5 @@
 import type { BirpcReturn } from 'birpc'
-import type { IOnActivate } from 'unioc/vscode'
+import type { Disposable, IOnActivate } from 'unioc/vscode'
 import type { ProtocolContext } from './protocol-context'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -8,10 +8,11 @@ import * as vscode from 'vscode'
 import { useCompiledWebviewPanel } from '../hook/compiled-webview'
 import { keepClassInstanceThis } from '../utils/keep-this'
 
-export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> implements IOnActivate {
+export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> implements IOnActivate, Disposable {
   protected _currentWebviewPanel: vscode.WebviewPanel | undefined
   protected _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
   protected _extensionUri: vscode.Uri
+  protected _context: vscode.ExtensionContext | undefined
 
   protected abstract readonly serverFunction: LocalFunctions
 
@@ -30,6 +31,15 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
     private readonly title: string,
   ) {}
 
+  public dispose(): void {
+    if (this._currentWebviewPanel) {
+      this._currentWebviewPanel.dispose()
+      this._currentWebviewPanel = undefined
+      this._currentConnection?.$close()
+      this._currentConnection = undefined
+    }
+  }
+
   public async createWebviewPanel(): Promise<void> {
     if (this._currentWebviewPanel) {
       return this._currentWebviewPanel.reveal(vscode.ViewColumn.One)
@@ -45,8 +55,9 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
         retainContextWhenHidden: true,
       },
     )
+    this.serverFunction.onBeforeRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
     this._currentWebviewPanel.webview.html = fs.readFileSync(path.resolve(this._extensionUri.fsPath, 'build', this.htmlName), 'utf-8')
-    useCompiledWebviewPanel(this._currentWebviewPanel, path.resolve(this._extensionUri.fsPath, 'build', this.htmlName))
+    const disposable = useCompiledWebviewPanel(this._currentWebviewPanel, path.resolve(this._extensionUri.fsPath, 'build', this.htmlName))
     this._currentConnection = createBirpc<RemoteFunctions, LocalFunctions>(
       keepClassInstanceThis(this.serverFunction),
       {
@@ -56,12 +67,16 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
         deserialize: data => JSON.parse(data),
       },
     )
-    this.serverFunction.onRpcInitialized(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
-    this._currentWebviewPanel.onDidDispose(() => {
-      this._currentConnection?.$close()
-      this._currentWebviewPanel = undefined
-      this._currentConnection = undefined
-    })
+    this.serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
+    this._context?.subscriptions.push(
+      this._currentWebviewPanel.onDidDispose(() => {
+        disposable.dispose()
+        this._currentConnection?.$close()
+        this.serverFunction.dispose?.()
+        this._currentWebviewPanel = undefined
+        this._currentConnection = undefined
+      }),
+    )
   }
 }
 
@@ -72,6 +87,16 @@ export namespace WebviewContext {
      *
      * @param connection - The RPC connection.
      */
-    onRpcInitialized(connection: BirpcReturn<RemoteFunctions, LocalFunctions>): void
+    onRpcInitialized?(connection: BirpcReturn<RemoteFunctions, LocalFunctions>): void
+    /**
+     * Called before the RPC connection is initialized.
+     *
+     * @param connection - The RPC connection.
+     */
+    onBeforeRpcInitialized?(connection: BirpcReturn<RemoteFunctions, LocalFunctions>): void
+    /**
+     * Called when the webview panel is disposed.
+     */
+    dispose?(): void
   }
 }

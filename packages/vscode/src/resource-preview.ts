@@ -93,8 +93,11 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
           ),
         })
       }),
-      vscode.commands.registerCommand('ets.resourceExplorer.openResourceQualifierEditor', (item?: ResourceTreeItem<Resource>) => {
+      vscode.commands.registerCommand('ets.resourceExplorer.openResourceQualifierEditor', async (item?: ResourceTreeItem<Resource>) => {
         if (!ResourceTreeItem.is(item, Resource.is)) return vscode.window.showWarningMessage(this.translator.t('command.resourceExplorer.openResourceQualifierEditor.error'))
+        const resourceUri = item.node.getUnderlyingResource().getUri().toString()
+        if (resourceUri !== this.qualifierEditorWebviewPanel.serverFunction.getResourceUri()) await this.qualifierEditorWebviewPanel.dispose()
+        this.qualifierEditorWebviewPanel.serverFunction.setResourceUri(item.node)
         this.qualifierEditorWebviewPanel.createWebviewPanel()
       }),
     )

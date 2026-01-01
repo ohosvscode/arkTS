@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { FormInst } from 'naive-ui'
 import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 
 const model = defineModel<{ density: string }>({ default: () => ({ density: '' }) })
 const { t: $t } = useI18n()
+const formRef = useTemplateRef<FormInst>('formRef')
 
 const densities: SelectMixedOption[] = [
   { label: $t('qualifierEditor.density.sdpi'), value: 'sdpi' },
@@ -15,8 +17,8 @@ const densities: SelectMixedOption[] = [
 </script>
 
 <template>
-  <CollapseSection :description="$t('qualifierEditor.density.description')">
-    <NForm mt-5>
+  <CollapseSection :description="$t('qualifierEditor.density.description')" :form-ref="formRef">
+    <NForm ref="formRef" mt-5>
       <NFormItem :show-label="false">
         <NSelect v-model:value="model.density" :options="densities" />
       </NFormItem>

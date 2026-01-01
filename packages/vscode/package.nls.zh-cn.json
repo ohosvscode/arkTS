@@ -90,6 +90,7 @@
   "qualifierEditor.density.xxxldpi": "超特大规模 (xxxldpi)",
   "qualifierEditor.preview": "预览结果",
   "qualifierEditor.willCreateDirectories": "将创建的子目录",
+  "qualifierEditor.resourceUri": "资源 URI",
   "qualifierEditor.docs.resource": "文档: 华为开发者 - 资源的分类与访问 - 限定词目录",
   "qualifierEditor.docs.resource-link": "https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#限定词目录",
   "retry": "重试",

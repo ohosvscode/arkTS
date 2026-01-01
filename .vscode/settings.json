@@ -68,6 +68,5 @@
   ],
   "i18n-ally.dirStructure": "file",
   "i18n-ally.pathMatcher": "package.nls.?{locale?}.json",
-  "i18n-ally.sourceLanguage": "en",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "i18n-ally.sourceLanguage": "en"
 }

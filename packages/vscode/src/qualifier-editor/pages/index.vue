@@ -48,17 +48,26 @@ const isHeaderVisible = useElementVisibility(headerRef)
 const { width: windowWidth } = useWindowSize()
 const lessThanSm = computed(() => windowWidth.value <= 640)
 const isFixed = computed(() => lessThanSm.value ? true : isHeaderVisible.value)
+const resourceRelativeFsPath = ref('')
+onMounted(async () => resourceRelativeFsPath.value = await window.connection.getResourceRelativeFsPath() ?? '')
+
+function submit() {
+  window.connection.submit({
+    qualifierDirectoryName: value.value,
+    subdirectoryNames: [willCreateDirectories.element ? 'element' : '', willCreateDirectories.media ? 'media' : '', willCreateDirectories.profile ? 'profile' : ''].filter(Boolean),
+  })
+}
 </script>
 
 <template>
   <div ref="containerRef">
     <div ref="headerRef">
       <Heading :title="$t('qualifierEditor.title')">
-        <NButton type="primary">
+        <NButton type="primary" :disabled="!value" @click="submit">
           <template #icon>
             <div class="i-ph-floppy-disk-duotone" />
           </template>
-          {{ $t('save') }}/{{ $t('create') }}
+          {{ $t('create') }}
         </NButton>
       </Heading>
       <div class="op-70" v-html="$t('qualifierEditor.description')" />
@@ -107,15 +116,17 @@ const isFixed = computed(() => lessThanSm.value ? true : isHeaderVisible.value)
 
       <div w-full relative transition="all">
         <div transition="all duration-300" :style="{ width: lessThanSm ? '100%' : `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
+          <NH2 text="4" font="500" mb="1 sm:2">{{ $t('qualifierEditor.resourceUri') }}</NH2>
+          <div op-70>{{ resourceRelativeFsPath }}</div>
           <NH2 text="4" font="500" mb="1 sm:2">{{ $t('qualifierEditor.willCreateDirectories') }}</NH2>
           <div mb="5">
-            <NCheckbox v-model="willCreateDirectories.element">Element</NCheckbox>
-            <NCheckbox v-model="willCreateDirectories.media">Media</NCheckbox>
-            <NCheckbox v-model="willCreateDirectories.profile">Profile</NCheckbox>
+            <NCheckbox v-model:checked="willCreateDirectories.element">Element</NCheckbox>
+            <NCheckbox v-model:checked="willCreateDirectories.media">Media</NCheckbox>
+            <NCheckbox v-model:checked="willCreateDirectories.profile">Profile</NCheckbox>
           </div>
           <NH2 text="4" font="500" mb="1 sm:2" mt-0>{{ $t('qualifierEditor.preview') }}</NH2>
           <div w-full h-fit transition="all duration-300" mb="2 sm:4" flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
-            <div v-if="value" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
+            <div v-if="value" transition="all duration-300" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
             <NEmpty v-else flex="~ row justify-center gap1" class="empty">请至少选择一个筛选器</NEmpty>
           </div>
           <div op-70 text="2.5 sm:3.2">

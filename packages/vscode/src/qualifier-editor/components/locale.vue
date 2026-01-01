@@ -1,7 +1,9 @@
 <script lang="tsx" setup>
+import type { FormInst } from 'naive-ui'
 import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 
 const model = defineModel<{ language: string, region?: string }>({ default: () => ({ language: '', region: undefined }) })
+const formRef = useTemplateRef<FormInst>('formRef')
 const regionMode = ref<'all' | 'specific'>('specific')
 const handleChange = (e: Event) => regionMode.value = (e.target as HTMLInputElement).value as 'all' | 'specific'
 const localeData = useLocaleData()
@@ -20,7 +22,7 @@ function renderLanguageLabel(option: SelectMixedOption & { flags?: string[] }, s
 </script>
 
 <template>
-  <CollapseSection :description="$t('qualifierEditor.locale.description')">
+  <CollapseSection :description="$t('qualifierEditor.locale.description')" :form-ref="formRef">
     <NForm mt-5>
       <NFormItem :label="$t('qualifierEditor.locale.language')">
         <NSelect v-model:value="model.language" :render-label="renderLanguageLabel" :options="languages" />

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-const model = defineModel<{
-  mcc: string[]
-  mnc: string[]
-}>({ default: () => ({ mcc: [], mnc: [] }) })
+import type { FormInst } from 'naive-ui'
+
+const model = defineModel<{ mcc: string[], mnc: string[] }>({ default: () => ({ mcc: [], mnc: [] }) })
+const formRef = useTemplateRef<FormInst>('formRef')
 </script>
 
 <template>
-  <CollapseSection :description="$t('qualifierEditor.mccAndMnc.description')">
-    <NForm mt-5 label-placement="left">
+  <CollapseSection :description="$t('qualifierEditor.mccAndMnc.description')" :form-ref="formRef">
+    <NForm ref="formRef" mt-5 label-placement="left">
       <NFormItem :label="$t('qualifierEditor.mccAndMnc.mcc')">
         <NInputOtp
           v-model:value="model.mcc"

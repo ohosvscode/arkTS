@@ -90,6 +90,7 @@
   "qualifierEditor.density.xxxldpi": "xxxldpi (Extra Extra Extra Large Density)",
   "qualifierEditor.preview": "Preview result",
   "qualifierEditor.willCreateDirectories": "Will create subdirectories",
+  "qualifierEditor.resourceUri": "Resource URI",
   "qualifierEditor.docs.resource": "Docs: Huawei Developer - Resource Categories and Access - Qualifiers Directory",
   "qualifierEditor.docs.resource-link": "https://developer.huawei.com/consumer/en/doc/harmonyos-guides/resource-categories-and-access#qualifiers-directory",
   "retry": "Retry",
