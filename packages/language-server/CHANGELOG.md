@@ -1,5 +1,25 @@
 # @arkts/language-server
 
+## 1.2.11
+
+### Patch Changes
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: set useUnknownInCatchVariables compiler options to `false` by default
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 修复多项问题:
+
+  - perf: 语义 `patch` 性能问题 (packages/language-server/src/patches/patch-semantic.ts)
+  - feat: 添加 `tsconfig.json` 的下列选项: (packages/vscode/schemas/ets-tsconfig.schema.json)
+    - `etsAnnotationsEnable`
+    - `compatibleSdkVersion`
+    - `packageManagerType`
+    - `compatibleSdkVersionStage`
+    - `etsLoaderPath`
+  - feat: 添加创建项目时选择卡片的倾斜效果 (packages/vscode/src/project/components/project-choice.vue)
+
+- Updated dependencies [[`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89)]:
+  - @arkts/language-service@1.2.11
+
 ## 1.2.10
 
 ### Patch Changes

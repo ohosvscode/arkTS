@@ -1,5 +1,11 @@
 # @arkts/language-service
 
+## 1.2.11
+
+### Patch Changes
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - perf: fix perf issue
+
 ## 1.2.10
 
 ### Patch Changes

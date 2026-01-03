@@ -1,5 +1,28 @@
 # vscode-naily-ets
 
+## 1.2.11
+
+### Patch Changes
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: 修复当打开 `OpenHarmony SDK` 时, `ets-loader` 内声明文件所属的 `tsconfig.json` 文件报错的问题
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add workspaceContains activation events for .ets, build-profile.json5 & oh-package.json5
+
+- [#241](https://github.com/ohosvscode/arkTS/pull/241) [`5895f54`](https://github.com/ohosvscode/arkTS/commit/5895f54a54ea1459de4b977e83c1fbf7338ccb9c) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: update resource-explorer.svg
+
+- [#241](https://github.com/ohosvscode/arkTS/pull/241) [`5895f54`](https://github.com/ohosvscode/arkTS/commit/5895f54a54ea1459de4b977e83c1fbf7338ccb9c) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add resource explorer i18n
+
+- [#239](https://github.com/ohosvscode/arkTS/pull/239) [`efdfd11`](https://github.com/ohosvscode/arkTS/commit/efdfd11347ed2a39a14d8fd4360555f4492d0e89) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 修复多项问题:
+
+  - perf: 语义 `patch` 性能问题 (packages/language-server/src/patches/patch-semantic.ts)
+  - feat: 添加 `tsconfig.json` 的下列选项: (packages/vscode/schemas/ets-tsconfig.schema.json)
+    - `etsAnnotationsEnable`
+    - `compatibleSdkVersion`
+    - `packageManagerType`
+    - `compatibleSdkVersionStage`
+    - `etsLoaderPath`
+  - feat: 添加创建项目时选择卡片的倾斜效果 (packages/vscode/src/project/components/project-choice.vue)
+
 ## 1.2.10
 
 ### Patch Changes
