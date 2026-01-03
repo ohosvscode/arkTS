@@ -44,7 +44,7 @@
         {
           "id": "ets-resource-explorer",
           "title": "Hvigor 资源管理器",
-          "icon": "$(file-media)"
+          "icon": "./assets/resource-explorer.svg"
         }
       ]
     },
