@@ -52,6 +52,8 @@ export struct Index {
           .textAlign(TextAlign.Center)
           .margin({ top: 20 })
 
+        Image($r('app.media.startIcon'))
+
         MyCustomComponent()
       }.width('100%')
         .height(200)

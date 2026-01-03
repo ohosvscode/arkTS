@@ -8,7 +8,7 @@ export namespace QualifierEditorConnectionProtocol {
   }
 
   export interface ServerFunction extends WebviewContext.ServerFunction<ClientFunction, ServerFunction> {
-    submit(request: ServerFunction.Submit.Request): Promise<void>
+    submit(request: ServerFunction.Submit.Request): Promise<ServerFunction.Submit.Response>
     getResourceUri(): string | undefined
     getResourceRelativeFsPath(): string | undefined
     getProductName(): string | undefined
@@ -23,6 +23,17 @@ export namespace QualifierEditorConnectionProtocol {
       export interface Request {
         qualifierDirectoryName: string
         subdirectoryNames: string[]
+      }
+
+      export type Response = SuccessResponse | FailureResponse
+
+      export interface SuccessResponse {
+        success: true
+      }
+
+      export interface FailureResponse {
+        success: false
+        message: string
       }
     }
   }

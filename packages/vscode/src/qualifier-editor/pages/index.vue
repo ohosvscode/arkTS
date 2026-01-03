@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const mccAndMnc = reactive({ mcc: [], mnc: [] })
-const locale = reactive({ language: '', region: undefined })
+const locale = reactive({ language: 'zh', region: undefined })
 const orientation = reactive({ value: 'vertical' })
 const device = reactive({ device: 'phone' })
 const colorMode = reactive({ colorMode: 'light' })
@@ -8,7 +8,7 @@ const density = reactive({ density: 'sdpi' })
 const qualifiers = reactive({
   mccAndMnc: {
     checked: false,
-    value: computed(() => `mcc${mccAndMnc.mcc.join('')}_mnc${mccAndMnc.mnc.join('')}`),
+    value: computed(() => `${mccAndMnc.mcc.join('') ? `mcc${mccAndMnc.mcc.join('')}` : ''}${mccAndMnc.mnc.join('') ? `_mnc${mccAndMnc.mnc.join('')}` : ''}`),
   },
   locale: {
     checked: false,
@@ -51,7 +51,7 @@ const isFixed = computed(() => lessThanSm.value ? true : isHeaderVisible.value)
 const resourceRelativeFsPath = ref('')
 onMounted(async () => resourceRelativeFsPath.value = await window.connection.getResourceRelativeFsPath() ?? '')
 
-function submit() {
+async function submit() {
   window.connection.submit({
     qualifierDirectoryName: value.value,
     subdirectoryNames: [willCreateDirectories.element ? 'element' : '', willCreateDirectories.media ? 'media' : '', willCreateDirectories.profile ? 'profile' : ''].filter(Boolean),

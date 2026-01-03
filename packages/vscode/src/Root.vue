@@ -21,6 +21,7 @@ const themeOverrides: GlobalThemeOverrides = {
     borderRadius: '2px',
     cardColor: 'var(--vscode-input-background)',
     tagColor: 'var(--vscode-background)',
+    inputColorDisabled: 'var(--vscode-disabledForeground)',
   },
   Card: {
     borderColor: 'none',

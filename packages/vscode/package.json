@@ -44,6 +44,11 @@
         }
       ]
     },
+    "breakpoints": [
+      {
+        "language": "ets"
+      }
+    ],
     "views": {
       "ets-resource-explorer": [
         {

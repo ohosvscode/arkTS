@@ -3,6 +3,7 @@ import type { CompletionContext, CompletionItem, CompletionList, Diagnostic, Doc
 import type * as ets from 'ohos-typescript'
 import type { Product, ProjectDetectorManager } from '../interfaces'
 import type { ContextUtil } from '../utils/context-util'
+import type { LocaleStorage } from '../utils/i18n'
 import type { GlobalCallExpressionFinder } from './global-call-finder'
 import path from 'node:path'
 import { CompletionItemKind, DiagnosticSeverity, FileType, MarkupKind, Position, Range } from '@volar/language-server'
@@ -11,6 +12,7 @@ import { permissions } from '../auth/permission'
 import { MediaReference } from '../interfaces/media-reference'
 import { Reference } from '../interfaces/reference'
 import { SysResource } from '../interfaces/sys-resource'
+import { simpleTranslate } from '../utils/i18n'
 import { LEADING_TRAILING_QUOTE_REGEX } from '../utils/regex'
 
 export interface ResourceProvider {
@@ -38,6 +40,29 @@ export namespace ResourceProvider {
     Position.create(0, 0),
     Position.create(0, 0),
   )
+
+  const imageHoverText = {
+    properties: {
+      default: 'Properties',
+      zh: '属性',
+    } satisfies LocaleStorage,
+    value: {
+      default: 'Value',
+      zh: '值',
+    } satisfies LocaleStorage,
+    qualifiers: {
+      default: 'Resource qualifiers',
+      zh: '资源组限定词',
+    } satisfies LocaleStorage,
+    fileName: {
+      default: 'File Name',
+      zh: '文件名',
+    } satisfies LocaleStorage,
+    fileSize: {
+      default: 'File Size',
+      zh: '文件大小',
+    } satisfies LocaleStorage,
+  } as const
 
   export function create(context: ContextUtil, globalCallExpressionFinder: GlobalCallExpressionFinder, projectDetectorManager: ProjectDetectorManager, config: LanguageServerConfigurator, ets: typeof import('ohos-typescript')): ResourceProvider {
     const definitionProvider = new DefinitionProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
@@ -733,11 +758,11 @@ export namespace ResourceProvider {
         .getQualifiers()
 
       return `**🖼️ [${reference.getRawFileName()}](${reference.getUri().fsPath})**\n\n`
-        .concat(`| 属性 | 值 |\n`)
+        .concat(`| ${simpleTranslate(this.config.getLocale(), imageHoverText.properties)} | ${simpleTranslate(this.config.getLocale(), imageHoverText.value)} |\n`)
         .concat(`|------|----|\n`)
-        .concat(`| 文件名 | \`${reference.getFileName()}\` |\n`)
-        .concat(`| 大小 | \`${reference.getFileSize()}\` |\n`)
-        .concat(`| 资源组限定词 | ${typeof qualifiers === 'string' ? `\`${qualifiers}\`` : qualifiers.map(q => `\`${Object.values(q).join(' ')}\``).join(' ')} |\n\n`)
+        .concat(`| ${simpleTranslate(this.config.getLocale(), imageHoverText.fileName)} | \`${reference.getFileName()}\` |\n`)
+        .concat(`| ${simpleTranslate(this.config.getLocale(), imageHoverText.fileSize)} | \`${reference.getFileSize()}\` |\n`)
+        .concat(`| ${simpleTranslate(this.config.getLocale(), imageHoverText.qualifiers)} | ${typeof qualifiers === 'string' ? `\`${qualifiers}\`` : qualifiers.map(q => `\`${Object.values(q).join(' ')}\``).join(' ')} |\n\n`)
         .concat(reference.getMarkdownPreview())
     }
 

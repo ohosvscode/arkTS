@@ -67,7 +67,7 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
         deserialize: data => JSON.parse(data),
       },
     )
-    this.serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
+    this.serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>, this)
     this._context?.subscriptions.push(
       this._currentWebviewPanel.onDidDispose(() => {
         disposable.dispose()
@@ -81,13 +81,13 @@ export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends Web
 }
 
 export namespace WebviewContext {
-  export interface ServerFunction<RemoteFunctions, LocalFunctions extends object = Record<string, never>> extends ProtocolContext {
+  export interface ServerFunction<RemoteFunctions, LocalFunctions extends ServerFunction<RemoteFunctions, LocalFunctions>> extends ProtocolContext {
     /**
      * Called when the RPC connection is initialized.
      *
      * @param connection - The RPC connection.
      */
-    onRpcInitialized?(connection: BirpcReturn<RemoteFunctions, LocalFunctions>): void
+    onRpcInitialized?(connection: BirpcReturn<RemoteFunctions, LocalFunctions>, context: WebviewContext<RemoteFunctions, LocalFunctions>): void
     /**
      * Called before the RPC connection is initialized.
      *

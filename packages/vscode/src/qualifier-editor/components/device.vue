@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import type { FormInst } from 'naive-ui'
 import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 
 const model = defineModel<{ device: string }>({ default: () => ({ device: '' }) })
 const { t: $t } = useI18n()
-const formRef = useTemplateRef<FormInst>('formRef')
 
 const devices: SelectMixedOption[] = [
   { label: $t('qualifierEditor.device.phone'), value: 'phone' },
@@ -17,8 +15,8 @@ const devices: SelectMixedOption[] = [
 </script>
 
 <template>
-  <CollapseSection :description="$t('qualifierEditor.device.description')" :form-ref="formRef">
-    <NForm ref="formRef" mt-5>
+  <CollapseSection :description="$t('qualifierEditor.device.description')">
+    <NForm mt-5>
       <NFormItem :show-label="false">
         <NSelect v-model:value="model.device" :options="devices" />
       </NFormItem>
