@@ -93,6 +93,7 @@
   "qualifierEditor.resourceUri": "Resource URI",
   "qualifierEditor.docs.resource": "Docs: Huawei Developer - Resource Categories and Access - Qualifiers Directory",
   "qualifierEditor.docs.resource-link": "https://developer.huawei.com/consumer/en/doc/harmonyos-guides/resource-categories-and-access#qualifiers-directory",
+  "resourceExplorer": "Hvigor Resource Explorer",
   "retry": "Retry",
   "save": "Save",
   "sdk.error.EtsComponentPathNotDirectory": "OpenHarmony SDK 'ets/component' path must be a directory, please check the 'ets.sdkPath' in the IDE settings or the 'sdk.dir' in the local.properties file in the local workspace.",

@@ -93,6 +93,7 @@
   "qualifierEditor.resourceUri": "资源 URI",
   "qualifierEditor.docs.resource": "文档: 华为开发者 - 资源的分类与访问 - 限定词目录",
   "qualifierEditor.docs.resource-link": "https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#限定词目录",
+  "resourceExplorer": "Hvigor 资源管理器",
   "retry": "重试",
   "save": "保存",
   "sdk.error.EtsComponentPathNotDirectory": "OpenHarmony SDK 的“ets/component”路径必须是一个目录, 请检查IDE设置中的“ets.sdkPath”或者本地工作区下的“local.properties”里的“sdk.dir”属性是否设置正确。",

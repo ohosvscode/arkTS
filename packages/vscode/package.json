@@ -43,7 +43,7 @@
       "activitybar": [
         {
           "id": "ets-resource-explorer",
-          "title": "Hvigor 资源管理器",
+          "title": "%resourceExplorer%",
           "icon": "./assets/resource-explorer.svg"
         }
       ]
@@ -57,9 +57,9 @@
       "ets-resource-explorer": [
         {
           "id": "ets.resourceExplorer",
-          "name": "Hvigor 资源管理器",
+          "name": "%resourceExplorer%",
           "icon": "$(folder)",
-          "contextualTitle": "资源管理器"
+          "contextualTitle": "%resourceExplorer%"
         }
       ]
     },
