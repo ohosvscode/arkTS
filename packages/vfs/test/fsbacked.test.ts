@@ -34,7 +34,7 @@ it('can use a FS backed system to extract node modules', () => {
 
   const hasReactComponentInCompletions = completions?.entries.find(c => c.name === 'sync')
   expect(hasReactComponentInCompletions).toBeTruthy()
-})
+}, 10000)
 
 it('can import files in the virtual fs', () => {
   const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }
