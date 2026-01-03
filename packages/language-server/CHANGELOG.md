@@ -1,5 +1,12 @@
 # @arkts/language-server
 
+## 1.2.10
+
+### Patch Changes
+
+- Updated dependencies [[`b400800`](https://github.com/ohosvscode/arkTS/commit/b400800c6b117abeddb5a08884341556ed5d0429)]:
+  - @arkts/language-service@1.2.10
+
 ## 1.2.9
 
 ### Patch Changes

@@ -2,7 +2,7 @@
   "publisher": "NailyZero",
   "name": "vscode-naily-ets",
   "displayName": "Naily's ArkTS Support",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "private": true,
   "description": "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support.",
   "author": "Naily Zero <zero@naily.cc>",

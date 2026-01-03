@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.2.10
+
+### Patch Changes
+
+- [#227](https://github.com/ohosvscode/arkTS/pull/227) [`b400800`](https://github.com/ohosvscode/arkTS/commit/b400800c6b117abeddb5a08884341556ed5d0429) Thanks [@SummerKaze](https://github.com/SummerKaze)! - feat: 添加图片预览功能和 hvigor 资源管理器面板、资源限定符文件夹创建面板
+
 ## 1.2.9
 
 ### Patch Changes
