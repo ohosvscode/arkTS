@@ -1,6 +1,8 @@
 packages:
   - packages/*
   - ohos-typescript
+catalog:
+  '@napi-rs/wasm-runtime': ^1.0.7
 catalogs:
   build:
     tsdown: 0.16.5

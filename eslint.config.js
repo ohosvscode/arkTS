@@ -34,4 +34,5 @@ export default antfu({
       emitDecoratorMetadata: true,
     },
   },
+  pnpm: false,
 })

@@ -164,22 +164,9 @@
           "ArkTS",
           "ets"
         ],
-        "configuration": "./syntaxes/language-configuration.json",
+        "configuration": "./language/language-configuration.json",
         "bases": [
           "typescript"
-        ]
-      },
-      {
-        "id": "hml",
-        "extensions": [
-          ".hml"
-        ],
-        "aliases": [
-          "hml"
-        ],
-        "configuration": "./syntaxes/hml-language-configuration.json",
-        "bases": [
-          "html"
         ]
       }
     ],
@@ -194,11 +181,6 @@
         "language": "ets",
         "scopeName": "source.ets",
         "path": "./syntaxes/ets.tmLanguage.json"
-      },
-      {
-        "language": "hml",
-        "scopeName": "source.hml",
-        "path": "./syntaxes/hml.tmLanguage.json"
       }
     ],
     "commands": [
