@@ -26,6 +26,8 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
     const instance = originalCreate(context)
     const contextUtil = new ContextUtil(context)
 
+    delete instance.provideDocumentFormattingEdits
+
     function findNodeInPosition<TNode extends ets.Node>(currentPositionOffset: number, predicate: (node: ets.Node) => node is TNode, sourceFile: ets.SourceFile): TNode | undefined {
       let foundNode: TNode | undefined
       sourceFile.forEachChild(function walk(node): void {

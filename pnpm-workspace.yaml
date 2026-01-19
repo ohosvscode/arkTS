@@ -56,6 +56,21 @@ catalogs:
     '@arkts/project-detector-win32-arm64-msvc': ^1.1.3-alpha.29
     '@arkts/project-detector-win32-ia32-msvc': ^1.1.3-alpha.29
     '@arkts/project-detector-win32-x64-msvc': ^1.1.3-alpha.29
+    '@ohos-rs/oxk': ^0.2.2
+    '@ohos-rs/oxk-darwin-x64': ^0.2.2
+    '@ohos-rs/oxk-freebsd-x64': ^0.2.2
+    '@ohos-rs/oxk-darwin-arm64': ^0.2.2
+    '@ohos-rs/oxk-wasm32-wasi': ^0.2.2
+    '@ohos-rs/oxk-linux-arm-gnueabihf': ^0.2.2
+    '@ohos-rs/oxk-win32-x64-msvc': ^0.2.2
+    '@ohos-rs/oxk-linux-x64-gnu': ^0.2.2
+    '@ohos-rs/oxk-android-arm64': ^0.2.2
+    '@ohos-rs/oxk-linux-x64-musl': ^0.2.2
+    '@ohos-rs/oxk-win32-arm64-msvc': ^0.2.2
+    '@ohos-rs/oxk-linux-arm64-gnu': ^0.2.2
+    '@ohos-rs/oxk-android-arm-eabi': ^0.2.2
+    '@ohos-rs/oxk-win32-ia32-msvc': ^0.2.2
+    '@ohos-rs/oxk-linux-arm64-musl': ^0.2.2
     '@arkts/sdk-downloader': ^0.1.30
     '@types/lodash': ^4.17.20
     '@types/unzipper': ^0.10.11

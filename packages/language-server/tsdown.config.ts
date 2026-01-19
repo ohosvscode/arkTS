@@ -14,4 +14,5 @@ export default defineConfig({
     },
   },
   fixedExtension: false,
+  external: ['@ohos-rs/oxk'],
 })
