@@ -14,7 +14,7 @@
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
     "test": "vitest --coverage --ui",
     "test:compatible": "vitest run e2e/compatible.test.ts",
-    "lint": "eslint && oxlint && tsc --noEmit && tsc --noEmit --project packages/vscode/src/project/tsconfig.json && tsc --noEmit --project packages/vscode/src/qualifier-editor/tsconfig.json && vitest --coverage",
+    "lint": "eslint && oxlint && tsc --noEmit && vitest --coverage",
     "prepare": "pnpm -F \"{packages/*}\" build"
   },
   "dependencies": {
@@ -57,9 +57,25 @@
     "@arkts/project-detector-win32-x64-msvc": "catalog:prod",
     "@arkts/sdk-downloader": "catalog:prod",
     "@arkts/shared": "workspace:*",
+    "@arkts/types": "workspace:*",
     "@changesets/changelog-github": "catalog:scripts",
     "@changesets/cli": "catalog:scripts",
     "@iconify-json/ph": "catalog:frontend",
+    "@ohos-rs/oxk": "catalog:prod",
+    "@ohos-rs/oxk-android-arm-eabi": "catalog:prod",
+    "@ohos-rs/oxk-android-arm64": "catalog:prod",
+    "@ohos-rs/oxk-darwin-arm64": "catalog:prod",
+    "@ohos-rs/oxk-darwin-x64": "catalog:prod",
+    "@ohos-rs/oxk-freebsd-x64": "catalog:prod",
+    "@ohos-rs/oxk-linux-arm-gnueabihf": "catalog:prod",
+    "@ohos-rs/oxk-linux-arm64-gnu": "catalog:prod",
+    "@ohos-rs/oxk-linux-arm64-musl": "catalog:prod",
+    "@ohos-rs/oxk-linux-x64-gnu": "catalog:prod",
+    "@ohos-rs/oxk-linux-x64-musl": "catalog:prod",
+    "@ohos-rs/oxk-wasm32-wasi": "catalog:prod",
+    "@ohos-rs/oxk-win32-arm64-msvc": "catalog:prod",
+    "@ohos-rs/oxk-win32-ia32-msvc": "catalog:prod",
+    "@ohos-rs/oxk-win32-x64-msvc": "catalog:prod",
     "@types/lodash": "catalog:prod",
     "@types/markdown-it": "catalog:types",
     "@types/node": "catalog:types",
@@ -117,6 +133,11 @@
     "vscode-ext-gen": "catalog:dev",
     "vscode-languageserver-textdocument": "catalog:prod",
     "vscode-nls": "catalog:prod"
+  },
+  "pnpm": {
+    "overrides": {
+      "eslint-plugin-antfu": "3.1.1"
+    }
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint"

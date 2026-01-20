@@ -9,6 +9,7 @@ import process from 'node:process'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createArkTServices, ProjectDetectorManager } from '@arkts/language-service'
 import { Uri } from '@arkts/project-detector'
+import { format } from '@ohos-rs/oxk'
 import { createConnection, createServer, createTypeScriptProject, FileChangeType } from '@volar/language-server/node'
 import * as ets from 'ohos-typescript'
 import { create as createTypeScriptServices } from 'volar-service-typescript'
@@ -25,6 +26,10 @@ logger.getConsola().info(`ETS Language Server is running: (pid: ${process.pid})`
 connection.onRequest('ets/waitForEtsConfigurationChangedRequested', (e) => {
   logger.getConsola().info(`waitForEtsConfigurationChangedRequested: ${JSON.stringify(e)}`)
   lspConfiguration.setConfiguration(e)
+})
+
+connection.onRequest('ets/formatDocument', async (e) => {
+  return format(e.textDocument.uri, e.textDocument.text)
 })
 
 connection.onInitialize(async (params) => {
@@ -63,10 +68,16 @@ connection.onInitialize(async (params) => {
     isValidationEnabled: document => !((document.languageId === 'json' || document.languageId === 'jsonc')),
     isSuggestionsEnabled: document => !((document.languageId === 'json' || document.languageId === 'jsonc')),
     isAutoClosingTagsEnabled: document => !((document.languageId === 'json' || document.languageId === 'jsonc')),
-    isFormattingEnabled: document => !((document.languageId === 'json' || document.languageId === 'jsonc')),
     disableAutoImportCache: true,
   })
   patchSemantic(typescriptServices, lspConfiguration)
+  delete typescriptServices[1].capabilities.documentFormattingProvider
+  const originalCreate = typescriptServices[1].create
+  typescriptServices[1].create = (context) => {
+    const instance = originalCreate(context)
+    delete instance.provideDocumentFormattingEdits
+    return instance
+  }
 
   // TODO
   connection.onRequest('ets/onDidChangeTextDocument', () => {})
@@ -103,8 +114,8 @@ connection.onInitialize(async (params) => {
       }
     }),
     [
-      ...typescriptServices,
       ...arkTSServices,
+      ...typescriptServices,
     ],
   )
 })

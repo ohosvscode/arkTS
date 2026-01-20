@@ -114,7 +114,7 @@
       },
       {
         "fileMatch": [
-          "**/resources/**/element/*.json"
+          "**/element/*.json"
         ],
         "url": "./schemas/element.schema.json"
       },
@@ -351,8 +351,8 @@
   "scripts": {
     "build": "tsdown",
     "watch": "cross-env NODE_ENV=development tsdown",
-    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package --target darwin-x64 && tsx scripts/clean-process.ts",
-    "release": "tsx scripts/pre-process.ts && pnpm run build && vsce publish && ovsx publish && tsx scripts/clean-process.ts",
+    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package",
+    "postpack": "tsx scripts/clean-process.ts",
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "ovsx": "ovsx",
     "vsce": "vsce"

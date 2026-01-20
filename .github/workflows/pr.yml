@@ -40,3 +40,93 @@ jobs:
 
       - name: Run Lint
         run: pnpm run lint
+  pack:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: macos-latest
+            pack: pnpm -F vscode-naily-ets run pack --target darwin-x64
+            env:
+              OS: darwin
+              ARCH: x64
+          - host: macos-latest
+            pack: pnpm -F vscode-naily-ets run pack --target darwin-arm64
+            env:
+              OS: darwin
+              ARCH: arm64
+          - host: ubuntu-latest
+            pack: pnpm -F vscode-naily-ets run pack --target linux-x64
+            env:
+              OS: linux
+              ARCH: x64
+          - host: ubuntu-latest
+            pack: pnpm -F vscode-naily-ets run pack --target linux-arm64
+            env:
+              OS: linux
+              ARCH: arm64
+          - host: ubuntu-latest
+            pack: pnpm -F vscode-naily-ets run pack --target alpine-x64
+            env:
+              OS: linux
+              ARCH: x64
+              LIBC: musl
+          - host: ubuntu-latest
+            pack: pnpm -F vscode-naily-ets run pack --target alpine-arm64
+            env:
+              OS: linux
+              ARCH: arm64
+              LIBC: musl
+          - host: ubuntu-latest
+            pack: pnpm -F vscode-naily-ets run pack --target linux-armhf
+            env:
+              OS: linux
+              CPU: arm
+          - host: windows-latest
+            pack: pnpm -F vscode-naily-ets run pack --target win32-x64
+            env:
+              OS: win32
+              ARCH: x64
+          - host: windows-latest
+            pack: pnpm -F vscode-naily-ets run pack --target win32-arm64
+            env:
+              OS: win32
+              ARCH: arm64
+          - host: macos-latest
+            pack: pnpm -F vscode-naily-ets run pack --target web
+            env:
+              CPU: wasm32
+    name: ${{ matrix.settings.env.CPU == 'wasm32' && 'Package Extension - web' || format('Package Extension - {0} - {1} - {2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
+    runs-on: ${{ matrix.settings.host }}
+    needs: lint
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.17.0
+          run_install: true
+
+      - name: Run Pack
+        run: ${{ matrix.settings.pack }}
+        env:
+          OS: ${{ matrix.settings.env.OS }}
+          ARCH: ${{ matrix.settings.env.ARCH }}
+          LIBC: ${{ matrix.settings.env.OS == 'win32' && 'msvc' || matrix.settings.env.CPU == 'wasm32' && '' || matrix.settings.env.LIBC || 'glibc' }}
+          CPU: ${{ matrix.settings.env.CPU }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.settings.env.CPU == 'wasm32' && 'vscode-naily-ets-web-none' || format('vscode-naily-ets-{0}-{1}-{2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
+          path: packages/vscode/vscode-naily-ets-*.vsix

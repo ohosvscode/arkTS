@@ -17,7 +17,7 @@ import { sleep } from './utils'
 
 @Disposable
 @Command('ets.restartServer')
-export class EtsLanguageServer extends LanguageServerContext implements Command, Disposable {
+export class EtsLanguageServer extends LanguageServerContext implements Command, Disposable, vscode.DocumentFormattingEditProvider {
   @Autowired
   protected readonly translator: Translator
 
@@ -32,6 +32,28 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
 
   onExecuteCommand(): void {
     this.restart().catch(e => this.handleLanguageServerError(e))
+  }
+
+  onActivate(): void {
+    super.onActivate()
+    vscode.languages.registerDocumentFormattingEditProvider('ets', this)
+    this.getConsola().info(`ETS Language Server document range formatting edit provider registered!`)
+  }
+
+  async provideDocumentFormattingEdits(document: vscode.TextDocument): Promise<vscode.TextEdit[] | null> {
+    const result: import('@ohos-rs/oxk').FormatResult | undefined = await this.getCurrentLanguageClient()?.sendRequest('ets/formatDocument', {
+      textDocument: {
+        uri: document.uri.toString(),
+        text: document.getText(),
+      },
+    })
+    if (!result || typeof result.code !== 'string' || !Array.isArray(result.errors)) return []
+    if (result.errors.length > 0) {
+      vscode.window.showErrorMessage(`${document.uri.fsPath} format error: ${result.errors.join(', ')}`)
+      return null
+    }
+    const textEdit = vscode.TextEdit.replace(new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), result.code)
+    return [textEdit]
   }
 
   @WatchConfiguration()

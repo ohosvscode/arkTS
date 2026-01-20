@@ -12,4 +12,5 @@ export default defineConfig({
   shims: true,
   dts: true,
   fixedExtension: false,
+  external: ['@ohos-rs/oxk'],
 })

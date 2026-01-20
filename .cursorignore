@@ -1,6 +1,5 @@
 out
 dist
-node_modules
 .vscode-test
 .idea
 .husky

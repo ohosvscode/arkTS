@@ -83,8 +83,9 @@ export class ContextUtil {
   }
 
   decodeTextDocumentUri(document: TextDocument): URI | null {
-    const decoded = this.context.decodeEmbeddedDocumentUri(URI.parse(document.uri))
-    if (!decoded) return null
+    const parsed = URI.parse(document.uri)
+    const decoded = this.context.decodeEmbeddedDocumentUri(parsed)
+    if (!decoded) return parsed
     const [decodedUri] = decoded
     return decodedUri
   }

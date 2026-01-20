@@ -1,10 +1,13 @@
+import type { ProjectLevelOhPackageJson5, WorkspaceLevelOhPackage5 } from '@arkts/types'
 import path from 'node:path'
 import { ElementDirectory, ElementJsonFile, ElementJsonFileReference, MediaDirectory, Module, Product, Project, ProjectDetector, ProjectDetectorManager, Resource, ResourceDirectory } from '@arkts/language-service'
+import JSON5 from 'json5'
+import { nanoid } from 'nanoid'
 import { Autowired, Service } from 'unioc'
 import { Disposable, IOnActivate } from 'unioc/vscode'
 import * as vscode from 'vscode'
-import { QualifierEditorWebviewPanel } from './qualifier-editor/command'
-import { Translator } from './translate'
+import { QualifierEditorWebviewPanel } from '../qualifier-editor/command'
+import { Translator } from '../translate'
 
 class MediaFile {
   constructor(
@@ -42,6 +45,33 @@ class ResourceTreeItem<T = unknown> extends vscode.TreeItem {
   static is<T>(value: unknown, assert: (value: unknown) => value is T): value is ResourceTreeItem<T> {
     return value instanceof ResourceTreeItem && assert(value.node)
   }
+}
+
+class OhPackageJson5TreeItem<T = unknown> extends ResourceTreeItem<T> {
+  constructor(
+    private readonly type: OhPackageJson5TreeItem.Type,
+    private readonly ohPackageJson5Uri: vscode.Uri,
+    node: T,
+    options: Omit<vscode.TreeItem, 'label'> & Required<Pick<vscode.TreeItem, 'label'>>,
+  ) {
+    super(node, options)
+  }
+
+  getType(): OhPackageJson5TreeItem.Type {
+    return this.type
+  }
+
+  getUri(): vscode.Uri {
+    return this.ohPackageJson5Uri
+  }
+
+  static isTreeItem<T extends OhPackageJson5TreeItem.Type>(value: unknown, type: T): value is OhPackageJson5TreeItem<T extends 'project' ? Project : Module> {
+    return value instanceof OhPackageJson5TreeItem && value.getType() === type
+  }
+}
+
+namespace OhPackageJson5TreeItem {
+  export type Type = 'project' | 'module'
 }
 
 @Service
@@ -127,8 +157,8 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
     ))
   }
 
-  getChildrenByProject(element: ResourceTreeItem<Project>): ResourceTreeItem<Module>[] {
-    return element.node.findAll().map(item => (
+  async getChildrenByProject(element: ResourceTreeItem<Project>): Promise<(ResourceTreeItem<Module> | OhPackageJson5TreeItem<Project>)[]> {
+    const modules: (ResourceTreeItem<Module> | OhPackageJson5TreeItem<Project>)[] = element.node.findAll().map(item => (
       new ResourceTreeItem(item, {
         label: vscode.workspace.asRelativePath(item.getUnderlyingModule().getUri().fsPath),
         id: `Module:${item.getUnderlyingModule().getUri().toString()}`,
@@ -137,10 +167,29 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
         collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
       })
     ))
+
+    const ohPackageJson5Uri = vscode.Uri.joinPath(vscode.Uri.parse(element.node.getUnderlyingProject().getUri().toString()), 'oh-package.json5')
+    const isPackageJson5Exists = await vscode.workspace.fs.stat(ohPackageJson5Uri).then(
+      stat => stat.type === vscode.FileType.File,
+      () => false,
+    )
+    if (isPackageJson5Exists) {
+      modules.push(
+        new OhPackageJson5TreeItem('project', ohPackageJson5Uri, element.node, {
+          label: 'oh-package.json5',
+          id: `Project:oh-package.json5:${nanoid()}:${element.node.getUnderlyingProject().getUri().toString()}`,
+          iconPath: new vscode.ThemeIcon('json'),
+          description: 'Project level oh-package.json5',
+          collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+        }),
+      )
+    }
+
+    return modules
   }
 
-  getChildrenByModule(element: ResourceTreeItem<Module>): ResourceTreeItem<Product>[] {
-    return element.node.findAll().map(item => (
+  async getChildrenByModule(element: ResourceTreeItem<Module>): Promise<(ResourceTreeItem<Product> | OhPackageJson5TreeItem<Module>)[]> {
+    const products: (ResourceTreeItem<Product> | OhPackageJson5TreeItem<Module>)[] = element.node.findAll().map(item => (
       new ResourceTreeItem(item, {
         label: item.getUnderlyingProduct().getName(),
         id: `Product:${item.getUnderlyingProduct().getModule().getUri()}:${item.getUnderlyingProduct().getName()}`,
@@ -149,6 +198,25 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
         collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
       })
     ))
+
+    const ohPackageJson5Uri = vscode.Uri.joinPath(vscode.Uri.parse(element.node.getUnderlyingModule().getUri().toString()), 'oh-package.json5')
+    const isPackageJson5Exists = await vscode.workspace.fs.stat(ohPackageJson5Uri).then(
+      stat => stat.type === vscode.FileType.File,
+      () => false,
+    )
+    if (isPackageJson5Exists) {
+      products.push(
+        new OhPackageJson5TreeItem('module', ohPackageJson5Uri, element.node, {
+          label: 'oh-package.json5',
+          id: `Module-oh-package.json5:${element.node.getUnderlyingModule().getUri().toString()}`,
+          iconPath: new vscode.ThemeIcon('json'),
+          description: 'Module level oh-package.json5',
+          collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+        }),
+      )
+    }
+
+    return products
   }
 
   getChildrenByProduct(element: ResourceTreeItem<Product>): ResourceTreeItem<Resource>[] {
@@ -263,9 +331,106 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
     ))
   }
 
+  async getChildrenByProjectOhPackageJson5(element: OhPackageJson5TreeItem<Project>): Promise<ResourceTreeItem[]> {
+    try {
+      const ohPackageJson5 = await vscode.workspace.fs.readFile(element.getUri())
+      const parsedOhPackageJson5: WorkspaceLevelOhPackage5 = JSON5.parse(ohPackageJson5.toString())
+
+      const children: ResourceTreeItem[] = []
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.dependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ProjectOhPackageJson5Dependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},dependency`,
+          }),
+        )
+      }
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.devDependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ProjectOhPackageJson5DevDependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},devDependency`,
+          }),
+        )
+      }
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.dynamicDependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ProjectOhPackageJson5DynamicDependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},dynamicDependency`,
+          }),
+        )
+      }
+
+      return children
+    }
+    catch (error) {
+      vscode.window.showErrorMessage(`Failed to get dependencies of ${element.getUri().toString()}: ${error}`)
+      return []
+    }
+  }
+
+  async getChildrenByModuleOhPackageJson5(element: OhPackageJson5TreeItem<Module>): Promise<ResourceTreeItem[]> {
+    try {
+      const ohPackageJson5 = await vscode.workspace.fs.readFile(element.getUri())
+      const parsedOhPackageJson5: ProjectLevelOhPackageJson5 = JSON5.parse(ohPackageJson5.toString())
+      const children: ResourceTreeItem[] = []
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.dependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ModuleOhPackageJson5Dependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},dependency`,
+          }),
+        )
+      }
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.devDependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ModuleOhPackageJson5DevDependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},devDependency`,
+          }),
+        )
+      }
+
+      for (const [key, value] of Object.entries(parsedOhPackageJson5.dynamicDependencies ?? {})) {
+        children.push(
+          new ResourceTreeItem(undefined, {
+            label: key,
+            id: `ModuleOhPackageJson5DynamicDependency:${element.getUri().toString()}:${nanoid()}`,
+            iconPath: new vscode.ThemeIcon('package'),
+            description: `${value},dynamicDependency`,
+          }),
+        )
+      }
+
+      return children
+    }
+    catch (error) {
+      vscode.window.showErrorMessage(`Failed to get dependencies of ${element.getUri().toString()}: ${error}`)
+      return []
+    }
+  }
+
   getChildren(element?: ResourceTreeItem): ResourceTreeItem[] | Promise<ResourceTreeItem[]> {
     if (!element) return this.getTopLevelChildren()
     if (ResourceTreeItem.is(element, ProjectDetector.is)) return this.getChildrenByProjectDetector(element)
+    if (OhPackageJson5TreeItem.isTreeItem(element, 'project')) return this.getChildrenByProjectOhPackageJson5(element)
+    if (OhPackageJson5TreeItem.isTreeItem(element, 'module')) return this.getChildrenByModuleOhPackageJson5(element)
     if (ResourceTreeItem.is(element, Project.is)) return this.getChildrenByProject(element)
     if (ResourceTreeItem.is(element, Module.is)) return this.getChildrenByModule(element)
     if (ResourceTreeItem.is(element, Product.is)) return this.getChildrenByProduct(element)

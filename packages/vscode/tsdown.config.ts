@@ -17,7 +17,7 @@ export default defineConfig({
   },
   format: 'cjs',
   sourcemap: isDev,
-  external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector'],
+  external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector', '@ohos-rs/oxk'],
   tsconfig: './tsconfig.json',
   clean: false,
   onSuccess: 'vite build && cross-env NODE_ENV=qualifier-editor vite build',
