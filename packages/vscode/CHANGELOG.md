@@ -1,5 +1,13 @@
 # vscode-naily-ets
 
+## 1.2.12
+
+### Patch Changes
+
+- [#247](https://github.com/ohosvscode/arkTS/pull/247) [`dcd531c`](https://github.com/ohosvscode/arkTS/commit/dcd531c8073926e6db4c96b08b06ef7efbf57522) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 添加[oxk](https://github.com/ohos-rs/oxc-ark)代码格式化支持
+
+- [#247](https://github.com/ohosvscode/arkTS/pull/247) [`dcd531c`](https://github.com/ohosvscode/arkTS/commit/dcd531c8073926e6db4c96b08b06ef7efbf57522) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 添加 hvigor 资源管理器的 oh-package.json5 依赖索引
+
 ## 1.2.11
 
 ### Patch Changes
