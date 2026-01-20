@@ -42,11 +42,61 @@ jobs:
         run: pnpm run lint
   pack:
     name: Package Extension
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.settings.host }}
+    needs: lint
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        settings:
+          - matrix:
+              - host: macos-latest
+                pack: pnpm run pack --target darwin-x64
+                env:
+                  OS: darwin
+                  ARCH: x64
+              - host: macos-latest
+                pack: pnpm run pack --target darwin-arm64
+                env:
+                  OS: darwin
+                  ARCH: arm64
+              - host: ubuntu-latest
+                pack: pnpm run pack --target linux-x64
+                env:
+                  OS: linux
+                  ARCH: x64
+              - host: ubuntu-latest
+                pack: pnpm run pack --target linux-arm64
+                env:
+                  OS: linux
+                  ARCH: arm64
+              - host: ubuntu-latest
+                pack: pnpm run pack --target alpine-x64
+                env:
+                  OS: linux
+                  ARCH: x64
+              - host: ubuntu-latest
+                pack: pnpm run pack --target alpine-arm64
+                env:
+                  OS: linux
+                  ARCH: armhf
+              - host: ubuntu-latest
+                pack: pnpm run pack --target linux-armhf
+                env:
+                  OS: linux
+                  ARCH: arm64
+              - host: windows-latest
+                pack: pnpm run pack --target win32-x64
+                env:
+                  OS: win32
+                  ARCH: x64
+              - host: windows-latest
+                pack: pnpm run pack --target win32-arm64
+                env:
+                  OS: win32
+              - host: macos-latest
+                pack: pnpm run pack --target web
+                env:
+                  OS: wasm32
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v5
@@ -65,20 +115,8 @@ jobs:
           version: 10.17.0
           run_install: true
 
-      - name: Package Extension (x64)
-        run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-x64
+      - name: Run Pack
+        run: pnpm run pack --target ${{ matrix.settings.pack }}
         env:
-          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
-          ARCH: x64
-
-      - name: Package Extension (arm64)
-        run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-arm64
-        env:
-          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
-          ARCH: arm64
-
-      - name: Package Extension (armhf)
-        run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-armhf
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        env:
-          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
+          OS: ${{ matrix.settings.env.OS }}
+          ARCH: ${{ matrix.settings.env.ARCH }}
