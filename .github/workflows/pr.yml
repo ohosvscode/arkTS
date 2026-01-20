@@ -95,8 +95,8 @@ jobs:
           - host: macos-latest
             pack: pnpm -F vscode-naily-ets run pack --target web
             env:
-              OS: wasm32
-    name: ${{ matrix.settings.env.OS == 'wasm32' && 'Package Extension - web - none' || format('Package Extension - {0} - {1} - {2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
+              CPU: wasm32
+    name: ${{ matrix.settings.env.CPU == 'wasm32' && 'Package Extension - web' || format('Package Extension - {0} - {1} - {2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
     runs-on: ${{ matrix.settings.host }}
     needs: lint
     steps:
@@ -122,10 +122,10 @@ jobs:
         env:
           OS: ${{ matrix.settings.env.OS }}
           ARCH: ${{ matrix.settings.env.ARCH || '' }}
-          LIBC: ${{ matrix.settings.env.OS == 'win32' && 'msvc' || matrix.settings.env.OS == 'wasm32' && 'none' || matrix.settings.env.LIBC || 'glibc' }}
+          LIBC: ${{ matrix.settings.env.OS == 'win32' && 'msvc' || matrix.settings.env.CPU == 'wasm32' && '' || matrix.settings.env.LIBC || 'glibc' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.settings.env.OS == 'wasm32' && 'vscode-naily-ets-web-none' || format('vscode-naily-ets-{0}-{1}-{2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
+          name: ${{ matrix.settings.env.CPU == 'wasm32' && 'vscode-naily-ets-web-none' || format('vscode-naily-ets-{0}-{1}-{2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
           path: packages/vscode/vscode-naily-ets-*.vsix
