@@ -70,16 +70,18 @@ jobs:
             env:
               OS: linux
               ARCH: x64
+              LIBC: musl
           - host: ubuntu-latest
             pack: pnpm -F vscode-naily-ets run pack --target alpine-arm64
             env:
               OS: linux
               ARCH: arm64
+              LIBC: musl
           - host: ubuntu-latest
             pack: pnpm -F vscode-naily-ets run pack --target linux-armhf
             env:
               OS: linux
-              ARCH: armhf
+              ARCH: arm
           - host: windows-latest
             pack: pnpm -F vscode-naily-ets run pack --target win32-x64
             env:
@@ -95,7 +97,7 @@ jobs:
             env:
               OS: wasm32
               ARCH: wasm32
-    name: Package Extension - ${{ matrix.settings.env.OS }} - ${{ matrix.settings.env.ARCH }}
+    name: Package Extension - ${{ matrix.settings.env.OS }} - ${{ matrix.settings.env.ARCH }} - ${{ matrix.settings.env.LIBC || 'glibc' }}
     runs-on: ${{ matrix.settings.host }}
     needs: lint
     steps:
@@ -121,9 +123,10 @@ jobs:
         env:
           OS: ${{ matrix.settings.env.OS }}
           ARCH: ${{ matrix.settings.env.ARCH }}
+          LIBC: ${{ matrix.settings.env.LIBC || 'glibc' }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vscode-naily-ets-${{ matrix.settings.env.OS }}-${{ matrix.settings.env.ARCH }}
+          name: vscode-naily-ets-${{ matrix.settings.env.OS }}-${{ matrix.settings.env.ARCH }}-${{ matrix.settings.env.LIBC || 'glibc' }}
           path: packages/vscode/vscode-naily-ets-${{ matrix.settings.env.OS }}-${{ matrix.settings.env.ARCH }}-*.vsix
