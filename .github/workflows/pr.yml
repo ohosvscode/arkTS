@@ -115,7 +115,7 @@ jobs:
           version: 10.17.0
           run_install: true
 
-      - name: Run Pack
+      - name: ${{ matrix.settings.env.OS }} - ${{ matrix.settings.env.ARCH }}
         run: ${{ matrix.settings.pack }}
         env:
           OS: ${{ matrix.settings.env.OS }}
