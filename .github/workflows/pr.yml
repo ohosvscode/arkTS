@@ -121,3 +121,9 @@ jobs:
         env:
           OS: ${{ matrix.settings.env.OS }}
           ARCH: ${{ matrix.settings.env.ARCH }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-naily-ets-${{ matrix.settings.env.OS }}-${{ matrix.settings.env.ARCH }}
+          path: packages/vscode/vscode-naily-ets-${{ matrix.settings.env.OS }}-${{ matrix.settings.env.ARCH }}.vsix
