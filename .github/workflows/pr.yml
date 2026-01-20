@@ -116,7 +116,7 @@ jobs:
           run_install: true
 
       - name: Run Pack
-        run: pnpm run pack --target ${{ matrix.settings.pack }}
+        run: ${{ matrix.settings.pack }}
         env:
           OS: ${{ matrix.settings.env.OS }}
           ARCH: ${{ matrix.settings.env.ARCH }}
