@@ -32,7 +32,14 @@ async function main() {
   if (fs.existsSync(path.resolve('package-lock.json'))) fs.rmSync(path.resolve('package-lock.json'))
   else globalLogger.warn('package-lock.json not found, skipping deletion')
   globalLogger.info('Installing dev & prod dependencies using npm...')
-  execSync(`npm install ${collectIdentifiers(resolveDependenciesByIdentifier('@arkts/project-detector')).join(' ')} ${collectIdentifiers(resolveDependenciesByIdentifier('@ohos-rs/oxk')).join(' ')} --verbose --no-save ${process.env.OS ? ` --os=${process.env.OS}` : ''}${process.env.ARCH ? ` --arch=${process.env.ARCH}` : ''}${process.env.LIBC ? ` --libc=${process.env.LIBC}` : ''}${process.env.CPU ? ` --cpu=${process.env.CPU}` : ''}`, { stdio: 'inherit' })
+  const projectDetectorIdentifiers = collectIdentifiers(resolveDependenciesByIdentifier('@arkts/project-detector')).map((identifier) => {
+    if (identifier === '@arkts/project-detector') return `${identifier}@next`
+    return identifier
+  }).join(' ')
+  const ohosRsOxkIdentifiers = collectIdentifiers(resolveDependenciesByIdentifier('@ohos-rs/oxk')).join(' ')
+  const installCommand = `npm install ${projectDetectorIdentifiers} ${ohosRsOxkIdentifiers} --verbose --no-save ${process.env.OS ? ` --os=${process.env.OS}` : ''}${process.env.ARCH ? ` --arch=${process.env.ARCH}` : ''}${process.env.LIBC ? ` --libc=${process.env.LIBC}` : ''}${process.env.CPU ? ` --cpu=${process.env.CPU}` : ''}`
+  globalLogger.info(installCommand)
+  execSync(installCommand, { stdio: 'inherit' })
   globalLogger.info('Install done, start copying dependencies...')
   globalLogger.success('✨ Dependencies preprocessing done!')
 }
