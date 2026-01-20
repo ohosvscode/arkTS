@@ -57,19 +57,19 @@ declare module 'vue-router/auto-routes' {
    * @internal
    */
   export interface _RouteFileInfoMap {
-    'src/project/pages/index.vue': {
+    'packages/vscode/src/project/pages/index.vue': {
       routes:
         | '/'
       views:
         | never
     }
-    'src/project/pages/template-detail.vue': {
+    'packages/vscode/src/project/pages/template-detail.vue': {
       routes:
         | '/template-detail'
       views:
         | never
     }
-    'src/project/pages/template-market.vue': {
+    'packages/vscode/src/project/pages/template-market.vue': {
       routes:
         | '/template-market'
       views:
