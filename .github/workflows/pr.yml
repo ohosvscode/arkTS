@@ -68,17 +68,17 @@ jobs:
       - name: Package Extension (x64)
         run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-x64
         env:
-          OS: ${{ matrix.os }}
+          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
           ARCH: x64
 
       - name: Package Extension (arm64)
         run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-arm64
         env:
-          OS: ${{ matrix.os }}
+          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
           ARCH: arm64
 
       - name: Package Extension (armhf)
         run: pnpm -F vscode-naily-ets run pack --target ${{ matrix.os }}-armhf
         if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
-          OS: ${{ matrix.os }}
+          OS: "${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'macos-latest' && 'darwin' || matrix.os == 'windows-latest' && 'win32' }}"
