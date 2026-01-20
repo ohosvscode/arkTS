@@ -97,7 +97,7 @@ jobs:
             env:
               OS: wasm32
               ARCH: wasm32
-    name: Package Extension - ${{ matrix.settings.env.OS }} - ${{ matrix.settings.env.ARCH }} - ${{ matrix.settings.env.LIBC || 'glibc' }}
+    name: Package Extension - ${{ matrix.settings.env.OS }} - ${{ matrix.settings.env.ARCH }} - ${{ matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc') }}
     runs-on: ${{ matrix.settings.host }}
     needs: lint
     steps:
