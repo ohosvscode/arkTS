@@ -81,7 +81,7 @@ jobs:
             pack: pnpm -F vscode-naily-ets run pack --target linux-armhf
             env:
               OS: linux
-              ARCH: arm
+              CPU: arm
           - host: windows-latest
             pack: pnpm -F vscode-naily-ets run pack --target win32-x64
             env:
