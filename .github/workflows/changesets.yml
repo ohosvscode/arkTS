@@ -155,11 +155,10 @@ jobs:
           version: 10.17.0
           run_install: true
 
-      - name: Download Artifact
+      - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.settings.env.CPU == 'wasm32' && 'vscode-naily-ets-web' || format('vscode-naily-ets-{0}-{1}-{2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
-          path: packages/vscode/vscode-naily-ets-*.vsix
+          path: packages/vscode
 
       - name: Create Release Pull Request or Release
         id: changesets
