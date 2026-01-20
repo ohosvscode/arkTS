@@ -353,10 +353,6 @@
     "watch": "cross-env NODE_ENV=development tsdown",
     "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package",
     "postpack": "tsx scripts/clean-process.ts",
-    "release:vsce": "tsx scripts/pre-process.ts && pnpm run build && vsce publish",
-    "release:ovsx": "tsx scripts/pre-process.ts && pnpm run build && ovsx publish",
-    "postrelease:vsce": "tsx scripts/clean-process.ts",
-    "postrelease:ovsx": "tsx scripts/clean-process.ts",
     "update": "vscode-ext-gen --output src/generated/meta.ts",
     "ovsx": "ovsx",
     "vsce": "vsce"
