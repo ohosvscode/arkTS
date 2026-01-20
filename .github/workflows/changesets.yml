@@ -100,7 +100,6 @@ jobs:
               CPU: wasm32
     name: ${{ matrix.settings.env.CPU == 'wasm32' && 'Package Extension - web' || format('Package Extension - {0} - {1} - {2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
     runs-on: ${{ matrix.settings.host }}
-    needs: lint
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v5
@@ -159,6 +158,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: packages/vscode
+
+      - name: List downloaded artifacts
+        run: |
+          echo "=== Downloaded artifacts ==="
+          find packages/vscode -type f
 
       - name: Create Release Pull Request or Release
         id: changesets
