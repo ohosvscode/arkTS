@@ -48,55 +48,56 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - matrix:
-              - host: macos-latest
-                pack: pnpm run pack --target darwin-x64
-                env:
-                  OS: darwin
-                  ARCH: x64
-              - host: macos-latest
-                pack: pnpm run pack --target darwin-arm64
-                env:
-                  OS: darwin
-                  ARCH: arm64
-              - host: ubuntu-latest
-                pack: pnpm run pack --target linux-x64
-                env:
-                  OS: linux
-                  ARCH: x64
-              - host: ubuntu-latest
-                pack: pnpm run pack --target linux-arm64
-                env:
-                  OS: linux
-                  ARCH: arm64
-              - host: ubuntu-latest
-                pack: pnpm run pack --target alpine-x64
-                env:
-                  OS: linux
-                  ARCH: x64
-              - host: ubuntu-latest
-                pack: pnpm run pack --target alpine-arm64
-                env:
-                  OS: linux
-                  ARCH: armhf
-              - host: ubuntu-latest
-                pack: pnpm run pack --target linux-armhf
-                env:
-                  OS: linux
-                  ARCH: arm64
-              - host: windows-latest
-                pack: pnpm run pack --target win32-x64
-                env:
-                  OS: win32
-                  ARCH: x64
-              - host: windows-latest
-                pack: pnpm run pack --target win32-arm64
-                env:
-                  OS: win32
-              - host: macos-latest
-                pack: pnpm run pack --target web
-                env:
-                  OS: wasm32
+          - host: macos-latest
+            pack: pnpm run pack --target darwin-x64
+            env:
+              OS: darwin
+              ARCH: x64
+          - host: macos-latest
+            pack: pnpm run pack --target darwin-arm64
+            env:
+              OS: darwin
+              ARCH: arm64
+          - host: ubuntu-latest
+            pack: pnpm run pack --target linux-x64
+            env:
+              OS: linux
+              ARCH: x64
+          - host: ubuntu-latest
+            pack: pnpm run pack --target linux-arm64
+            env:
+              OS: linux
+              ARCH: arm64
+          - host: ubuntu-latest
+            pack: pnpm run pack --target alpine-x64
+            env:
+              OS: linux
+              ARCH: x64
+          - host: ubuntu-latest
+            pack: pnpm run pack --target alpine-arm64
+            env:
+              OS: linux
+              ARCH: arm64
+          - host: ubuntu-latest
+            pack: pnpm run pack --target linux-armhf
+            env:
+              OS: linux
+              ARCH: armhf
+          - host: windows-latest
+            pack: pnpm run pack --target win32-x64
+            env:
+              OS: win32
+              ARCH: x64
+          - host: windows-latest
+            pack: pnpm run pack --target win32-arm64
+            env:
+              OS: win32
+              ARCH: arm64
+          - host: macos-latest
+            pack: pnpm run pack --target web
+            env:
+              OS: wasm32
+              ARCH: wasm32
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v5
