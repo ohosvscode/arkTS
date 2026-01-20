@@ -121,8 +121,9 @@ jobs:
         run: ${{ matrix.settings.pack }}
         env:
           OS: ${{ matrix.settings.env.OS }}
-          ARCH: ${{ matrix.settings.env.ARCH || '' }}
+          ARCH: ${{ matrix.settings.env.ARCH }}
           LIBC: ${{ matrix.settings.env.OS == 'win32' && 'msvc' || matrix.settings.env.CPU == 'wasm32' && '' || matrix.settings.env.LIBC || 'glibc' }}
+          CPU: ${{ matrix.settings.env.CPU }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
