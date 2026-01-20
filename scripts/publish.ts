@@ -23,8 +23,8 @@ const EXTENSION_TARGETS = [
 function getExtensionPackagePath(target: (typeof EXTENSION_TARGETS)[number]): string {
   const packagePath = path.resolve(PROJECT_ROOT, 'packages', 'vscode', `vscode-naily-ets-${target}-*.vsix`)
   const packages = fg.sync(packagePath)
-  if (packages.length === 0) throw new Error(`No extension package found for target ${target}: ${Object.values(fg.sync(path.resolve(PROJECT_ROOT, 'packages', 'vscode', '*.vsix'))).join(', ')}`)
-  if (packages.length > 1) throw new Error(`Multiple extension packages found for target ${target}: ${packages.join(', ')}`)
+  if (packages.length === 0) throw new Error(`No extension package found for target ${target}: ${Object.values(fg.sync(path.resolve(PROJECT_ROOT, 'packages', 'vscode', '*.vsix'))).join(', ')}, glob: ${packagePath}`)
+  if (packages.length > 1) throw new Error(`Multiple extension packages found for target ${target}: ${packages.join(', ')}, glob: ${packagePath}`)
   return packages[0]
 }
 
@@ -80,7 +80,10 @@ function publishToOvsce(): boolean {
 }
 
 ;(async () => {
+  logger.info(`=== PUBLISHING NPM PACKAGES ===`)
   publishNpmPackages()
+  logger.info(`=== PUBLISHING NPM PACKAGES DONE ===`)
+  logger.info(`=== PUBLISHING VSCODE EXTENSION ===`)
   execSync(`pnpm tsx scripts/pre-process.ts`, { cwd: path.resolve(`packages`, `vscode`), stdio: `inherit` })
   execSync(`pnpm run build`, { cwd: path.resolve(`packages`, `vscode`), stdio: `inherit` })
   const isPublishedToVsce = publishToVsce()
@@ -92,4 +95,5 @@ function publishToOvsce(): boolean {
     console.log(`🦋 New tag: ${packageJson.name}@${packageJson.version}`)
   }
   execSync(`pnpm tsx scripts/clean-process.ts`, { cwd: path.resolve(`packages`, `vscode`), stdio: `inherit` })
+  logger.info(`=== PUBLISHING VSCODE EXTENSION DONE ===`)
 })()
