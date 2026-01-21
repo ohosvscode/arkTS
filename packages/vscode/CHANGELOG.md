@@ -1,5 +1,13 @@
 # vscode-naily-ets
 
+## 1.2.13
+
+### Patch Changes
+
+- [#258](https://github.com/ohosvscode/arkTS/pull/258) [`ba6ef43`](https://github.com/ohosvscode/arkTS/commit/ba6ef43324d58d348ffb8d2bb49aa641b3620eaa) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: update README, add upload when release new version
+
+- [#256](https://github.com/ohosvscode/arkTS/pull/256) [`7851e8e`](https://github.com/ohosvscode/arkTS/commit/7851e8ebc735ec8c9503bd39f134d313b92fd3a7) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: 添加 categories: linters、snippets、formatters、themes
+
 ## 1.2.12
 
 ### Patch Changes
