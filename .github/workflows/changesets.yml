@@ -168,8 +168,9 @@ jobs:
         run: |
           find packages/vscode -type f -name '*.vsix' -print0 |
           while IFS= read -r -d '' f; do
-            cp "$f" "packages/vscode/vscode-naily-ets-$(basename "$f")"
+            cp "$f" "packages/vscode/$(basename "$f")"
           done
+          find packages/vscode -maxdepth 1 -type f -name '*.vsix'
 
       - name: Create Release Pull Request or Release
         id: changesets
