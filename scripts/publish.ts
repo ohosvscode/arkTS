@@ -51,7 +51,7 @@ function publishToVsce(): boolean {
     try {
       const packagePath = getExtensionPackagePath(target)
       logger.info(`Publishing to VSCE for target ${target}...`)
-      const command = `pnpm -F vscode-naily-ets vsce publish --target ${target} --packagePath ${packagePath}`
+      const command = `pnpm -F vscode-naily-ets vsce publish --packagePath ${packagePath}`
       logger.info(`Executing command: ${command}`)
       execSync(command, { cwd: path.resolve(dirname, '..'), stdio: 'inherit' })
     }
