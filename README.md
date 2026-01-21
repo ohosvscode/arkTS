@@ -36,6 +36,8 @@
 - 📦 1.x版本开始支持安装和管理`OpenHarmony SDK`，并且支持根据当前打开的项目自动探测`API版本`，发出弹窗提示`下载`或`切换`
 - 🥇 1.1.6+ 版本开始支持完美的 `$r` 函数补全和跳转、支持 `module.json5` 文件的补全和跳转、`resources/element/` 下所有`json`文件点击查询全局引用；由 [@arkts/project-detector](https://github.com/ohosvscode/project-detector) hvigor项目分析器提供强力支撑 ✊
 - 🍞 1.1.8+ 版本开始支持 `module.json5` 文件路径补全和跳转、引用表达式错误诊断、`requestPermissions` 权限补全等一系列 new feature ✨
+- 🌾 1.2.10+ 版本增加 hvigor 资源管理器面板，支持资源限定符文件夹创建、资源引用索引等功能
+- 🎨 1.2.12+ 版本增加 [oxk](https://github.com/ohos-rs/oxc-ark) 代码格式化支持
 
 ![截图](./screenshots/edit.gif)
 

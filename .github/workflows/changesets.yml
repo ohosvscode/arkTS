@@ -185,3 +185,17 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
           OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+      - name: Upload VSIX assets to GitHub Release
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=$(echo "$PUBLISHED_PACKAGES" | jq -r '.[] | select(.name == "vscode-naily-ets") | "\(.name)@\(.version)"' | head -n 1)
+          if [ -z "$tag" ]; then
+            echo "No vscode-naily-ets package found in published packages; skip upload."
+            exit 0
+          fi
+          echo "Uploading VSIX assets to release: $tag"
+          gh release upload "$tag" packages/vscode/*.vsix --clobber
