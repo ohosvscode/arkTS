@@ -23,7 +23,10 @@ const EXTENSION_TARGETS = [
 function getExtensionPackagePath(target: (typeof EXTENSION_TARGETS)[number]): string {
   const packagePath = path.resolve(PROJECT_ROOT, 'packages', 'vscode', `vscode-naily-ets-${target}-*.vsix`)
   const packages = fg.sync(packagePath)
-  if (packages.length === 0) throw new Error(`No extension package found for target ${target}: ${Object.values(fg.sync(path.resolve(PROJECT_ROOT, 'packages', 'vscode', '*.vsix'))).join(', ')}, glob: ${packagePath}`)
+  for (const packagePath of Object.values(fg.sync(path.resolve(PROJECT_ROOT, 'packages', 'vscode', '*.vsix')))) {
+    logger.info(`Detected extension package: ${packagePath}`)
+  }
+  if (packages.length === 0) throw new Error(`No extension package found for target ${target}, glob: ${packagePath}`)
   if (packages.length > 1) throw new Error(`Multiple extension packages found for target ${target}: ${packages.join(', ')}, glob: ${packagePath}`)
   return packages[0]
 }
