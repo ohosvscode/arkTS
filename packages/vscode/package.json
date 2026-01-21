@@ -22,7 +22,11 @@
     "huawei"
   ],
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Formatters",
+    "Themes"
   ],
   "main": "./dist/client.js",
   "icon": "assets/icon.png",
