@@ -107,6 +107,7 @@
   "sdk.error.downloadOrChoiceSdkPath": "下载或选择一个 OpenHarmony SDK 路径",
   "sdk.error.languageServerError": "ArkTS 语言服务器启动失败, 请尝试重启 IDE 或检查 OpenHarmony SDK 路径是否正确。错误详情: {0}",
   "sdk.error.validSdkPath": "OpenHarmony SDK 路径未设置在全局 IDE 配置和本地工作区 local.properties 文件中，ETS 语言服务器可能将无法正常工作。",
+  "sdk.error.helpLabel": "帮助",
   "sdk.guess.install.no": "否",
   "sdk.guess.install.title": "当前工作区可能使用 OpenHarmony SDK {0}，您是否想要安装此 SDK？",
   "sdk.guess.install.yes": "是",

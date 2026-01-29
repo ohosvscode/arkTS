@@ -107,6 +107,7 @@
   "sdk.error.downloadOrChoiceSdkPath": "Download or choose a OpenHarmony SDK path",
   "sdk.error.languageServerError": "ArkTS Language Server Start Failed, please try to restart the IDE or check the OpenHarmony SDK path is correct. Error detail: {0}",
   "sdk.error.validSdkPath": "OpenHarmony SDK path is not set in global IDE configuration and local workspace local.properties file, the ETS Language Server will not work properly.",
+  "sdk.error.helpLabel": "Help",
   "sdk.guess.install.no": "No",
   "sdk.guess.install.title": "The current workspace likely use OpenHarmony SDK {0}, are you want to install this SDK?",
   "sdk.guess.install.yes": "Yes",
