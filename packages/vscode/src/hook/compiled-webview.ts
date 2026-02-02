@@ -39,7 +39,6 @@ export function useCompiledWebviewPanel<T extends vscode.WebviewPanel | vscode.W
       const resourceUri = webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.resolve(path.dirname(htmlPath), href?.trim?.() || href)))
       return decodeURIComponent(resourceUri?.toString() || '')
     }).replace(/<head>/, `<head>${initialURL ? `<script>window.INITIAL_URL = '${initialURL}'</script>` : ''}`)
-    console.warn(webviewPanel.webview.html)
   }
 
   const fsWatcher = createFileSystemWatcher(htmlPath)

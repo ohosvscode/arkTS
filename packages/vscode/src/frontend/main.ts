@@ -20,7 +20,6 @@ export const createApp = ViteSSG(
     if (globalThis?.window) {
       globalThis.window.vscode = acquireVsCodeApi()
       if (globalThis?.window?.INITIAL_URL) await ctx.router.replace(globalThis.window.INITIAL_URL)
-      console.warn(`window.INITIAL_URL: `, window.INITIAL_URL)
     }
     ctx.app.use(createPinia())
     const connection = useConnection(ctx.router)
