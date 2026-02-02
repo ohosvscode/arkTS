@@ -46,7 +46,7 @@ export abstract class LanguageServerContext extends AbstractWatcher implements I
     const downloadOrChoiceSdkPath = this.translator.t('sdk.error.downloadOrChoiceSdkPath')
     const helpLabel = this.translator.t('sdk.error.helpLabel')
     const detail = this.errorToString(error)
-    
+
     // 循环显示对话框，直到用户选择操作
     let result: string | undefined
     do {
