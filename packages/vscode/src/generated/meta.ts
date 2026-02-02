@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
-export const version = "1.1.2"
+export const version = "1.2.12"
 export const displayName = "Naily's ArkTS Support"
 export const description = "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support."
 export const extensionId = `${publisher}.${name}`
@@ -12,63 +12,89 @@ export const extensionId = `${publisher}.${name}`
 /**
  * Type union of all commands
  */
-export type CommandKey = 
+export type CommandKey =
   | "ets.restartServer"
   | "ets.installSDK"
+  | "ets.createProject"
+  | "ets.resourceExplorer.refresh"
+  | "ets.resourceExplorer.openFile"
+  | "ets.resourceExplorer.openResourceQualifierEditor"
+  | "ets.openHdcManager"
 
 /**
- * Commands map registed by `NailyZero.vscode-naily-ets`
+ * Commands map registered by `NailyZero.vscode-naily-ets`
  */
 export const commands = {
   /**
-   * %command.restartServer%
+   * 重启 ArkTS 服务器
    * @value `ets.restartServer`
    */
   etsRestartServer: "ets.restartServer",
   /**
-   * %command.installSDK%
+   * 安装/切换 OpenHarmony SDK
    * @value `ets.installSDK`
    */
   etsInstallSDK: "ets.installSDK",
+  /**
+   * 创建 ArkTS 项目
+   * @value `ets.createProject`
+   */
+  etsCreateProject: "ets.createProject",
+  /**
+   * 刷新 Hvigor 资源管理器
+   * @value `ets.resourceExplorer.refresh`
+   */
+  etsResourceExplorerRefresh: "ets.resourceExplorer.refresh",
+  /**
+   * 在编辑器中打开文件
+   * @value `ets.resourceExplorer.openFile`
+   */
+  etsResourceExplorerOpenFile: "ets.resourceExplorer.openFile",
+  /**
+   * 打开资源限定符编辑器
+   * @value `ets.resourceExplorer.openResourceQualifierEditor`
+   */
+  etsResourceExplorerOpenResourceQualifierEditor: "ets.resourceExplorer.openResourceQualifierEditor",
+  /**
+   * 选择已连接的 OpenHarmony/HarmonyOS 设备
+   * @value `ets.openHdcManager`
+   */
+  etsOpenHdcManager: "ets.openHdcManager",
 } satisfies Record<string, CommandKey>
 
 /**
  * Type union of all languages
  */
-export type LanguageKey = 
+export type LanguageKey =
   | "ets"
-  | "hml"
 
 /**
  * Languages map registed by `NailyZero.vscode-naily-ets`
  */
 export const languages = {
   ets: "ets",
-  hml: "hml",
 } satisfies Record<string, LanguageKey>
 
 /**
  * Type union of all configs
  */
-export type ConfigKey = 
+export type ConfigKey =
   | "ets.sdkPath"
   | "ets.baseSdkPath"
   | "ets.hmsPath"
   | "ets.lspDebugMode"
-  | "ets.hdcPath"
   | "ets.ignoreWorkspaceLocalPropertiesFile"
+  | "ets.linterVersion"
   | "ets.resourceReferenceDiagnostic"
-  | "ets.sdkList"
 
 export interface ConfigKeyTypeMap {
   "ets.sdkPath": string,
   "ets.baseSdkPath": string,
   "ets.hmsPath": string,
   "ets.lspDebugMode": boolean,
-  "ets.hdcPath": string,
   "ets.ignoreWorkspaceLocalPropertiesFile": boolean,
+  "ets.linterVersion": ("1.0" | "1.1" | "off"),
   "ets.resourceReferenceDiagnostic": ("error" | "warning" | "none"),
-  "ets.sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
 }
 
 export interface ConfigShorthandMap {
@@ -76,10 +102,9 @@ export interface ConfigShorthandMap {
   etsBaseSdkPath: "ets.baseSdkPath",
   etsHmsPath: "ets.hmsPath",
   etsLspDebugMode: "ets.lspDebugMode",
-  etsHdcPath: "ets.hdcPath",
   etsIgnoreWorkspaceLocalPropertiesFile: "ets.ignoreWorkspaceLocalPropertiesFile",
+  etsLinterVersion: "ets.linterVersion",
   etsResourceReferenceDiagnostic: "ets.resourceReferenceDiagnostic",
-  etsSdkList: "ets.sdkList",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -87,10 +112,9 @@ export interface ConfigShorthandTypeMap {
   etsBaseSdkPath: string,
   etsHmsPath: string,
   etsLspDebugMode: boolean,
-  etsHdcPath: string,
   etsIgnoreWorkspaceLocalPropertiesFile: boolean,
+  etsLinterVersion: ("1.0" | "1.1" | "off"),
   etsResourceReferenceDiagnostic: ("error" | "warning" | "none"),
-  etsSdkList: { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -104,7 +128,7 @@ export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
  */
 export const configs = {
   /**
-   * %configuration.ets.sdkPath.description%
+   * OpenHarmony SDK 路径。每次更改此设置时将会重启 ETS 语言服务器。(此路径对应deveco studio 安装目录下的`sdk/default/openharmony`路径)
    * @key `ets.sdkPath`
    * @default `""`
    * @type `string`
@@ -114,7 +138,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.sdkPath">,
   /**
-   * 
+   *
    * @key `ets.baseSdkPath`
    * @default `"${os.homedir}/OpenHarmony"`
    * @type `string`
@@ -124,7 +148,7 @@ export const configs = {
     default: "${os.homedir}/OpenHarmony",
   } as ConfigItem<"ets.baseSdkPath">,
   /**
-   * %configuration.ets.hmsPath.description%
+   * HMS SDK 路径。因为 HMS SDK 是独立于 OpenHarmony SDK 的，所以需要另外单独设置。一般您可以在 DevEco Studio 安装目录下找到该SDK。(此路径对应deveco studio 安装目录下的`sdk/default/harmony`路径)
    * @key `ets.hmsPath`
    * @default `""`
    * @type `string`
@@ -134,7 +158,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.hmsPath">,
   /**
-   * %configuration.ets.lspDebugMode.description%
+   * 启用 ETS 语言服务器调试日志。
    * @key `ets.lspDebugMode`
    * @default `false`
    * @type `boolean`
@@ -144,17 +168,7 @@ export const configs = {
     default: false,
   } as ConfigItem<"ets.lspDebugMode">,
   /**
-   * %configuration.ets.hdcPath.description%
-   * @key `ets.hdcPath`
-   * @default `""`
-   * @type `string`
-   */
-  etsHdcPath: {
-    key: "ets.hdcPath",
-    default: "",
-  } as ConfigItem<"ets.hdcPath">,
-  /**
-   * 
+   *
    * @key `ets.ignoreWorkspaceLocalPropertiesFile`
    * @default `false`
    * @type `boolean`
@@ -163,6 +177,16 @@ export const configs = {
     key: "ets.ignoreWorkspaceLocalPropertiesFile",
     default: false,
   } as ConfigItem<"ets.ignoreWorkspaceLocalPropertiesFile">,
+  /**
+   * The version of the ArkTS linter to use. Set to 'off' to disable the linter.
+   * @key `ets.linterVersion`
+   * @default `"1.1"`
+   * @type `string`
+   */
+  etsLinterVersion: {
+    key: "ets.linterVersion",
+    default: "1.1",
+  } as ConfigItem<"ets.linterVersion">,
   /**
    * 未匹配到的 $r() 资源引用的诊断级别
    * @key `ets.resourceReferenceDiagnostic`
@@ -173,16 +197,6 @@ export const configs = {
     key: "ets.resourceReferenceDiagnostic",
     default: "error",
   } as ConfigItem<"ets.resourceReferenceDiagnostic">,
-  /**
-   * A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10).
-   * @key `ets.sdkList`
-   * @default `{}`
-   * @type `object`
-   */
-  etsSdkList: {
-    key: "ets.sdkList",
-    default: {},
-  } as ConfigItem<"ets.sdkList">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -200,10 +214,9 @@ export interface NestedConfigs {
     "baseSdkPath": string,
     "hmsPath": string,
     "lspDebugMode": boolean,
-    "hdcPath": string,
     "ignoreWorkspaceLocalPropertiesFile": boolean,
+    "linterVersion": ("1.0" | "1.1" | "off"),
     "resourceReferenceDiagnostic": ("error" | "warning" | "none"),
-    "sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
   },
 }
 

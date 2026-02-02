@@ -7,18 +7,17 @@ import { LanguageClient, TransportKind } from '@volar/vscode/node'
 import defu from 'defu'
 import { executeCommand } from 'reactive-vscode'
 import { Autowired } from 'unioc'
-import { Command, Disposable, ExtensionContext, WatchConfiguration } from 'unioc/vscode'
+import { Command, Disposable, ExtensionContext, Translator, WatchConfiguration } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { LanguageServerContext } from './context/server-context'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
-import { Translator } from './translate'
 import { sleep } from './utils'
 
 @Disposable
 @Command('ets.restartServer')
 export class EtsLanguageServer extends LanguageServerContext implements Command, Disposable, vscode.DocumentFormattingEditProvider {
-  @Autowired
+  @Autowired(Translator)
   protected readonly translator: Translator
 
   @Autowired(ExtensionContext)

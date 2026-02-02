@@ -50,11 +50,74 @@
           "title": "%resourceExplorer%",
           "icon": "./assets/resource-explorer.svg"
         }
+      ],
+      "panel": [
+        {
+          "id": "ets-hdc-manager",
+          "title": "%hdcManager.title%",
+          "icon": "$(device-desktop)"
+        }
       ]
     },
     "breakpoints": [
       {
         "language": "ets"
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "hvigor-debug-deploy",
+        "properties": {
+          "projectRoot": {
+            "type": "string",
+            "description": "Hvigor 项目根目录。",
+            "default": "${workspaceFolder}"
+          },
+          "moduleName": {
+            "type": "string",
+            "description": "模块名称。",
+            "default": "entry"
+          },
+          "productName": {
+            "type": "string",
+            "description": "产品名称。",
+            "default": "default"
+          },
+          "requiredDeviceType": {
+            "type": "string",
+            "description": "调试设备类型。默认自动使用hdc shell param get \"const.product.devicetype\" 获取。"
+          },
+          "analyze": {
+            "type": "string",
+            "description": "构建分析模式",
+            "default": "normal"
+          },
+          "parallel": {
+            "type": "boolean",
+            "description": "是否开启并行构建",
+            "default": true
+          },
+          "incremental": {
+            "type": "boolean",
+            "description": "是否开启增量构建",
+            "default": true
+          },
+          "daemon": {
+            "type": "boolean",
+            "default": true
+          },
+          "args": {
+            "types": "array",
+            "default": [],
+            "description": "额外参数",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "projectRoot"
+        ]
       }
     ],
     "views": {
@@ -65,8 +128,67 @@
           "icon": "$(folder)",
           "contextualTitle": "%resourceExplorer%"
         }
+      ],
+      "ets-hdc-manager": [
+        {
+          "type": "webview",
+          "id": "ets.hdcManager",
+          "name": "%hdcManager.title%",
+          "icon": "$(device-desktop)",
+          "contextualTitle": "%hdcManager.title%"
+        }
       ]
     },
+    "debuggers": [
+      {
+        "type": "ets",
+        "label": "ArkTS Debugger",
+        "languages": [
+          "ets"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "type": "object",
+            "properties": {
+              "abilityName": {
+                "type": "string",
+                "description": "Ability 名称，默认 EntryAbility",
+                "default": "EntryAbility"
+              },
+              "controlPort": {
+                "type": "number",
+                "description": "控制端口，默认 9230",
+                "default": 9230
+              },
+              "devtoolsPort": {
+                "type": "number",
+                "description": "DevTools 端口，默认 9229",
+                "default": 9229
+              },
+              "projectRoot": {
+                "type": "string",
+                "description": "Hvigor 项目根目录",
+                "default": "${workspaceFolder}"
+              },
+              "moduleName": {
+                "type": "string",
+                "description": "模块名称，必填"
+              },
+              "sourceMapFilePath": {
+                "type": "string",
+                "description": "Source Map 文件路径。",
+                "default": "build/default/cache/default/default@CompileArkTS/esmodule/debug/sourceMaps.json"
+              }
+            },
+            "required": [
+              "projectRoot",
+              "moduleName"
+            ],
+            "additionalProperties": true
+          }
+        }
+      }
+    ],
     "menus": {
       "view/title": [
         {
@@ -90,6 +212,17 @@
           "command": "ets.resourceExplorer.openResourceQualifierEditor",
           "group": "inline",
           "when": "view == ets.resourceExplorer && viewItem == Resource"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "ets.restartServer"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "ets.openHdcManager",
+          "group": "navigation"
         }
       ]
     },
@@ -220,6 +353,12 @@
         "title": "%command.resourceExplorer.openResourceQualifierEditor%",
         "icon": "$(plus)",
         "category": "ETS"
+      },
+      {
+        "command": "ets.openHdcManager",
+        "title": "%command.openHdcManager%",
+        "icon": "$(device-desktop)",
+        "category": "ETS"
       }
     ],
     "configuration": {
@@ -245,12 +384,6 @@
           "type": "boolean",
           "description": "%configuration.ets.lspDebugMode.description%",
           "default": false
-        },
-        "ets.hdcPath": {
-          "type": "string",
-          "description": "%configuration.ets.hdcPath.description%",
-          "deprecationMessage": "Currently this setting is not used.",
-          "default": ""
         },
         "ets.ignoreWorkspaceLocalPropertiesFile": {
           "type": "boolean",
@@ -282,49 +415,10 @@
           ],
           "default": "error"
         },
-        "ets.sdkList": {
-          "type": "object",
-          "description": "A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10).",
-          "default": {},
-          "deprecationMessage": "Currently this setting is not used.",
-          "properties": {
-            "API10": {
-              "type": "string",
-              "description": "SDK path for API version 10"
-            },
-            "API11": {
-              "type": "string",
-              "description": "SDK path for API version 11"
-            },
-            "API12": {
-              "type": "string",
-              "description": "SDK path for API version 12"
-            },
-            "API13": {
-              "type": "string",
-              "description": "SDK path for API version 13"
-            },
-            "API14": {
-              "type": "string",
-              "description": "SDK path for API version 14"
-            },
-            "API15": {
-              "type": "string",
-              "description": "SDK path for API version 15"
-            },
-            "API18": {
-              "type": "string",
-              "description": "SDK path for API version 18"
-            },
-            "API20": {
-              "type": "string",
-              "description": "SDK path for API version 20"
-            }
-          },
-          "additionalProperties": {
-            "type": "string",
-            "description": "SDK path for the corresponding API version"
-          }
+        "ets.localImagePath": {
+          "type": "string",
+          "description": "%configuration.ets.localImagePath.description%",
+          "markdownDescription": "%configuration.ets.localImagePath.description%"
         }
       }
     },
@@ -357,7 +451,7 @@
     "watch": "cross-env NODE_ENV=development tsdown",
     "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package",
     "postpack": "tsx scripts/clean-process.ts",
-    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "update": "vscode-ext-gen --output src/generated/meta.ts --locale zh-cn && vscode-ext-gen --output src/generated/meta.ts --locale zh-cn --readme ../../README.md && vscode-ext-gen --output src/generated/meta.ts --locale --readme ../../README-en.md",
     "ovsx": "ovsx",
     "vsce": "vsce"
   },

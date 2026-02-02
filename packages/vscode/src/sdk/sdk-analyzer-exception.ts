@@ -1,4 +1,4 @@
-import type { Translator } from '../translate'
+import type { Translator } from 'unioc/vscode'
 import { FileSystemException } from '../fs/file-system-exception'
 
 export class SdkAnalyzerException extends FileSystemException {

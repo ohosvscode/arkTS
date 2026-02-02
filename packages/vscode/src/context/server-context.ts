@@ -2,8 +2,7 @@
 import type { ETSPluginOptions, TypescriptLanguageFeatures } from '@arkts/shared'
 import type { LabsInfo } from '@volar/vscode'
 import type { LanguageClient, LanguageClientOptions } from '@volar/vscode/node'
-import type { IOnActivate } from 'unioc/vscode'
-import type { Translator } from '../translate'
+import type { IOnActivate, Translator } from 'unioc/vscode'
 import path from 'node:path'
 import { executeCommand } from 'reactive-vscode'
 import * as vscode from 'vscode'
@@ -34,8 +33,8 @@ export abstract class LanguageServerContext extends AbstractWatcher implements I
   }
 
   protected errorToString(error: unknown): string {
-    if (error instanceof Error || (error && typeof error === 'object' && 'message' in error)) return this.translator.t('sdk.error.languageServerError', { args: [`${error.message} ${'code' in error ? `[${error.code}]` : ''}`] })
-    return this.translator.t('sdk.error.languageServerError', { args: [typeof error === 'string' || typeof error === 'number' || typeof error === 'boolean' ? error : JSON.stringify(error)] })
+    if (error instanceof Error || (error && typeof error === 'object' && 'message' in error)) return this.translator.t('sdk.error.languageServerError', `${error.message} ${'code' in error ? `[${error.code}]` : ''}`)
+    return this.translator.t('sdk.error.languageServerError', typeof error === 'string' || typeof error === 'number' || typeof error === 'boolean' ? error : JSON.stringify(error))
   }
 
   protected async handleLanguageServerError(error: unknown): Promise<void> {

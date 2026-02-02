@@ -92,14 +92,15 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 
 <!-- configs -->
 
-| Key                | Description                                                                                                | Type      | Default                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- | --------- | ----------------------------- |
-| `ets.sdkPath`      | %configuration.ets.sdkPath.description%                                                                    | `string`  | `""`                          |
-| `ets.baseSdkPath`  | %configuration.ets.baseSdkPath.description%                                                                | `string`  | `"${os.homedir}/OpenHarmony"` |
-| `ets.hmsPath`      | %configuration.ets.hmsPath.description%                                                                    | `string`  | `""`                          |
-| `ets.lspDebugMode` | %configuration.ets.lspDebugMode.description%                                                               | `boolean` | `false`                       |
-| `ets.hdcPath`      | %configuration.ets.hdcPath.description%                                                                    | `string`  | `""`                          |
-| `ets.sdkList`      | A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10). | `object`  | `{}`                          |
+| Key                                      | Description                                                                 | Type      | Default                       |
+| ---------------------------------------- | --------------------------------------------------------------------------- | --------- | ----------------------------- |
+| `ets.sdkPath`                            | %configuration.ets.sdkPath.description%                                     | `string`  | `""`                          |
+| `ets.baseSdkPath`                        | %configuration.ets.baseSdkPath.description%                                 | `string`  | `"${os.homedir}/OpenHarmony"` |
+| `ets.hmsPath`                            | %configuration.ets.hmsPath.description%                                     | `string`  | `""`                          |
+| `ets.lspDebugMode`                       | %configuration.ets.lspDebugMode.description%                                | `boolean` | `false`                       |
+| `ets.ignoreWorkspaceLocalPropertiesFile` | %configuration.ets.ignoreWorkspaceLocalPropertiesFile.description%          | `boolean` | `false`                       |
+| `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
+| `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
 
 <!-- configs -->
 
@@ -107,10 +108,15 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 
 <!-- commands -->
 
-| Command             | Title                        |
-| ------------------- | ---------------------------- |
-| `ets.restartServer` | ETS: %command.restartServer% |
-| `ets.installSDK`    | ETS: %command.installSDK%    |
+| Command                                            | Title                                                       |
+| -------------------------------------------------- | ----------------------------------------------------------- |
+| `ets.restartServer`                                | ETS: %command.restartServer%                                |
+| `ets.installSDK`                                   | ETS: %command.installSDK%                                   |
+| `ets.createProject`                                | ETS: %command.createProject%                                |
+| `ets.resourceExplorer.refresh`                     | ETS: %command.resourceExplorer.refresh%                     |
+| `ets.resourceExplorer.openFile`                    | ETS: %command.resourceExplorer.openFile%                    |
+| `ets.resourceExplorer.openResourceQualifierEditor` | ETS: %command.resourceExplorer.openResourceQualifierEditor% |
+| `ets.openHdcManager`                               | ETS: %command.chooseConnectedDevice%                        |
 
 <!-- commands -->
 

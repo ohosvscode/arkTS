@@ -4,10 +4,9 @@ import { ElementDirectory, ElementJsonFile, ElementJsonFileReference, MediaDirec
 import JSON5 from 'json5'
 import { nanoid } from 'nanoid'
 import { Autowired, Service } from 'unioc'
-import { Disposable, IOnActivate } from 'unioc/vscode'
+import { Disposable, IOnActivate, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
-import { QualifierEditorWebviewPanel } from '../qualifier-editor/command'
-import { Translator } from '../translate'
+import { QualifierEditorWebviewPanel } from '../frontend/commands/qualifier-editor-command'
 
 class MediaFile {
   constructor(
@@ -80,7 +79,7 @@ export class ResourceExplorer implements IOnActivate, vscode.TreeDataProvider<Re
   @Autowired(ProjectDetectorManager)
   private readonly projectDetectorManager: ProjectDetectorManager
 
-  @Autowired
+  @Autowired(Translator)
   private readonly translator: Translator
 
   @Autowired
