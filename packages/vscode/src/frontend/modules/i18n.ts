@@ -1,37 +1,48 @@
+import type { Locale } from 'vue-i18n'
 import type { UserModule } from '../types'
 import { createI18n } from 'vue-i18n'
 
+const localesMap = Object.fromEntries(
+  Object
+    .entries(import.meta.glob(['../../../node_modules/.cache/vue-i18n/locales/*.json']))
+    .map(([path, loadLocale]) => [path.replace('../../../node_modules/.cache/vue-i18n/locales/', '').replace(/.json$/, ''), loadLocale ?? {}]),
+) as Record<Locale, () => Promise<{ default: Record<string, string> }>>
+
+const i18n = createI18n({
+  legacy: false,
+  locale: '',
+  flatJson: true,
+  messages: {},
+})
+
+function setI18nLanguage(lang: Locale): Locale {
+  i18n.global.locale.value = lang
+  if (typeof document !== 'undefined') document.querySelector('html')?.setAttribute('lang', lang)
+  return lang
+}
+
+const loadedLanguages: string[] = []
+
+export async function loadLanguageAsync(lang: string): Promise<Locale> {
+  // If the same language
+  if (i18n.global.locale.value === lang) return setI18nLanguage(lang)
+
+  // If the language was already loaded
+  if (loadedLanguages.includes(lang)) return setI18nLanguage(lang)
+
+  // If the language hasn't been loaded yet
+  const messages = (await localesMap[lang]?.()) ?? {}
+  i18n.global.setLocaleMessage(lang, messages?.default ?? {})
+  loadedLanguages.push(lang)
+  return setI18nLanguage(lang)
+}
+
 export const install: UserModule = async ({ app }, connection) => {
   const currentLanguage = await connection?.getCurrentLanguage?.() ?? 'en'
-  const i18n = createI18n({
-    legacy: false,
-    // `C` is mean `Current`, we only need to use it, not to change it.
-    // The language change will be handled by the VS Code extension,
-    // we just need to follow the vscode itself.
-    locale: 'C',
-    flatJson: true,
-    messages: {
-      C: (await connection?.findAllL10nByCurrentLanguage?.()) ?? (await loadFromFileSystem()),
-    },
-  })
+  loadLanguageAsync(currentLanguage)
   app.provide('vscode:currentLanguage', currentLanguage)
   app.provide('naiveui:locale', await loadCurrentNaiveUILocale(currentLanguage))
   app.use(i18n)
-}
-
-async function loadFromFileSystem(): Promise<Record<string, string>> {
-  try {
-    const PATH_IDENTIFIER = 'node:path'
-    const fs = await import('node:fs')
-    const path = await import(PATH_IDENTIFIER)
-    const process = await import('node:process')
-
-    const content = fs.readFileSync(path.join(process.cwd(), 'package.nls.json'), 'utf-8')
-    return JSON.parse(content)
-  }
-  catch {
-    return {}
-  }
 }
 
 async function loadCurrentNaiveUILocale(language: string): Promise<object | undefined> {

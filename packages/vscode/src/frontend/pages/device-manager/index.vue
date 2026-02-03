@@ -104,7 +104,7 @@ function getIconByDeviceType(deviceType: HdcManagerConnectionProtocol.ServerFunc
     <Heading :title="$t('hdcManager.deviceManager')" />
     <NFormItem
       size="small"
-      :label="$t('hdcManager.deviceManager.localImagePath')"
+      :label="$t('hdcManager.deviceManager.localImagePath.title')"
       label-placement="left"
       class="opacity-feedback"
       :feedback="feedback"

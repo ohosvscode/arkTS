@@ -63,6 +63,7 @@
     "@changesets/cli": "catalog:scripts",
     "@css-render/vue3-ssr": "catalog:frontend",
     "@iconify-json/ph": "catalog:frontend",
+    "@intlify/unplugin-vue-i18n": "^11.0.3",
     "@ohos-rs/oxk": "catalog:prod",
     "@ohos-rs/oxk-android-arm-eabi": "catalog:prod",
     "@ohos-rs/oxk-android-arm64": "catalog:prod",

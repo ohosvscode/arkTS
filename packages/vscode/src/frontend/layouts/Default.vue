@@ -77,11 +77,7 @@ const isThrowErrorIfNoNetwork = computed(() => {
 })
 watch(isThrowErrorIfNoNetwork, () => key.value++)
 
-if (isThrowErrorIfNoNetwork.value) {
-  onErrorCaptured((err) => {
-    error.value = err
-  })
-}
+onErrorCaptured(() => !import.meta.env.SSR)
 </script>
 
 <template>
