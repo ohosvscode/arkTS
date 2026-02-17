@@ -10,6 +10,9 @@ catalogs:
       specifier: 0.16.5
       version: 0.16.5
   dev:
+    baseline-browser-mapping:
+      specifier: latest
+      version: 2.9.19
     fast-glob:
       specifier: ^3.3.3
       version: 3.3.3
@@ -35,6 +38,9 @@ catalogs:
     '@iconify-json/ph':
       specifier: ^1.2.2
       version: 1.2.2
+    '@intlify/unplugin-vue-i18n':
+      specifier: ^11.0.3
+      version: 11.0.3
     '@vitejs/plugin-vue':
       specifier: ^6.0.1
       version: 6.0.1
@@ -101,6 +107,12 @@ catalogs:
       specifier: ^0.2.2
       version: 0.2.2
   prod:
+    '@arkts/debugger':
+      specifier: 0.0.2-alpha.1
+      version: 0.0.2-alpha.1
+    '@arkts/image-manager':
+      specifier: ^0.1.5
+      version: 0.1.5
     '@arkts/project-detector':
       specifier: ^1.1.3-alpha.29
       version: 1.1.3-alpha.29
@@ -435,10 +447,10 @@ importers:
         specifier: catalog:scripts
         version: 0.1.0
       '@arkts/debugger':
-        specifier: 0.0.2-alpha.1
+        specifier: catalog:prod
         version: 0.0.2-alpha.1(@types/node@25.2.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.20.6)(yaml@2.8.2)
       '@arkts/image-manager':
-        specifier: ^0.1.5
+        specifier: catalog:prod
         version: 0.1.5
       '@arkts/language-service':
         specifier: workspace:*
@@ -519,7 +531,7 @@ importers:
         specifier: catalog:frontend
         version: 1.2.2
       '@intlify/unplugin-vue-i18n':
-        specifier: ^11.0.3
+        specifier: catalog:frontend
         version: 11.0.3(@vue/compiler-dom@3.5.22)(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)(vue-i18n@11.1.12(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@ohos-rs/oxk':
         specifier: catalog:prod
@@ -614,6 +626,9 @@ importers:
       alien-signals:
         specifier: catalog:prod
         version: 3.0.3
+      baseline-browser-mapping:
+        specifier: catalog:dev
+        version: 2.9.19
       birpc:
         specifier: catalog:prod
         version: 2.6.1
@@ -4103,8 +4118,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==, tarball: https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz}
 
-  baseline-browser-mapping@2.8.19:
-    resolution: {integrity: sha512-zoKGUdu6vb2jd3YOq0nnhEDQVbPcHhco3UImJrv5dSkvxTc2pl2WjOPsjZXDwPDSl5eghIMuY3R6J9NDKF3KcQ==, tarball: https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.8.19.tgz}
+  baseline-browser-mapping@2.9.19:
+    resolution: {integrity: sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg==, tarball: https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.9.19.tgz}
     hasBin: true
 
   before-after-hook@2.2.3:
@@ -9895,8 +9910,8 @@ snapshots:
       '@intlify/shared': 11.1.12
       '@intlify/vue-i18n-extensions': 8.0.0(@intlify/shared@11.1.12)(@vue/compiler-dom@3.5.22)(vue-i18n@11.1.12(vue@3.5.22(typescript@5.9.3)))(vue@3.5.22(typescript@5.9.3))
       '@rollup/pluginutils': 5.3.0
-      '@typescript-eslint/scope-manager': 8.54.0
-      '@typescript-eslint/typescript-estree': 8.54.0(typescript@5.9.3)
+      '@typescript-eslint/scope-manager': 8.55.0
+      '@typescript-eslint/typescript-estree': 8.55.0(typescript@5.9.3)
       debug: 4.4.3
       fast-glob: 3.3.3
       pathe: 2.0.3
@@ -10926,7 +10941,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 25.2.3
+      '@types/node': 18.11.7
 
   '@types/yauzl@2.10.3':
     dependencies:
@@ -12068,7 +12083,7 @@ snapshots:
   base64-js@1.5.1:
     optional: true
 
-  baseline-browser-mapping@2.8.19: {}
+  baseline-browser-mapping@2.9.19: {}
 
   before-after-hook@2.2.3: {}
 
@@ -12134,7 +12149,7 @@ snapshots:
 
   browserslist@4.27.0:
     dependencies:
-      baseline-browser-mapping: 2.8.19
+      baseline-browser-mapping: 2.9.19
       caniuse-lite: 1.0.30001751
       electron-to-chromium: 1.5.239
       node-releases: 2.0.26
