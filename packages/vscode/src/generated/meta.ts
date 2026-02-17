@@ -4,7 +4,7 @@
 // Meta info
 export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
-export const version = "1.2.12"
+export const version = "1.2.13"
 export const displayName = "Naily's ArkTS Support"
 export const description = "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support."
 export const extensionId = `${publisher}.${name}`
@@ -20,6 +20,7 @@ export type CommandKey =
   | "ets.resourceExplorer.openFile"
   | "ets.resourceExplorer.openResourceQualifierEditor"
   | "ets.openHdcManager"
+  | "ets.openDeviceManager"
 
 /**
  * Commands map registered by `NailyZero.vscode-naily-ets`
@@ -56,10 +57,15 @@ export const commands = {
    */
   etsResourceExplorerOpenResourceQualifierEditor: "ets.resourceExplorer.openResourceQualifierEditor",
   /**
-   * 选择已连接的 OpenHarmony/HarmonyOS 设备
+   * 打开 HDC 管理器
    * @value `ets.openHdcManager`
    */
   etsOpenHdcManager: "ets.openHdcManager",
+  /**
+   * 打开设备管理器
+   * @value `ets.openDeviceManager`
+   */
+  etsOpenDeviceManager: "ets.openDeviceManager",
 } satisfies Record<string, CommandKey>
 
 /**
@@ -86,6 +92,7 @@ export type ConfigKey =
   | "ets.ignoreWorkspaceLocalPropertiesFile"
   | "ets.linterVersion"
   | "ets.resourceReferenceDiagnostic"
+  | "ets.localImagePath"
 
 export interface ConfigKeyTypeMap {
   "ets.sdkPath": string,
@@ -95,6 +102,7 @@ export interface ConfigKeyTypeMap {
   "ets.ignoreWorkspaceLocalPropertiesFile": boolean,
   "ets.linterVersion": ("1.0" | "1.1" | "off"),
   "ets.resourceReferenceDiagnostic": ("error" | "warning" | "none"),
+  "ets.localImagePath": (string | undefined),
 }
 
 export interface ConfigShorthandMap {
@@ -105,6 +113,7 @@ export interface ConfigShorthandMap {
   etsIgnoreWorkspaceLocalPropertiesFile: "ets.ignoreWorkspaceLocalPropertiesFile",
   etsLinterVersion: "ets.linterVersion",
   etsResourceReferenceDiagnostic: "ets.resourceReferenceDiagnostic",
+  etsLocalImagePath: "ets.localImagePath",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -115,6 +124,7 @@ export interface ConfigShorthandTypeMap {
   etsIgnoreWorkspaceLocalPropertiesFile: boolean,
   etsLinterVersion: ("1.0" | "1.1" | "off"),
   etsResourceReferenceDiagnostic: ("error" | "warning" | "none"),
+  etsLocalImagePath: (string | undefined),
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -197,6 +207,18 @@ export const configs = {
     key: "ets.resourceReferenceDiagnostic",
     default: "error",
   } as ConfigItem<"ets.resourceReferenceDiagnostic">,
+  /**
+   * 本地HarmonyOS/OpenHarmony模拟器镜像存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Huawei/Sdk`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Sdk`.
+   * @key `ets.localImagePath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsLocalImagePath: {
+    key: "ets.localImagePath",
+    default: undefined,
+  } as ConfigItem<"ets.localImagePath">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -217,6 +239,7 @@ export interface NestedConfigs {
     "ignoreWorkspaceLocalPropertiesFile": boolean,
     "linterVersion": ("1.0" | "1.1" | "off"),
     "resourceReferenceDiagnostic": ("error" | "warning" | "none"),
+    "localImagePath": (string | undefined),
   },
 }
 

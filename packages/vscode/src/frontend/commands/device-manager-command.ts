@@ -5,7 +5,7 @@ import { WebviewPanelContext } from '../../context/webview-panel-context'
 import { HdcServerFunctionImpl } from '../functions/hdc-server-function'
 import { HdcManagerConnectionProtocol } from '../interfaces/hdc-connection-protocol'
 
-@Command('ets.openHdcManager')
+@Command('ets.openDeviceManager')
 export class OpenHdcManagerCommand extends WebviewPanelContext<HdcManagerConnectionProtocol.ClientFunction, HdcManagerConnectionProtocol.ServerFunction> implements Command {
   @Autowired
   protected readonly serverFunction: HdcServerFunctionImpl
@@ -14,7 +14,7 @@ export class OpenHdcManagerCommand extends WebviewPanelContext<HdcManagerConnect
   protected readonly logger: ExtensionLogger
 
   constructor() {
-    super('hdc-manager.html', 'ets.hdcManager', 'ETS HDC Manager', '/device-manager')
+    super('device-manager.html', 'ets.deviceManager', 'ETS Device Manager', '/device-manager')
   }
 
   onExecuteCommand(): void {

@@ -87,7 +87,7 @@ async function handleUseTemplate(fileUrl: string) {
           </NCarousel>
 
           <div>
-            <NH2 mb0>{{ data?.productEntity.productName ?? $t('project.templateMarket.noProductName') }}</NH2>
+            <NH2 class="mb0!">{{ data?.productEntity.productName ?? $t('project.templateMarket.noProductName') }}</NH2>
             <NP>{{ data?.productEntity.briefInfo ?? $t('project.templateMarket.noBriefInfo') }}</NP>
 
             <div flex="~ col gap-2">
@@ -100,7 +100,7 @@ async function handleUseTemplate(fileUrl: string) {
               </div>
             </div>
 
-            <NButton type="primary" mt-5 @click="handleUseTemplate(data?.productTemplateList?.[0]?.fileUrl ?? '')">使用此模版</NButton>
+            <NButton type="primary" class="mt-5!" @click="handleUseTemplate(data?.productTemplateList?.[0]?.fileUrl ?? '')">使用此模版</NButton>
           </div>
         </div>
 
@@ -116,8 +116,8 @@ async function handleUseTemplate(fileUrl: string) {
           </NTabPane>
           <NTabPane :name="$t('project.templateMarket.versionHistory')" flex="~ col gap-2">
             <div v-for="(template, templateIndex) in data?.productTemplateList ?? []" :key="templateIndex">
-              <NH2 m0 p0>{{ template.version }}</NH2>
-              <NP m0 p0>{{ template.desc }}</NP>
+              <NH2 class="m0! p0!">{{ template.version }}</NH2>
+              <NP class="m0! p0!">{{ template.desc }}</NP>
               <NButton type="primary" mt-5 @click="handleUseTemplate(template.fileUrl)">使用此模版</NButton>
               <hr v-if="templateIndex !== (data?.productTemplateList?.length ?? 0) - 1" op-50 mt-3>
             </div>

@@ -25,7 +25,7 @@ function renderLanguageLabel(option: SelectMixedOption & { flags?: string[] }, s
       <NFormItem :label="$t('qualifierEditor.locale.language')">
         <NSelect v-model:value="model.language" :render-label="renderLanguageLabel" :options="languages" />
       </NFormItem>
-      <NFormItem :label="$t('qualifierEditor.locale.region')">
+      <NFormItem :label="$t('qualifierEditor.locale.region.title')">
         <NSelect v-model:value="model.region" :options="regions" clearable />
       </NFormItem>
       <NFormItem :show-label="false">

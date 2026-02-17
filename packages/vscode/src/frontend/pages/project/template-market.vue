@@ -49,11 +49,13 @@ watch(isOnline, newValue => newValue === true ? error.value = null : null)
     <Heading :title="$t('project.templateMarket.title')" back>
       <NTabs v-model:value="viewMode" type="segment" size="large">
         <NTab name="list" class="p0! m0!">
-          <NIcon m2 flex="~ gap-2 items-center"><div i-ph-list-duotone font-size="2xl" /></NIcon>
+          <NIcon m2 flex="~ gap-2 items-center">
+            <div i-ph-list-duotone />
+          </NIcon>
         </NTab>
         <NTab name="grid" class="p0! m0!">
           <NIcon m2 flex="~ gap-2 items-center">
-            <div i-ph-squares-four-duotone font-size="2xl" />
+            <div i-ph-squares-four-duotone />
           </NIcon>
         </NTab>
       </NTabs>

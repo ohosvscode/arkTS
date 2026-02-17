@@ -4,7 +4,7 @@
   "displayName": "Naily's ArkTS Support",
   "version": "1.2.13",
   "private": true,
-  "description": "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support.",
+  "description": "功能最全的鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/OpenHarmony SDK下载管理/HarmonyOS模拟器下载管理, 欢迎PR!",
   "author": "Naily Zero <zero@naily.cc>",
   "license": "MIT",
   "repository": {
@@ -19,7 +19,12 @@
   "keywords": [
     "ArkTS",
     "ets",
-    "huawei"
+    "huawei",
+    "hvigor",
+    "harmonyos",
+    "openharmony",
+    "ohos",
+    "hdc"
   ],
   "categories": [
     "Programming Languages",
@@ -195,6 +200,16 @@
           "command": "ets.resourceExplorer.refresh",
           "group": "navigation",
           "when": "view == ets.resourceExplorer"
+        },
+        {
+          "command": "ets.openDeviceManager",
+          "group": "navigation",
+          "when": "view == ets.hdcManager"
+        },
+        {
+          "command": "ets.copyHdcPathToClipboard",
+          "group": "navigation",
+          "when": "view == ets.hdcManager"
         }
       ],
       "view/item/context": [
@@ -217,12 +232,6 @@
       "editor/title": [
         {
           "command": "ets.restartServer"
-        }
-      ],
-      "editor/title/run": [
-        {
-          "command": "ets.openHdcManager",
-          "group": "navigation"
         }
       ]
     },
@@ -355,9 +364,15 @@
         "category": "ETS"
       },
       {
-        "command": "ets.openHdcManager",
-        "title": "%command.openHdcManager%",
+        "command": "ets.openDeviceManager",
+        "title": "%command.openDeviceManager%",
         "icon": "$(device-desktop)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.copyHdcPathToClipboard",
+        "title": "%command.copyHdcPathToClipboard%",
+        "icon": "$(copy)",
         "category": "ETS"
       }
     ],
@@ -419,6 +434,21 @@
           "type": "string",
           "description": "%configuration.ets.localImagePath.description%",
           "markdownDescription": "%configuration.ets.localImagePath.description%"
+        },
+        "ets.imageConfigPath": {
+          "type": "string",
+          "description": "%configuration.ets.imageConfigPath.description%",
+          "markdownDescription": "%configuration.ets.imageConfigPath.description%"
+        },
+        "ets.deployedEmulatorPath": {
+          "type": "string",
+          "description": "%configuration.ets.deployedEmulatorPath.description%",
+          "markdownDescription": "%configuration.ets.deployedEmulatorPath.description%"
+        },
+        "ets.emulatorLogPath": {
+          "type": "string",
+          "description": "%configuration.ets.emulatorLogPath.description%",
+          "markdownDescription": "%configuration.ets.emulatorLogPath.description%"
         }
       }
     },

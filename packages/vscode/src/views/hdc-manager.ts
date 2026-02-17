@@ -25,7 +25,7 @@ export class HdcManagerView extends WebviewContext<HdcManagerConnectionProtocol.
       enableForms: true,
     }
     this.logger.getConsola().info('HdcManagerView resolved.')
-    super.attachWebview(webviewView, this.extensionContext.extensionUri, 'hdc-manager.html', this.serverFunction, '/device-manager')
+    super.attachWebview(webviewView, this.extensionContext.extensionUri, 'hdc-manager.html', this.serverFunction, '/hdc-manager')
   }
 
   async onActivate(context: vscode.ExtensionContext): Promise<void> {

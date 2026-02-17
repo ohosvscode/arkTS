@@ -30,7 +30,7 @@ async function handleUseTemplate() {
     </div>
 
     <div w-full flex="~ col" :class="viewMode === 'grid' ? 'gap-2 justify-around' : 'gap-4'">
-      <NH2 class="text-lg font-bold mb0">
+      <NH2 class="text-lg! font-bold! mb0!">
         {{ data.productName }}
       </NH2>
       <NText>{{ data.briefInfo }}</NText>

@@ -76,12 +76,10 @@ const isThrowErrorIfNoNetwork = computed(() => {
   return false
 })
 watch(isThrowErrorIfNoNetwork, () => key.value++)
-
-onErrorCaptured(() => !import.meta.env.SSR)
 </script>
 
 <template>
-  <div class="mx-1 md:mx-10 lg:mx-20 xl:mx-30 2xl:mx-60 mt-6 mb-10 md:mt-13 transition-all duration-300 relative">
+  <div transition="all 300" relative :class="$route.meta.noGap ? '' : 'mx-1 md:mx-10 lg:mx-20 xl:mx-30 2xl:mx-60 mt-6 mb-10 md:mt-13'">
     <RouterView v-slot="{ Component }">
       <template v-if="Component">
         <Transition v-bind="transitionClasses">

@@ -30,6 +30,20 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/device-manager/create-device': RouteRecordInfo<
+      '/device-manager/create-device',
+      '/device-manager/create-device',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/device-manager/image-manager': RouteRecordInfo<
+      '/device-manager/image-manager',
+      '/device-manager/image-manager',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/hdc-manager/': RouteRecordInfo<
       '/hdc-manager/',
       '/hdc-manager',
@@ -81,6 +95,18 @@ declare module 'vue-router/auto-routes' {
     'src/frontend/pages/device-manager/index.vue': {
       routes:
         | '/device-manager/'
+      views:
+        | never
+    }
+    'src/frontend/pages/device-manager/create-device.vue': {
+      routes:
+        | '/device-manager/create-device'
+      views:
+        | never
+    }
+    'src/frontend/pages/device-manager/image-manager.vue': {
+      routes:
+        | '/device-manager/image-manager'
       views:
         | never
     }

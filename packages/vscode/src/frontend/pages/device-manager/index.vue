@@ -1,118 +1,64 @@
-<script setup lang="tsx">
-import type { TableColumns } from 'naive-ui/es/data-table/src/interface'
-import type { HdcManagerConnectionProtocol } from '../../interfaces/hdc-connection-protocol'
-
-const { t } = useI18n()
+<script setup lang="ts">
+import type { FullDeployedImageOptions } from '@arkts/image-manager'
+import { getIconByDeviceType } from '../../composables/device-type-icon'
 
 const connection = useHdcConnection()
-const { images } = await connection.requestRemoteImageList?.() ?? { images: [] }
-const isValidLocalImagePath = ref(await connection.isValidLocalImagePath?.(await connection.getLocalImagePath?.() ?? ''))
-const localImagePath = ref(await connection.getLocalImagePath?.())
-const feedback = computed(() => {
-  switch (isValidLocalImagePath.value) {
-    case 'not-folder':
-      return t('hdcManager.deviceManager.localImagePath.feedback.not-folder')
-    case 'not-exists':
-      return t('hdcManager.deviceManager.localImagePath.feedback.not-exists')
-    case 'invalid-permission':
-      return t('hdcManager.deviceManager.localImagePath.feedback.invalid-permission')
-    default:
-      return t('hdcManager.deviceManager.localImagePath.feedback')
-  }
+const deployedEmulatorPath = computed(() => {
+  return '/Users/naily/.huawei/Emulator/deployed'
 })
-const canDownload = computed(() => isValidLocalImagePath.value === true)
-onDidChangeLocalImagePath((path, isValid) => {
-  localImagePath.value = path
-  isValidLocalImagePath.value = isValid
-})
-const columns: TableColumns<HdcManagerConnectionProtocol.ServerFunction.RequestRemoteImageList.Image> = [
-  {
-    title: 'Device Name',
-    key: 'title',
-    render: row => (
-      <div class="flex items-center gap-2">
-        <div class={`${getIconByDeviceType(row.deviceType)} text-2xl`} />
-        {`${row.systemName}(${row.targetVersion})`}
-      </div>
-    ),
-    minWidth: 200,
-  },
-  {
-    title: 'API Version',
-    key: 'apiVersion',
-    sorter: (a, b) => a.numericApiVersion - b.numericApiVersion,
-    minWidth: 120,
-  },
-  {
-    title: 'Device Type',
-    key: 'deviceType',
-    filterOptions: [
-      { label: 'phone', value: 'phone' },
-      { label: 'tablet', value: 'tablet' },
-      { label: 'pc', value: 'pc' },
-      { label: 'wearable', value: 'wearable' },
-      { label: 'tv', value: 'tv' },
-      { label: 'foldable', value: 'foldable' },
-      { label: 'widefold', value: 'widefold' },
-      { label: '2in1', value: '2in1' },
-    ],
-    filter: (value, row) => row.deviceType === value,
-    minWidth: 130,
-  },
-  {
-    key: 'action',
-    render: (row) => {
-      return (
-        <NButton size="small" disabled={!canDownload.value} type="primary" onClick={() => downloadImage(row)}>
-          {{ default: () => t('download'), icon: () => <div class="i-ph-download-duotone" /> }}
-        </NButton>
-      )
-    },
-  },
-]
-
-function downloadImage(row: HdcManagerConnectionProtocol.ServerFunction.RequestRemoteImageList.Image) {
-  connection.requestRemoteImageDownload?.(row)
-}
-
-function getIconByDeviceType(deviceType: HdcManagerConnectionProtocol.ServerFunction.RequestRemoteImageList.Image.DeviceType) {
-  switch (deviceType) {
-    case 'phone':
-      return 'i-ph-device-mobile-camera-duotone'
-    case 'tablet':
-      return 'i-ph-device-tablet-camera-duotone'
-    case 'pc':
-      return 'i-ph-devices-duotone'
-    case 'wearable':
-      return 'i-ph-watch-duotone'
-    case 'tv':
-      return 'i-ph-television-duotone'
-    case 'foldable':
-      return 'i-ph-device-tablet-duotone'
-    case 'widefold':
-      return 'i-ph-device-tablet-speaker-duotone'
-    case '2in1':
-      return 'i-ph-laptop-duotone'
-    default:
-      return 'i-ph-question-duotone'
-  }
-}
+const devices = ref<FullDeployedImageOptions[]>([])
+await connection.getLocalDevices?.().then(res => devices.value = res.devices)
 </script>
 
 <template>
   <div>
-    <Heading :title="$t('hdcManager.deviceManager')" />
+    <Heading :title="$t('hdcManager.deviceManager.title')">
+      <NButton type="primary" @click="$router.push('/device-manager/image-manager')">
+        <template #icon><div i-ph-disc-duotone /></template>
+        {{ $t('hdcManager.imageManager.title') }}
+      </NButton>
+    </Heading>
     <NFormItem
       size="small"
-      :label="$t('hdcManager.deviceManager.localImagePath.title')"
+      :label="$t('hdcManager.deviceManager.deployedEmulatorPath.title')"
       label-placement="left"
-      class="opacity-feedback"
-      :feedback="feedback"
-      :validation-status="canDownload ? undefined : 'error'"
+      class="opacity-feedback mb-1"
+      :feedback="$t('hdcManager.deviceManager.deployedEmulatorPath.feedback')"
     >
-      <NInput v-model:value="localImagePath" readonly />
+      <NInput v-model:value="deployedEmulatorPath" readonly mr-2 />
+      <a href="command:workbench.action.openSettings?%7B%22query%22%3A%22ets.deployedEmulatorPath%22%7D">
+        <NButton text type="info">编辑</NButton>
+      </a>
     </NFormItem>
-    <NDataTable :scroll-x="300" striped mt-1 size="small" :columns :data="images" />
+    <NList hoverable clickable>
+      <NListItem v-for="(device, index) in devices" :key="index">
+        <NThing :title="device.name">
+          <template #avatar>
+            <div :class="`${getIconByDeviceType(device.type)} text-2xl`" />
+          </template>
+          <template #description>
+            <div class="flex items-center gap-2 flex-wrap">
+              <NTag size="small" type="info">DeviceType: {{ device.type }}</NTag>
+              <NTag size="small" type="info">UUID: {{ device.uuid }}</NTag>
+              <NTag size="small" type="info">CPU: {{ device.cpuNumber }}核心</NTag>
+              <NTag size="small" type="info">RAM: {{ device.memoryRamSize }}MB</NTag>
+              <NTag size="small" type="info">像素密度: {{ device.density }}PPI</NTag>
+              <NTag size="small" type="info">分辨率高度: {{ device.resolutionHeight }}</NTag>
+              <NTag size="small" type="info">分辨率宽度: {{ device.resolutionWidth }}</NTag>
+              <NTag size="small" type="info">屏幕大小: {{ device.diagonalSize }}英寸</NTag>
+              <NTag size="small" type="info">版本: {{ device.showVersion }}</NTag>
+              <NTag size="small" type="info">CPU/ABI: {{ device.abi }}</NTag>
+            </div>
+          </template>
+          <template #header-extra>
+            <NButton type="primary" size="small" @click="connection.startDevice(device)">
+              启动
+              <template #icon><div i-ph-play-duotone /></template>
+            </NButton>
+          </template>
+        </NThing>
+      </NListItem>
+    </NList>
   </div>
 </template>
 

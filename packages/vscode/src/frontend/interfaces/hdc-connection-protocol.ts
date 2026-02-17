@@ -1,6 +1,8 @@
+import type { FullDeployedImageOptions, LocalImage, RemoteImage } from '@arkts/image-manager'
+import type { Arrayable } from '@vueuse/core'
 import type { ProtocolContext } from '../../context/protocol-context'
 import type { WebviewContext } from '../../context/webview-context'
-import process from 'node:process'
+import type { ParsedIfconfig } from '../utils/parse-ifconfig'
 
 export namespace HdcManagerConnectionProtocol {
   export interface ClientFunction extends WebviewContext.ClientFunction {
@@ -8,6 +10,10 @@ export namespace HdcManagerConnectionProtocol {
      * Called when the local image path changes.
      */
     onDidChangeLocalImagePath(path: string, isValid: ServerFunction.isValidLocalImagePath.Response): void
+    /**
+     * Called when the webview panel is refreshed.
+     */
+    onDidRefresh(): void
   }
 
   export interface ServerFunction extends ProtocolContext<ClientFunction, ServerFunction> {
@@ -31,24 +37,61 @@ export namespace HdcManagerConnectionProtocol {
      */
     getConnectedDevices(): Promise<ServerFunction.GetConnectedDevices.Response>
     /**
-     * Copy the given text to the clipboard.
+     * Get the information of the device.
      *
-     * @param text The text to copy.
-     * @param showMessage Whether to show a success message after copying. Default is `true`.
+     * @param connectKey The connect key of the device.
+     * @returns The information of the device.
      */
-    copyTextToClipboard(text: string, showMessage?: boolean): Promise<void>
+    getDeviceInfo(connectKey: string): Promise<ServerFunction.GetDeviceInfo.Response>
+    /**
+     * Set the log level of the hilog.
+     *
+     * @param logLevel The log level to set.
+     * @param connectKey The connect key of the device.
+     */
+    setLogLevel(logLevel: Arrayable<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>, connectKey: string): Promise<void>
+    /**
+     * Open the hilog.
+     */
+    openHilog(): Promise<void>
+    /**
+     * Open the connect device dialog.
+     */
+    openConnectDeviceDialog(): Promise<void>
+    /**
+     * Disconnect the device.
+     *
+     * @param connectKey The connect key of the device.
+     */
+    disconnectDevice(connectKey: string): Promise<void>
+    /**
+     * Get the list of local devices.
+     */
+    getLocalDevices(): Promise<HdcManagerConnectionProtocol.ServerFunction.GetLocalDevices.Response>
     /**
      * Request the list of remote images by operating system and architecture.
      *
      * @returns The list of remote images by operating system and architecture.
      */
-    requestRemoteImageList(request?: ServerFunction.RequestRemoteImageList.Request): Promise<ServerFunction.RequestRemoteImageList.Response>
+    requestRemoteImageList(): Promise<ServerFunction.RequestRemoteImageList.Response>
     /**
      * Download the remote image.
      *
      * @param image The remote image to download.
      */
-    requestRemoteImageDownload(image: ServerFunction.RequestRemoteImageList.Image): Promise<void>
+    requestRemoteImageDownload(image: RemoteImage.Stringifiable): Promise<void>
+    /**
+     * Delete the local image.
+     *
+     * @param localImage The local image to delete.
+     */
+    deleteLocalImage(localImage: LocalImage.Stringifiable): Promise<void>
+    /**
+     * Start the device.
+     *
+     * @param device The device to start.
+     */
+    startDevice(device: FullDeployedImageOptions): Promise<void>
   }
 
   export namespace ServerFunction {
@@ -74,86 +117,91 @@ export namespace HdcManagerConnectionProtocol {
       }
     }
 
+    export namespace GetLocalDevices {
+      export interface Response {
+        /**
+         * The list of local devices.
+         */
+        devices: FullDeployedImageOptions[]
+      }
+    }
+
+    export namespace GetDeviceInfo {
+      export interface Response {
+        /** @example 50 */
+        cpuUsage: number
+        /** @example 50 */
+        memoryUsage: number
+        /** Storage usage percentage (0–100) of root partition. @example 65.5 */
+        storageUsage: number
+        /** @example '22' */
+        apiVersion: string
+        /** @example 'arm64-v8a' */
+        cpuAbilist: string
+        /** @example 'MIA-AL00' */
+        model: string
+        /** @example 'HUAWEI' */
+        brand: string
+        /** @example 'HarmonyOS' */
+        osDistName: string
+        /** @example 'Nova 14 Pro' */
+        productName: string
+        /** @example '1.0.0' */
+        incrementalVersion: string
+        /** @example 'OpenHarmony-6.0.2.130' */
+        fullName: string
+        /** @example 100 */
+        batteryCapacity: number
+        /** @example 3.7 */
+        batteryVoltage: number
+        /** @example 250 */
+        batteryTemperature: number
+        /** @example 1 */
+        batteryNowCurrent: number
+        /** @example 1000 */
+        batteryTotalEnergy: number
+        /** @example 1000 */
+        batteryRemainingEnergy: number
+        /** @example 1000 */
+        batteryRemainingChargeTime: number
+        /** @example 0 | 1 */
+        batteryStatus: 0 | 1
+        /** @example 'Li-ion' | 'Li-poly' */
+        batteryTechnology: string
+        /** Ifconfig. */
+        network: ParsedIfconfig[]
+      }
+
+      export const defaultResponse: Response = {
+        cpuUsage: 0,
+        memoryUsage: 0,
+        storageUsage: 0,
+        apiVersion: '',
+        cpuAbilist: '',
+        model: '',
+        brand: '',
+        osDistName: '',
+        productName: '',
+        incrementalVersion: '',
+        fullName: '',
+        batteryCapacity: 0,
+        batteryVoltage: 0,
+        batteryTemperature: 0,
+        batteryNowCurrent: 0,
+        batteryTotalEnergy: 0,
+        batteryRemainingEnergy: 0,
+        batteryRemainingChargeTime: 0,
+        batteryTechnology: '',
+        batteryStatus: 0,
+        network: [],
+      }
+    }
     export namespace RequestRemoteImageList {
-      export type OS = 'windows' | 'mac' | 'linux'
-      export type Arch = 'x86' | 'arm64'
-
-      export interface Request {
-        /**
-         * Default is current operating system.
-         */
-        os?: OS
-        /**
-         * Default is current architecture.
-         */
-        arch?: Arch
-      }
-
-      export namespace Request {
-        export function resolve(value: Request = {}): Required<Request> {
-          return {
-            os: value.os ?? process.platform === 'win32' ? 'windows' : process.platform === 'darwin' ? 'mac' : 'linux',
-            arch: value.arch ?? process.arch === 'x64' ? 'x86' : 'arm64',
-          }
-        }
-      }
-
-      export interface Image {
-        /**
-         * The unique identifier of the remote image.
-         *
-         * @example 'system-image,HarmonyOS-6.0.0,phone_all_arm'
-         */
-        id: Image.Id
-        /**
-         * The version of the remote image.
-         *
-         * @example '6.0.0.48'
-         */
-        version: string
-        /**
-         * The API version of the remote image.
-         *
-         * @example 'API21'
-         */
-        apiVersion: Image.ApiVersion
-        /**
-         * The numeric API version of the remote image.
-         *
-         * @example 21
-         */
-        numericApiVersion: number
-        /**
-         * The target version of the remote image.
-         *
-         * @example '6.0.0' is mean HarmonyOS 6.0.0.
-         */
-        targetVersion: string
-        /**
-         * The device type of the remote image.
-         *
-         * @example 'phone'
-         */
-        deviceType: string
-        /**
-         * The system name of the remote image.
-         *
-         * @example 'HarmonyOS'
-         */
-        systemName: string
-      }
-
-      export namespace Image {
-        export type Id = `${string},${string},${string}`
-        export type ApiVersion = `API${number}`
-        export type DeviceType = 'phone' | 'tablet' | 'pc' | 'wearable' | 'tv' | 'foldable' | 'widefold' | '2in1' | (string & {})
-      }
-
       export interface Response {
         /**
          * The list of remote images.
          */
-        images: Image[]
+        images: (LocalImage.Stringifiable | RemoteImage.Stringifiable)[]
       }
     }
   }

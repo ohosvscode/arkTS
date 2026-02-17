@@ -43,6 +43,7 @@ declare global {
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
+  const getIconByDeviceType: typeof import('./composables/device-type-icon').getIconByDeviceType
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
@@ -66,6 +67,7 @@ declare global {
   const onDeactivated: typeof import('vue').onDeactivated
   const onDidChangeActiveColorTheme: typeof import('./composables/on-did-change-active-color-theme').onDidChangeActiveColorTheme
   const onDidChangeLocalImagePath: typeof import('./composables/on-did-change-local-image-path').onDidChangeLocalImagePath
+  const onDidRefresh: typeof import('./composables/on-did-refresh').onDidRefresh
   const onElementRemoval: typeof import('@vueuse/core').onElementRemoval
   const onErrorCaptured: typeof import('vue').onErrorCaptured
   const onKeyStroke: typeof import('@vueuse/core').onKeyStroke
@@ -145,6 +147,7 @@ declare global {
   const useBroadcastChannel: typeof import('@vueuse/core').useBroadcastChannel
   const useBrowserLocation: typeof import('@vueuse/core').useBrowserLocation
   const useCached: typeof import('@vueuse/core').useCached
+  const useCallOnce: typeof import('./composables/call-once').useCallOnce
   const useClipboard: typeof import('@vueuse/core').useClipboard
   const useClipboardItems: typeof import('@vueuse/core').useClipboardItems
   const useCloned: typeof import('@vueuse/core').useCloned

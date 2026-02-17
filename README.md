@@ -95,12 +95,15 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 | Key                                      | Description                                                                 | Type      | Default                       |
 | ---------------------------------------- | --------------------------------------------------------------------------- | --------- | ----------------------------- |
 | `ets.sdkPath`                            | OpenHarmony SDK 路径。每次更改此设置时将会重启 ETS 语言服务器。(此路径对应deveco studio 安装目录下的`sdk/default/openharmony`路径)                                     | `string`  | `""`                          |
-| `ets.baseSdkPath`                        | 默认其它版本 OpenHarmony SDK 安装路径路径。所有版本的 SDK 都将安装在此路径下。（您可以使用 `${os.homedir}` 代表用户主目录）(此路经对应deveco studio 设置中的 OpenHarmony SDK 位置)                                 | `string`  | `"${os.homedir}/OpenHarmony"` |
+| `ets.baseSdkPath`                        | 默认其它版本 OpenHarmony SDK 安装路径路径。所有版本的 SDK 都将安装在此路径下。(此路经对应deveco studio 设置中的 OpenHarmony SDK 位置)                                 | `string`  | `"${os.homedir}/OpenHarmony"` |
 | `ets.hmsPath`                            | HMS SDK 路径。因为 HMS SDK 是独立于 OpenHarmony SDK 的，所以需要另外单独设置。一般您可以在 DevEco Studio 安装目录下找到该SDK。(此路径对应deveco studio 安装目录下的`sdk/default/harmony`路径)                                     | `string`  | `""`                          |
 | `ets.lspDebugMode`                       | 启用 ETS 语言服务器调试日志。                                | `boolean` | `false`                       |
 | `ets.ignoreWorkspaceLocalPropertiesFile` | 忽略从本地工作区 `local.properties` 文件中自动推断基础 SDK 路径。          | `boolean` | `false`                       |
 | `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
 | `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
+| `ets.localImagePath`                     | 本地HarmonyOS/OpenHarmony模拟器镜像存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Huawei/Sdk`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
 
 <!-- configs -->
 
@@ -116,7 +119,8 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 | `ets.resourceExplorer.refresh`                     | ETS: 刷新 Hvigor 资源管理器                     |
 | `ets.resourceExplorer.openFile`                    | ETS: 在编辑器中打开文件                    |
 | `ets.resourceExplorer.openResourceQualifierEditor` | ETS: 打开资源限定符编辑器 |
-| `ets.openHdcManager`                               | ETS: 选择已连接的 OpenHarmony/HarmonyOS 设备                        |
+| `ets.openHdcManager`                               | ETS: 打开 HDC 管理器                               |
+| `ets.openDeviceManager`                            | ETS: 打开设备管理器                            |
 
 <!-- commands -->
 

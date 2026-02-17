@@ -78,37 +78,37 @@ async function submit() {
     <!-- This mt-5 is for the padding of the container. -->
     <div mt-5 flex="~ col-reverse sm:row justify-center gap-5">
       <NCollapse w-full arrow-placement="right" :trigger-areas="['arrow', 'main']">
-        <NCollapseItem :title="$t('qualifierEditor.mccAndMnc')">
+        <NCollapseItem :title="$t('qualifierEditor.mccAndMnc.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.mccAndMnc.checked" />
           </template>
           <MccMnc v-model="mccAndMnc" />
         </NCollapseItem>
-        <NCollapseItem :title="$t('qualifierEditor.locale')">
+        <NCollapseItem :title="$t('qualifierEditor.locale.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.locale.checked" />
           </template>
           <Locale v-model="locale" />
         </NCollapseItem>
-        <NCollapseItem :title="$t('qualifierEditor.orientation')">
+        <NCollapseItem :title="$t('qualifierEditor.orientation.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.orientation.checked" />
           </template>
           <Orientation v-model="orientation" />
         </NCollapseItem>
-        <NCollapseItem :title="$t('qualifierEditor.device')">
+        <NCollapseItem :title="$t('qualifierEditor.device.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.device.checked" />
           </template>
           <Device v-model="device" />
         </NCollapseItem>
-        <NCollapseItem :title="$t('qualifierEditor.colorMode')">
+        <NCollapseItem :title="$t('qualifierEditor.colorMode.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.colorMode.checked" />
           </template>
           <ColorMode v-model="colorMode" />
         </NCollapseItem>
-        <NCollapseItem :title="$t('qualifierEditor.density')">
+        <NCollapseItem :title="$t('qualifierEditor.density.title')">
           <template #header-extra>
             <NSwitch v-model:value="qualifiers.density.checked" />
           </template>
@@ -118,15 +118,15 @@ async function submit() {
 
       <div w-full relative transition="all">
         <div transition="all duration-300" :style="{ width: lessThanSm ? '100%' : `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
-          <NH2 text="4" font="500" mb="1 sm:2">{{ $t('qualifierEditor.resourceUri') }}</NH2>
+          <NH2 text="4!" font="500" mb="1! sm:2!">{{ $t('qualifierEditor.resourceUri') }}</NH2>
           <div op-70>{{ resourceRelativeFsPath }}</div>
-          <NH2 text="4" font="500" mb="1 sm:2">{{ $t('qualifierEditor.willCreateDirectories') }}</NH2>
+          <NH2 text="4!" font="500" mb="1! sm:2!">{{ $t('qualifierEditor.willCreateDirectories') }}</NH2>
           <div mb="5">
             <NCheckbox v-model:checked="willCreateDirectories.element">Element</NCheckbox>
             <NCheckbox v-model:checked="willCreateDirectories.media">Media</NCheckbox>
             <NCheckbox v-model:checked="willCreateDirectories.profile">Profile</NCheckbox>
           </div>
-          <NH2 text="4" font="500" mb="1 sm:2" mt-0>{{ $t('qualifierEditor.preview') }}</NH2>
+          <NH2 text="4!" font="500" mb="1! sm:2!" mt-0>{{ $t('qualifierEditor.preview') }}</NH2>
           <div w-full h-fit transition="all duration-300" mb="2 sm:4" flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
             <div v-if="value" transition="all duration-300" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
             <NEmpty v-else flex="~ row justify-center gap1" class="empty">请至少选择一个筛选器</NEmpty>

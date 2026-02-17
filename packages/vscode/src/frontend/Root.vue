@@ -59,9 +59,14 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     colorSegmentActive: 'var(--vscode-button-hoverBackground)',
     tabColor: 'var(--vscode-input-background)',
     tabBorderColor: 'var(--vscode-button-background)',
+    tabTextColorActiveBar: 'var(--vscode-button-background)',
+    barColor: 'var(--vscode-button-background)',
   },
   Tag: {
     border: '1px solid var(--vscode-button-background)',
+    colorBordered: 'var(--vscode-button-background)',
+    closeIconColor: 'var(--vscode-badge-foreground)',
+    closeIconColorHover: 'var(--vscode-badge-foreground)',
   },
   Button: {
     border: 'var(--vscode-input-border)',
@@ -71,6 +76,16 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     colorFocusPrimary: 'var(--vscode-button-hoverBackground)',
     colorHover: 'var(--vscode-button-hoverBackground)',
     borderPrimary: 'var(--vscode-input-border)',
+    colorError: 'var(--vscode-editorError-foreground)',
+    colorErrorHover: 'var(--vscode-errorForeground)',
+    colorErrorPressed: 'var(--vscode-errorForeground)',
+    colorErrorFocus: 'var(--vscode-errorForeground)',
+    borderError: 'var(--vscode-editorError-foreground)',
+    colorInfo: 'var(--vscode-editorInfo-foreground)',
+    colorInfoHover: 'var(--vscode-infoForeground)',
+    colorInfoPressed: 'var(--vscode-infoForeground)',
+    colorInfoFocus: 'var(--vscode-infoForeground)',
+    borderInfo: 'var(--vscode-editorInfo-foreground)',
   },
   Checkbox: {
     colorChecked: 'var(--vscode-checkbox-selectBackground)',
@@ -110,6 +125,9 @@ const rawThemeOverrides: GlobalThemeOverrides = {
         colorActive: 'var(--vscode-checkbox-background)',
         colorActiveError: 'var(--vscode-errorForeground)',
         colorActiveWarning: 'var(--vscode-warningForeground)',
+        common: {
+          tagColor: 'var(--vscode-button-background)',
+        },
       },
     },
   },
@@ -143,15 +161,64 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     color: 'var(--vscode-dropdown-background)',
     dividerColor: 'var(--vscode-dropdown-border)',
   },
+  List: {
+    colorHover: 'var(--vscode-button-secondaryHoverBackground)',
+    borderRadius: '2px',
+    borderColor: 'none',
+  },
 }
 
 /** 必须在首次渲染前解析，否则 DataTable 等组件内部会因 seemly 解析 var() 报错 */
 const themeOverrides = ref<GlobalThemeOverrides>(resolveTheme(rawThemeOverrides))
 onDidChangeActiveColorTheme(() => themeOverrides.value = resolveTheme(rawThemeOverrides))
+
+const route = useRoute()
+const { isOnline } = useNetwork()
+const error = ref<Error | null>(null)
+const key = ref(0)
+onErrorCaptured((err) => {
+  error.value = err as Error
+  return !import.meta.env.SSR
+})
+
+const isThrowErrorIfNoNetwork = computed(() => {
+  if (route.meta.throwErrorIfNoNetwork === true && !isOnline.value) return true
+  return false
+})
+watch(isThrowErrorIfNoNetwork, () => key.value++)
 </script>
 
 <template>
-  <NConfigProvider :theme-overrides="themeOverrides" inline-theme-disabled :locale>
-    <RouterView />
-  </NConfigProvider>
+  <Suspense>
+    <NConfigProvider :theme-overrides="themeOverrides" inline-theme-disabled :locale>
+      <RouterView />
+    </NConfigProvider>
+    <template #fallback>
+      <div class="relative top-[-6rem] left-[-1rem] right-[-1rem] bottom-0 flex flex-col items-center justify-center gap-2 z-50 w-[calc(100%+2rem)] h-screen">
+        <div v-if="error" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
+          <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
+          <div select-none>
+            加载失败, 请提交 issue 或联系开发者修复此问题：
+          </div>
+          <a href="https://github.com/ohosvscode/arkTS/issues">
+            https://github.com/ohosvscode/arkTS/issues
+          </a>
+          <NCode class="text-sm whitespace-pre-wrap">
+            {{ error?.stack }}
+          </NCode>
+        </div>
+
+        <div v-else-if="isThrowErrorIfNoNetwork" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
+          <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
+          <div select-none>
+            {{ $t('noNetwork') }}
+          </div>
+        </div>
+
+        <div v-else class="flex flex-col items-center justify-center gap-2">
+          <LoadingSpinner size-full />
+        </div>
+      </div>
+    </template>
+  </Suspense>
 </template>

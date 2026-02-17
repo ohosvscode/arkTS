@@ -8,8 +8,17 @@ import { useCompiledWebviewPanel } from '../hook/compiled-webview'
 import { keepClassInstanceThis } from '../utils/keep-this'
 
 export abstract class WebviewContext<RemoteFunctions extends WebviewContext.ClientFunction, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> {
-  protected _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
+  private _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
   protected abstract readonly logger: ExtensionLogger
+
+  getCurrentConnection(): BirpcReturn<RemoteFunctions, LocalFunctions> {
+    return this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>
+  }
+
+  disposeCurrentConnection(): void {
+    this._currentConnection?.$close()
+    this._currentConnection = undefined
+  }
 
   protected attachWebview<T extends vscode.WebviewPanel | vscode.WebviewView>(
     webviewContainer: T,

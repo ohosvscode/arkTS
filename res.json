@@ -1,0 +1,618 @@
+[
+  {
+    "path": "system-image,HarmonyOS-6.0.1,pc_all_arm",
+    "apiVersion": "21",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.112",
+    "displayName": "System-image-pc_all",
+    "description": "HarmonyOS emulator image for pc_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2408997259",
+        "checksum": "8da9ca177cb9cf86279cba6da92985c517e5dd20c30b3da61b0db84b5bcc156f",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.1,phone_all_arm",
+    "apiVersion": "21",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.112",
+    "displayName": "System-image-phone_all",
+    "description": "HarmonyOS emulator image for phone_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2150066000",
+        "checksum": "ee789eb262fc28ce337cfc6f17e7ca677ffa5fdd28c7a70668409ad93e880645",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.1,tablet_arm",
+    "apiVersion": "21",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.112",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "1967843521",
+        "checksum": "474b14e09ed89419b29115d04cbd0b80580991097f974243abe79594c3be0237",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.1,wearable_arm",
+    "apiVersion": "21",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.112",
+    "displayName": "System-image-wearable",
+    "description": "HarmonyOS emulator image for wearable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "825438607",
+        "checksum": "a95fdd4d680f576f283d1262c958b4d3ab4352ed66f27974d90a68d0e1b9d3ad",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.0,pc_all_arm",
+    "apiVersion": "20",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.48",
+    "displayName": "System-image-pc_all",
+    "description": "HarmonyOS emulator image for pc_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2355770373",
+        "checksum": "529ee3e7c87a10ba8e3ca07184da7b3bd12f52ca4b71a818a1e60c1ef361cb9b",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.0,phone_all_arm",
+    "apiVersion": "20",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.48",
+    "displayName": "System-image-phone_all",
+    "description": "HarmonyOS emulator image for phone_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2059514357",
+        "checksum": "2fd88381ecd2487ecaba9c0fe58e3fb32eec1df4275a4cffa0417f05ac6a24f8",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.0,tablet_arm",
+    "apiVersion": "20",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.48",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "1914579511",
+        "checksum": "2d108113dabcf5f4be00dd03dc6659f09b70c1545bb77447e4ea6b9abb659241",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-6.0.0,wearable_arm",
+    "apiVersion": "20",
+    "license": "HarmonyOS-SDK",
+    "version": "6.0.0.48",
+    "displayName": "System-image-wearable",
+    "description": "HarmonyOS emulator image for wearable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "880301714",
+        "checksum": "433faed1a6aa9cd4d3be231ff1b8aa0b5c284af6ed784cf44dc5b5dd246fa44d",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.1.1,phone_all_arm",
+    "apiVersion": "19",
+    "license": "HarmonyOS-SDK",
+    "version": "5.1.0.235",
+    "displayName": "System-image-phone_all",
+    "description": "HarmonyOS emulator image for phone_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2608616694",
+        "checksum": "60cca3d9e7c9019386700cb4690d23868997d63ebb13afe974118b5aad1a4b97",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.1.1,tv_arm",
+    "apiVersion": "19",
+    "license": "HarmonyOS-SDK",
+    "version": "5.1.0.221",
+    "displayName": "System-image-tv",
+    "description": "HarmonyOS emulator image for tv",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2377312162",
+        "checksum": "8b77a5d211cc6fa7ca102174832637009e69be3bd1dab95132449cc86157db7f",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.1.0,phone_all_arm",
+    "apiVersion": "18",
+    "license": "HarmonyOS-SDK",
+    "version": "5.1.0.110",
+    "displayName": "System-image-phone_all",
+    "description": "HarmonyOS emulator image for phone_all",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2568276869",
+        "checksum": "e36d1439869d418192c3adbfbfac053d8efb08ef2fc53ee402fc83e4f289ff3c",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.5,foldable_arm",
+    "apiVersion": "17",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.1.121",
+    "displayName": "System-image-foldable",
+    "description": "HarmonyOS emulator image for foldable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2365392967",
+        "checksum": "ec754c5f7469e074699fb57acfab0975359d195a2495fa8123064ec306a61b5e",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.5,phone_arm",
+    "apiVersion": "17",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.1.121",
+    "displayName": "System-image-phone",
+    "description": "HarmonyOS emulator image for phone",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2453463991",
+        "checksum": "af309e63e96bc0f145fcb538a9aa2f54116dccd70c77b83d868403f5d1f129f4",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.5,tablet_arm",
+    "apiVersion": "17",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.1.121",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2346279823",
+        "checksum": "c260f75dc003e6719025a896c8855de65438fc77a0295bf2ea9ac844134d2db6",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.5,widefold_arm",
+    "apiVersion": "17",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.1.120",
+    "displayName": "System-image-widefold",
+    "description": "HarmonyOS emulator image for widefold",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2272476789",
+        "checksum": "a8c67b3e7bcdbc7a9208629f5f4921179ca8fff72b2ae9ef1d4557d3eec88987",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.5,2in1_arm",
+    "apiVersion": "17",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.319",
+    "displayName": "System-image-2in1",
+    "description": "HarmonyOS emulator image for 2in1",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2472511422",
+        "checksum": "90e57ce9605cf3f9df42b8841f18b96d4dee197372199f36073b887bbf449302",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.4,foldable_arm",
+    "apiVersion": "16",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.150",
+    "displayName": "System-image-foldable",
+    "description": "HarmonyOS emulator image for foldable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2349696839",
+        "checksum": "19138c434b1910c74679aa1046f6027227801ecdafb4335ed0fa2254e7dfb9cd",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.4,phone_arm",
+    "apiVersion": "16",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.150",
+    "displayName": "System-image-phone",
+    "description": "HarmonyOS emulator image for phone",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2433606030",
+        "checksum": "ff020b54083efb94e335a0575a9e12b3afa83ff391ff336d347a73a57851ae8c",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.4,tablet_arm",
+    "apiVersion": "16",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.150",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2333395791",
+        "checksum": "440a48985967fdc386f7ad9ecb9ef95b2f30de5a0d6598564ff0e832cdbe3f0d",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.3,foldable_arm",
+    "apiVersion": "15",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.135",
+    "displayName": "System-image-foldable",
+    "description": "HarmonyOS emulator image for foldable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2347406466",
+        "checksum": "267adf74fcca6c9f7c89e948f7ed64443de52a7b0dff75e886151844068bd219",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.3,phone_arm",
+    "apiVersion": "15",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.135",
+    "displayName": "System-image-phone",
+    "description": "HarmonyOS emulator image for phone",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2430927966",
+        "checksum": "d0624c39e16a834362be4abb5fbaea81ce8d116251d6790ab2438dc967ce94d7",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.3,tablet_arm",
+    "apiVersion": "15",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.135",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2334166672",
+        "checksum": "902d5da76bf2f8523b4b6b26bb331a8f17297cc5f9446176799384dc370b73ec",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.2,foldable_arm",
+    "apiVersion": "14",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.124",
+    "displayName": "System-image-foldable",
+    "description": "HarmonyOS emulator image for foldable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2292686967",
+        "checksum": "da238df01bf68a68d5ed3cd768f8ca125ca758a602fa69b844c028072727bfca",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.2,phone_arm",
+    "apiVersion": "14",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.124",
+    "displayName": "System-image-phone",
+    "description": "HarmonyOS emulator image for phone",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2381520933",
+        "checksum": "d2ea7ece80320f232e81b71c4ddc0ea03fd43ebcca7913623bd13965b8f03794",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.2,tablet_arm",
+    "apiVersion": "14",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.124",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2307258763",
+        "checksum": "f4e68184cff64d9e1967650eedaf73db8a0a7219b5507ab24ee80dac0e1762ba",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.1,foldable_arm",
+    "apiVersion": "13",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.112",
+    "displayName": "System-image-foldable",
+    "description": "HarmonyOS emulator image for foldable",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2267297736",
+        "checksum": "ca97b67f1dc0608f11a26681e9436406b047c1b63b1f0d0ec06c3b168465026b",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.1,phone_arm",
+    "apiVersion": "13",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.112",
+    "displayName": "System-image-phone",
+    "description": "HarmonyOS emulator image for phone",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2362459455",
+        "checksum": "a6c3dd84c944c2af09f89b383368f8ccac9aedd882d5c43c6f279e28b0c35cc2",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  },
+  {
+    "path": "system-image,HarmonyOS-5.0.1,tablet_arm",
+    "apiVersion": "13",
+    "license": "HarmonyOS-SDK",
+    "version": "5.0.0.112",
+    "displayName": "System-image-tablet",
+    "description": "HarmonyOS emulator image for tablet",
+    "experimentalFlag": "0",
+    "releaseType": "Release",
+    "metaVersion": "1.0.0",
+    "archive": {
+      "complete": {
+        "size": "2287868381",
+        "checksum": "c32473e9516d6c543f3c5c22ac76080c0c25e9bfeb223e3baa9ffd8319979cab",
+        "osArch": "arm64"
+      }
+    },
+    "deviceType": [],
+    "dependencies": [],
+    "stage": "Release",
+    "platformVersion": "0.0.0"
+  }
+]
