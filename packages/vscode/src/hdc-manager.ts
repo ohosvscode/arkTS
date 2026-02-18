@@ -1,10 +1,17 @@
 import { createImageManager, ImageManager } from '@arkts/image-manager'
 import { Autowired, Service } from 'unioc'
-import { Command, Translator } from 'unioc/vscode'
+import { Command, ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import which from 'which'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
+
+const GLOBAL_STATE_KEY_CURRENT_CONNECT = 'ets.hdc.currentConnectKey'
+
+export type CurrentConnectKey = |
+  string // 已选择设备
+  | 0 // 未选择设备
+  | -1 // 未连接设备
 
 @Service
 @Command('ets.copyHdcPathToClipboard')
@@ -14,6 +21,9 @@ export class HdcManager implements Command {
 
   @Autowired(Translator)
   private readonly translator: Translator
+
+  @Autowired(ExtensionContext)
+  private readonly extensionContext: vscode.ExtensionContext
 
   @Autowired
   private readonly sdkVersionGuesser: SdkVersionGuesser
@@ -34,6 +44,24 @@ export class HdcManager implements Command {
     const configurationHdcPath = await this.getHdcPathFromConfiguration()
     if (configurationHdcPath) return configurationHdcPath
     return which.sync('hdc', { nothrow: true }) ?? null
+  }
+
+  private currentConnectKey: CurrentConnectKey = 0
+
+  setCurrentConnectKey(connectKey: CurrentConnectKey): void {
+    this.currentConnectKey = connectKey
+    const stored: string | number | undefined = connectKey === 0 ? '0' : connectKey
+    void this.extensionContext.globalState.update(GLOBAL_STATE_KEY_CURRENT_CONNECT, stored)
+  }
+
+  getCurrentConnectKey(): CurrentConnectKey {
+    if (this.currentConnectKey !== 0) return this.currentConnectKey
+    const stored = this.extensionContext.globalState.get<string | number>(GLOBAL_STATE_KEY_CURRENT_CONNECT)
+    if (stored === undefined || stored === '0') return 0
+    if (stored === -1) return -1
+    const key = stored as CurrentConnectKey
+    this.currentConnectKey = key
+    return key
   }
 
   async createImageManager(): Promise<ImageManager> {

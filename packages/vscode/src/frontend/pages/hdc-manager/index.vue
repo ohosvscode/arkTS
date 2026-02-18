@@ -45,6 +45,8 @@ watch([currentDevice, hilogLevel], () => {
   connection.setLogLevel?.(hilogLevel.value, currentDevice.value)
   refreshDeviceInfo(true)
 })
+
+watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value || -1))
 </script>
 
 <template>

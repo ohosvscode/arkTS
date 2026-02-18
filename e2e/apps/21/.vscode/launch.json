@@ -7,7 +7,7 @@
       "request": "launch",
       "moduleName": "entry",
       "projectRoot": "${workspaceFolder}",
-      "preLaunchTask": "Hvigor AssembleHap"
+      "preLaunchTask": "Hvigor install"
     }
   ]
 }

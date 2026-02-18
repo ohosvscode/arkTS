@@ -96,6 +96,15 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 | `ets.localImagePath`                     | 本地HarmonyOS/OpenHarmony模拟器镜像存放位置。
 
 在 MacOS 下, 默认路径为 `~/Library/Huawei/Sdk`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
+| `ets.imageConfigPath`                    | HarmonyOS 配置文件存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Application Support/Huawei/DevEcoStudio6.0`; 在 Windows 下, 默认路径为 `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0`; 在其他平台, 默认路径为 `~/.huawei/DevEcoStudio6.0`.                             | `string`  | ``                            |
+| `ets.deployedEmulatorPath`               | 部署的模拟器存放位置。
+
+在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Emulator\deployed`; 在其他平台下, 默认路径为 `~/.huawei/Emulator/deployed`.                        | `string`  | ``                            |
+| `ets.emulatorLogPath`                    | 模拟器日志存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Logs/Huawei/DevEcoStudio6.0`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; 在其他平台, 默认路径为 `~/.huawei/DevEcoStudio6.0/log`.                             | `string`  | ``                            |
 
 <!-- configs -->
 
@@ -111,7 +120,7 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 | `ets.resourceExplorer.refresh`                     | ETS: 刷新 Hvigor 资源管理器                     |
 | `ets.resourceExplorer.openFile`                    | ETS: 在编辑器中打开文件                    |
 | `ets.resourceExplorer.openResourceQualifierEditor` | ETS: 打开资源限定符编辑器 |
-| `ets.openHdcManager`                               | ETS: 打开 HDC 管理器                               |
 | `ets.openDeviceManager`                            | ETS: 打开设备管理器                            |
+| `ets.copyHdcPathToClipboard`                       | ETS: 复制 HDC 路径                       |
 
 <!-- commands -->

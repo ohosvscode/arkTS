@@ -3,10 +3,26 @@
   "tasks": [
     {
       "label": "Hvigor AssembleHap",
-      "type": "hvigor-debug-deploy",
+      "type": "hvigor-assemble-hap",
       "projectRoot": "${workspaceFolder}",
       "moduleName": "entry",
-      "productName": "default"
+      "productName": "default",
+      "problemMatcher": []
+    },
+    {
+      "label": "Hvigor install",
+      "type": "hdc-install-hap",
+      "dependsOn": ["Hvigor AssembleHap"],
+      "projectRoot": "${workspaceFolder}",
+      "moduleName": "entry",
+      "productName": "default",
+      "problemMatcher": []
+    },
+    {
+      "label": "Hvigor run",
+      "type": "hdc-run-ability",
+      "dependsOn": ["Hvigor install"],
+      "problemMatcher": []
     }
   ]
 }

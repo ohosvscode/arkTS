@@ -6,7 +6,7 @@ export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
 export const version = "1.2.13"
 export const displayName = "Naily's ArkTS Support"
-export const description = "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support."
+export const description = "功能最全的鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/OpenHarmony SDK下载管理/HarmonyOS模拟器下载管理, 欢迎PR!"
 export const extensionId = `${publisher}.${name}`
 
 /**
@@ -19,53 +19,53 @@ export type CommandKey =
   | "ets.resourceExplorer.refresh"
   | "ets.resourceExplorer.openFile"
   | "ets.resourceExplorer.openResourceQualifierEditor"
-  | "ets.openHdcManager"
   | "ets.openDeviceManager"
+  | "ets.copyHdcPathToClipboard"
 
 /**
  * Commands map registered by `NailyZero.vscode-naily-ets`
  */
 export const commands = {
   /**
-   * 重启 ArkTS 服务器
+   * Restart ETS Language Server
    * @value `ets.restartServer`
    */
   etsRestartServer: "ets.restartServer",
   /**
-   * 安装/切换 OpenHarmony SDK
+   * Install/Switch OpenHarmony SDK
    * @value `ets.installSDK`
    */
   etsInstallSDK: "ets.installSDK",
   /**
-   * 创建 ArkTS 项目
+   * Create ArkTS Project
    * @value `ets.createProject`
    */
   etsCreateProject: "ets.createProject",
   /**
-   * 刷新 Hvigor 资源管理器
+   * Refresh Hvigor Resource Explorer
    * @value `ets.resourceExplorer.refresh`
    */
   etsResourceExplorerRefresh: "ets.resourceExplorer.refresh",
   /**
-   * 在编辑器中打开文件
+   * Open File in Editor
    * @value `ets.resourceExplorer.openFile`
    */
   etsResourceExplorerOpenFile: "ets.resourceExplorer.openFile",
   /**
-   * 打开资源限定符编辑器
+   * Open Resource Qualifier Editor
    * @value `ets.resourceExplorer.openResourceQualifierEditor`
    */
   etsResourceExplorerOpenResourceQualifierEditor: "ets.resourceExplorer.openResourceQualifierEditor",
   /**
-   * 打开 HDC 管理器
-   * @value `ets.openHdcManager`
-   */
-  etsOpenHdcManager: "ets.openHdcManager",
-  /**
-   * 打开设备管理器
+   * Open Device Manager
    * @value `ets.openDeviceManager`
    */
   etsOpenDeviceManager: "ets.openDeviceManager",
+  /**
+   * Copy HDC Path
+   * @value `ets.copyHdcPathToClipboard`
+   */
+  etsCopyHdcPathToClipboard: "ets.copyHdcPathToClipboard",
 } satisfies Record<string, CommandKey>
 
 /**
@@ -93,6 +93,9 @@ export type ConfigKey =
   | "ets.linterVersion"
   | "ets.resourceReferenceDiagnostic"
   | "ets.localImagePath"
+  | "ets.imageConfigPath"
+  | "ets.deployedEmulatorPath"
+  | "ets.emulatorLogPath"
 
 export interface ConfigKeyTypeMap {
   "ets.sdkPath": string,
@@ -103,6 +106,9 @@ export interface ConfigKeyTypeMap {
   "ets.linterVersion": ("1.0" | "1.1" | "off"),
   "ets.resourceReferenceDiagnostic": ("error" | "warning" | "none"),
   "ets.localImagePath": (string | undefined),
+  "ets.imageConfigPath": (string | undefined),
+  "ets.deployedEmulatorPath": (string | undefined),
+  "ets.emulatorLogPath": (string | undefined),
 }
 
 export interface ConfigShorthandMap {
@@ -114,6 +120,9 @@ export interface ConfigShorthandMap {
   etsLinterVersion: "ets.linterVersion",
   etsResourceReferenceDiagnostic: "ets.resourceReferenceDiagnostic",
   etsLocalImagePath: "ets.localImagePath",
+  etsImageConfigPath: "ets.imageConfigPath",
+  etsDeployedEmulatorPath: "ets.deployedEmulatorPath",
+  etsEmulatorLogPath: "ets.emulatorLogPath",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -125,6 +134,9 @@ export interface ConfigShorthandTypeMap {
   etsLinterVersion: ("1.0" | "1.1" | "off"),
   etsResourceReferenceDiagnostic: ("error" | "warning" | "none"),
   etsLocalImagePath: (string | undefined),
+  etsImageConfigPath: (string | undefined),
+  etsDeployedEmulatorPath: (string | undefined),
+  etsEmulatorLogPath: (string | undefined),
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -138,7 +150,7 @@ export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
  */
 export const configs = {
   /**
-   * OpenHarmony SDK 路径。每次更改此设置时将会重启 ETS 语言服务器。(此路径对应deveco studio 安装目录下的`sdk/default/openharmony`路径)
+   * OpenHarmony SDK path. The ETS Language Server will be restarted when this setting is changed. (This path corresponds to the `sdk/default/openharmony` path in the DevEco Studio installation directory)
    * @key `ets.sdkPath`
    * @default `""`
    * @type `string`
@@ -158,7 +170,7 @@ export const configs = {
     default: "${os.homedir}/OpenHarmony",
   } as ConfigItem<"ets.baseSdkPath">,
   /**
-   * HMS SDK 路径。因为 HMS SDK 是独立于 OpenHarmony SDK 的，所以需要另外单独设置。一般您可以在 DevEco Studio 安装目录下找到该SDK。(此路径对应deveco studio 安装目录下的`sdk/default/harmony`路径)
+   * The path to the HMS SDK path. Because HMS SDK is independent of OpenHarmony SDK, it needs to be set separately. Generally, you can find the SDK in the DevEco Studio installation directory. (This path corresponds to the `sdk/default/harmony` path in the DevEco Studio installation directory)
    * @key `ets.hmsPath`
    * @default `""`
    * @type `string`
@@ -168,7 +180,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.hmsPath">,
   /**
-   * 启用 ETS 语言服务器调试日志。
+   * Enable ETS Language Server debug logging.
    * @key `ets.lspDebugMode`
    * @default `false`
    * @type `boolean`
@@ -208,9 +220,9 @@ export const configs = {
     default: "error",
   } as ConfigItem<"ets.resourceReferenceDiagnostic">,
   /**
-   * 本地HarmonyOS/OpenHarmony模拟器镜像存放位置。
+   * The path of the local image folder. The local image folder is used to store the images of the devices. 
 
-在 MacOS 下, 默认路径为 `~/Library/Huawei/Sdk`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Sdk`.
+In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default path is `%APPDATA%\Local\Huawei\Sdk`.
    * @key `ets.localImagePath`
    * @default `undefined`
    * @type `string`
@@ -219,6 +231,42 @@ export const configs = {
     key: "ets.localImagePath",
     default: undefined,
   } as ConfigItem<"ets.localImagePath">,
+  /**
+   * The path to store the HarmonyOS configuration files.
+
+ In macOS, it will be `~/Library/Application Support/Huawei/DevEcoStudio6.0` by default; In Windows, it will be `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0` by default; In other platforms, it will be `~/.huawei/DevEcoStudio6.0` by default.
+   * @key `ets.imageConfigPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsImageConfigPath: {
+    key: "ets.imageConfigPath",
+    default: undefined,
+  } as ConfigItem<"ets.imageConfigPath">,
+  /**
+   * The path to store the deployed devices. 
+
+ In Windows, the default path is `%APPDATA%\Local\Huawei\Emulator\deployed`; In other platforms, the default path is `~/.huawei/Emulator/deployed`.
+   * @key `ets.deployedEmulatorPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsDeployedEmulatorPath: {
+    key: "ets.deployedEmulatorPath",
+    default: undefined,
+  } as ConfigItem<"ets.deployedEmulatorPath">,
+  /**
+   * The path to store the emulator log files. 
+
+ In macOS, the default path is `~/Library/Logs/Huawei/DevEcoStudio6.0`; in Windows, the default path is `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; in other platforms, the default path is `~/.huawei/DevEcoStudio6.0/log`.
+   * @key `ets.emulatorLogPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsEmulatorLogPath: {
+    key: "ets.emulatorLogPath",
+    default: undefined,
+  } as ConfigItem<"ets.emulatorLogPath">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -240,9 +288,45 @@ export interface NestedConfigs {
     "linterVersion": ("1.0" | "1.1" | "off"),
     "resourceReferenceDiagnostic": ("error" | "warning" | "none"),
     "localImagePath": (string | undefined),
+    "imageConfigPath": (string | undefined),
+    "deployedEmulatorPath": (string | undefined),
+    "emulatorLogPath": (string | undefined),
   },
 }
 
 export interface NestedScopedConfigs {
 }
 
+
+/**
+ * Type union of all task definitions
+ */
+export type TaskType =
+  | "hdc-install-hap"
+  | "hdc-run-ability"
+  | "hvigor-assemble-hap"
+
+export interface TaskPropertiesMap {
+  "hdc-install-hap": {
+    "projectRoot": (string | undefined),
+    "moduleName": string,
+    "productName": string,
+    "hapPath": (string | undefined),
+    "abilityName": string,
+  },
+  "hdc-run-ability": {
+    "projectRoot": (string | undefined),
+    "abilityName": string,
+  },
+  "hvigor-assemble-hap": {
+    "projectRoot": (string | undefined),
+    "moduleName": string,
+    "productName": string,
+    "requiredDeviceType": (string | undefined),
+    "analyze": string,
+    "parallel": boolean,
+    "incremental": boolean,
+    "daemon": boolean,
+    "args": unknown,
+  },
+}

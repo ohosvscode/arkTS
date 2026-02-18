@@ -54,6 +54,10 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
     return this.hdcManager.getHdcPath()
   }
 
+  async setCurrentConnectKey(connectKey: string | -1): Promise<void> {
+    this.hdcManager.setCurrentConnectKey(connectKey)
+  }
+
   private getDefaultLocalImagePath(): string {
     switch (process.platform) {
       case 'win32':

@@ -203,5 +203,7 @@
   "tasks.error.hdcNotFoundInSystemEnvironmentVariables.help": "查看 https://developer.huawei.com/consumer/en/doc/harmonyos-guides/hdc",
   "tasks.error.hvigorNotFoundInSystemEnvironmentVariables.help": "查看 https://developer.huawei.com/consumer/en/doc/harmonyos-guides/ide-hvigor",
   "tasks.error.deviceNotConnected": "设备未连接, 请使用 hdc 命令连接 OpenHarmony/HarmonyOS 设备。",
+  "tasks.error.deviceNotSelected": "未选择设备, 请转到 HDC 管理器面板连接并选择一个设备。",
+  "tasks.error.appJson5BundleNameNotFound": "{0} 文件中未找到 app.bundleName 字段，无法获取当前项目的包名。请在 app.json5 文件中添加 app.bundleName 字段。",
   "needHelp": "需要帮助？"
 }

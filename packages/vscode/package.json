@@ -71,12 +71,57 @@
     ],
     "taskDefinitions": [
       {
-        "type": "hvigor-debug-deploy",
+        "type": "hdc-install-hap",
         "properties": {
           "projectRoot": {
             "type": "string",
-            "description": "Hvigor 项目根目录。",
-            "default": "${workspaceFolder}"
+            "description": "Hvigor 项目根目录。"
+          },
+          "moduleName": {
+            "type": "string",
+            "description": "模块名称。",
+            "default": "entry"
+          },
+          "productName": {
+            "type": "string",
+            "description": "产品名称。",
+            "default": "default"
+          },
+          "hapPath": {
+            "type": "string",
+            "description": "Hap 文件路径，相对于当前项目指定模块和指定产品的目录。"
+          },
+          "abilityName": {
+            "type": "string",
+            "description": "Ability 名称，默认 EntryAbility",
+            "default": "EntryAbility"
+          }
+        },
+        "required": [
+          "moduleName",
+          "productName"
+        ]
+      },
+      {
+        "type": "hdc-run-ability",
+        "properties": {
+          "projectRoot": {
+            "type": "string",
+            "description": "Hvigor 项目根目录。"
+          },
+          "abilityName": {
+            "type": "string",
+            "description": "Ability 名称，默认 EntryAbility",
+            "default": "EntryAbility"
+          }
+        }
+      },
+      {
+        "type": "hvigor-assemble-hap",
+        "properties": {
+          "projectRoot": {
+            "type": "string",
+            "description": "Hvigor 项目根目录。"
           },
           "moduleName": {
             "type": "string",
@@ -119,10 +164,7 @@
               "type": "string"
             }
           }
-        },
-        "required": [
-          "projectRoot"
-        ]
+        }
       }
     ],
     "views": {

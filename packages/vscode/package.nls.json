@@ -203,5 +203,7 @@
   "tasks.error.hdcNotFoundInSystemEnvironmentVariables.help": "See https://developer.huawei.com/consumer/en/doc/harmonyos-guides/hdc",
   "tasks.error.hvigorNotFoundInSystemEnvironmentVariables.help": "See https://developer.huawei.com/consumer/en/doc/harmonyos-guides/ide-hvigor",
   "tasks.error.deviceNotConnected": "Device is not connected. Please using hdc command to connect OpenHarmony/HarmonyOS device.",
+  "tasks.error.deviceNotSelected": "Device is not selected. Please go to HDC Manager panel to connect and select a device.",
+  "tasks.error.appJson5BundleNameNotFound": "{0} file not found app.bundleName field, cannot get the bundle name of the current project. Please add app.bundleName field in the app.json5 file.",
   "needHelp": "Need help?"
 }

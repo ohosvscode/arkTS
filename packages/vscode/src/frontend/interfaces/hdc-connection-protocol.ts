@@ -22,6 +22,10 @@ export namespace HdcManagerConnectionProtocol {
      */
     getHdcPath(): Promise<string | null>
     /**
+     * Set the current connect key.
+     */
+    setCurrentConnectKey(connectKey: string | -1): void
+    /**
      * Get the path of the local image folder.
      */
     getLocalImagePath(): Promise<string>

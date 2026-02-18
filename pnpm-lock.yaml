@@ -29,8 +29,8 @@ catalogs:
       specifier: ^4.41.0
       version: 4.41.0
     vscode-ext-gen:
-      specifier: ^1.5.1
-      version: 1.5.1
+      specifier: npm:naily-vscode-ext-gen@latest
+      version: 1.5.1-beta.2
   frontend:
     '@css-render/vue3-ssr':
       specifier: ^0.15.14
@@ -772,7 +772,7 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@25.2.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.20.6)(yaml@2.8.2)
       vscode-ext-gen:
         specifier: catalog:dev
-        version: 1.5.1
+        version: naily-vscode-ext-gen@1.5.1-beta.2
       vscode-languageserver-textdocument:
         specifier: catalog:prod
         version: 1.0.12
@@ -6712,6 +6712,10 @@ packages:
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==, tarball: https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz}
 
+  naily-vscode-ext-gen@1.5.1-beta.2:
+    resolution: {integrity: sha512-rxVd56sjW2RNYOSOOaxqw9EjsDF7YMEGkiYQ3eXtCPGO1ggEj90QyxUQpYRXdKhJ+FZIIoEmvMgNW7k0aGDo2A==, tarball: https://registry.npmjs.org/naily-vscode-ext-gen/-/naily-vscode-ext-gen-1.5.1-beta.2.tgz}
+    hasBin: true
+
   naive-ui@2.43.1:
     resolution: {integrity: sha512-w52W0mOhdOGt4uucFSZmP0DI44PCsFyuxeLSs9aoUThfIuxms90MYjv46Qrr7xprjyJRw5RU6vYpCx4o9ind3A==, tarball: https://registry.npmjs.org/naive-ui/-/naive-ui-2.43.1.tgz}
     peerDependencies:
@@ -8448,10 +8452,6 @@ packages:
 
   vscode-css-languageservice@6.3.8:
     resolution: {integrity: sha512-dBk/9ullEjIMbfSYAohGpDOisOVU1x2MQHOeU12ohGJQI7+r0PCimBwaa/pWpxl/vH4f7ibrBfxIZY3anGmHKQ==, tarball: https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.8.tgz}
-
-  vscode-ext-gen@1.5.1:
-    resolution: {integrity: sha512-FI8XbZBDu8K6hj5PXRMBd+E+k1r2gmJV7QHmEsVRaDbGjk5qREMDQpFamBEQLfWj96R3JiYujC+mobUNGJYu1Q==, tarball: https://registry.npmjs.org/vscode-ext-gen/-/vscode-ext-gen-1.5.1.tgz}
-    hasBin: true
 
   vscode-html-languageservice@5.6.0:
     resolution: {integrity: sha512-FIVz83oGw2tBkOr8gQPeiREInnineCKGCz3ZD1Pi6opOuX3nSRkc4y4zLLWsuop+6ttYX//XZCI6SLzGhRzLmA==, tarball: https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.0.tgz}
@@ -15045,6 +15045,11 @@ snapshots:
 
   mute-stream@0.0.8: {}
 
+  naily-vscode-ext-gen@1.5.1-beta.2:
+    dependencies:
+      cac: 6.7.14
+      tinyglobby: 0.2.15
+
   naive-ui@2.43.1(vue@3.5.22(typescript@5.9.3)):
     dependencies:
       '@css-render/plugin-bem': 0.15.14(css-render@0.15.14)
@@ -17049,11 +17054,6 @@ snapshots:
       vscode-languageserver-textdocument: 1.0.12
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
-
-  vscode-ext-gen@1.5.1:
-    dependencies:
-      cac: 6.7.14
-      tinyglobby: 0.2.15
 
   vscode-html-languageservice@5.6.0:
     dependencies:

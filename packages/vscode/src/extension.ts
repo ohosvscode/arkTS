@@ -14,7 +14,9 @@ import './frontend/commands/project-command'
 import './frontend/commands/device-manager-command'
 import './views/resource-preview'
 import './views/hdc-manager'
-import './tasks/hvigor-debug-deploy'
+import './tasks/hvigor-assemble-hap'
+import './tasks/hdc-install-hap'
+import './tasks/hdc-run-ability'
 import './debugger/debugger-descriptor'
 
 class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
