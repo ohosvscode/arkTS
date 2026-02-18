@@ -10,9 +10,9 @@
     "out",
     "ohos-typescript",
     "oh_modules",
-    "samples",
     "sample",
     "packages/vscode/src/qualifier-editor/main.ts",
-    "packages/vscode/src/project/main.ts"
+    "packages/vscode/src/project/main.ts",
+    "e2e/apps/**/*"
   ]
 }

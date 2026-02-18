@@ -11,18 +11,25 @@ export function InternalTransformHtmlPlugin(): Plugin {
       handler(html: string) {
         const htmlAst = parse(html)
         const ms = new MagicString(html)
-        return transformHtml(html, htmlAst, ms)
+        return transformHtml(htmlAst, ms)
       },
     },
   }
 }
 
-function transformHtml(_html: string, ast: INode[], ms: MagicString): string {
+export function transformHtmlString(html: string): string {
+  const htmlAst = parse(html)
+  const ms = new MagicString(html)
+  return transformHtml(htmlAst, ms)
+}
+
+function transformHtml(ast: INode[], ms: MagicString): string {
   function transformScriptSrc(node: INode): void {
     if (node.type !== SyntaxKind.Tag || node.name !== 'script') return
     for (const attr of node.attributes) {
       if (attr.name.value !== 'src' || !attr.value) continue
       const src = attr.value.value
+      if (src.startsWith('{{') && src.endsWith('}}')) continue
       ms.overwrite(attr.value.start + 1, attr.value.end - 1, `{{${src}}}`)
     }
   }

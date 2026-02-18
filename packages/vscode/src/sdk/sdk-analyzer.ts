@@ -1,6 +1,6 @@
 import type { OhosClientOptions } from '@arkts/shared'
+import type { Translator } from 'unioc/vscode'
 import type { AbstractWatcher } from '../abstract-watcher'
-import type { Translator } from '../translate'
 import type { SdkVersionGuesser } from './sdk-guesser'
 import type { SdkManager } from './sdk-manager'
 import fs from 'node:fs'
@@ -23,7 +23,7 @@ interface ChoiceValidSdkPathReturn {
 }
 
 export class SdkAnalyzer {
-  constructor(
+  private constructor(
     private readonly sdkUri: vscode.Uri,
     private readonly hmsSdkUri: vscode.Uri | undefined,
     private readonly fileSystem: AbstractWatcher,
@@ -132,7 +132,7 @@ export class SdkAnalyzer {
     return new SdkAnalyzer(
       sdkUri,
       hmsSdkUri,
-      sdkManager,
+      sdkManager.watcher,
       sdkManager.translator,
       identifier,
     )
@@ -146,7 +146,7 @@ export class SdkAnalyzer {
 
   static async createLocalSdkAnalyzer(sdkManager: SdkManager, sdkVersionGuesser: SdkVersionGuesser): Promise<SdkAnalyzer | SdkAnalyzer.NotFoundError> {
     const localSdkPath = await sdkManager.getOhosSdkPathFromLocalProperties()
-    const [, numbericSdkVersion] = sdkVersionGuesser.getGuessedOhosSdkVersion() || []
+    const [, numbericSdkVersion] = await sdkVersionGuesser.getGuessedOhosSdkVersion() || []
     if (!localSdkPath || !numbericSdkVersion) return new SdkAnalyzer.NotFoundError('local', sdkManager.translator)
     const sdkUri = vscode.Uri.file(path.resolve(localSdkPath, numbericSdkVersion.toString()))
     return this.fromSdkManager(sdkManager, sdkUri, await sdkManager.getAnalyzedHmsSdkPath(), 'local')

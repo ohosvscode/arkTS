@@ -92,14 +92,27 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 
 <!-- configs -->
 
-| Key                | Description                                                                                                | Type      | Default                       | Example                                                         |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- | --------- | ----------------------------- | --------------------------------------------------------------- |
-| `ets.sdkPath`      | %configuration.ets.sdkPath.description%                                                                    | `string`  | `""`                          | ```${os.homedir}/AppData/Local/OpenHarmony/20```                              |
-| `ets.baseSdkPath`  | %configuration.ets.baseSdkPath.description%                                                                | `string`  | `"${os.homedir}/OpenHarmony"` | `"${os.homedir}/AppData/Local/OpenHarmony"`                                   |
-| `ets.hmsPath`      | %configuration.ets.hmsPath.description%                                                                    | `string`  | `""`                          | <ul><li>Windows: <code>C:/Program Files/Huawei/DevEco Studio/sdk/default/hms</code></li></ul>                             |
-| `ets.lspDebugMode` | %configuration.ets.lspDebugMode.description%                                                               | `boolean` | `false`                       | `true`                                                          |
-| `ets.hdcPath`      | %configuration.ets.hdcPath.description%                                                                    | `string`  | `""`                          | <ul><li>Unix: <code>/usr/local/bin/hdc</code></li><li>Windows: <code>C:/Program Files/Huawei/DevEco Studio/sdk/default/openharmony/toolchains</code></li></ul>                                             |
-| `ets.sdkList`      | A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10). | `object`  | `{}`                          | `{"API20": "${os.homedir}/OpenHarmony/20", "API18": "/opt/OpenHarmony/18"}` |
+| Key                                      | Description                                                                 | Type      | Default                       |
+| ---------------------------------------- | --------------------------------------------------------------------------- | --------- | ----------------------------- |
+| `ets.sdkPath`                            | OpenHarmony SDK 路径。每次更改此设置时将会重启 ETS 语言服务器。(此路径对应deveco studio 安装目录下的`sdk/default/openharmony`路径)                                     | `string`  | `""`                          |
+| `ets.baseSdkPath`                        | 默认其它版本 OpenHarmony SDK 安装路径路径。所有版本的 SDK 都将安装在此路径下。(此路经对应deveco studio 设置中的 OpenHarmony SDK 位置)                                 | `string`  | `"${os.homedir}/OpenHarmony"` |
+| `ets.hmsPath`                            | HMS SDK 路径。因为 HMS SDK 是独立于 OpenHarmony SDK 的，所以需要另外单独设置。一般您可以在 DevEco Studio 安装目录下找到该SDK。(此路径对应deveco studio 安装目录下的`sdk/default/harmony`路径)                                     | `string`  | `""`                          |
+| `ets.lspDebugMode`                       | 启用 ETS 语言服务器调试日志。                                | `boolean` | `false`                       |
+| `ets.ignoreWorkspaceLocalPropertiesFile` | 忽略从本地工作区 `local.properties` 文件中自动推断基础 SDK 路径。          | `boolean` | `false`                       |
+| `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
+| `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
+| `ets.localImagePath`                     | 本地HarmonyOS/OpenHarmony模拟器镜像存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Huawei/Sdk`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
+| `ets.imageConfigPath`                    | HarmonyOS 配置文件存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Application Support/Huawei/DevEcoStudio6.0`; 在 Windows 下, 默认路径为 `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0`; 在其他平台, 默认路径为 `~/.huawei/DevEcoStudio6.0`.                             | `string`  | ``                            |
+| `ets.deployedEmulatorPath`               | 部署的模拟器存放位置。
+
+在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\Emulator\deployed`; 在其他平台下, 默认路径为 `~/.huawei/Emulator/deployed`.                        | `string`  | ``                            |
+| `ets.emulatorLogPath`                    | 模拟器日志存放位置。
+
+在 MacOS 下, 默认路径为 `~/Library/Logs/Huawei/DevEcoStudio6.0`; 在 Windows 下, 默认路径为 `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; 在其他平台, 默认路径为 `~/.huawei/DevEcoStudio6.0/log`.                             | `string`  | ``                            |
 
 <!-- configs -->
 
@@ -107,10 +120,16 @@ PR地址: [https://github.com/material-extensions/vscode-material-icon-theme/pul
 
 <!-- commands -->
 
-| Command             | Title                        |
-| ------------------- | ---------------------------- |
-| `ets.restartServer` | ETS: %command.restartServer% |
-| `ets.installSDK`    | ETS: %command.installSDK%    |
+| Command                                            | Title                                                       |
+| -------------------------------------------------- | ----------------------------------------------------------- |
+| `ets.restartServer`                                | ETS: 重启 ArkTS 服务器                                |
+| `ets.installSDK`                                   | ETS: 安装/切换 OpenHarmony SDK                                   |
+| `ets.createProject`                                | ETS: 创建 ArkTS 项目                                |
+| `ets.resourceExplorer.refresh`                     | ETS: 刷新 Hvigor 资源管理器                     |
+| `ets.resourceExplorer.openFile`                    | ETS: 在编辑器中打开文件                    |
+| `ets.resourceExplorer.openResourceQualifierEditor` | ETS: 打开资源限定符编辑器 |
+| `ets.openDeviceManager`                            | ETS: 打开设备管理器                            |
+| `ets.copyHdcPathToClipboard`                       | ETS: 复制 HDC 路径                       |
 
 <!-- commands -->
 

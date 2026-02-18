@@ -15,3 +15,5 @@ oh_modules
 coverage
 .vscode-test
 package-lock.json
+.vite-ssg-temp
+weekly

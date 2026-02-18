@@ -4,71 +4,111 @@
 // Meta info
 export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
-export const version = "1.1.2"
+export const version = "1.2.13"
 export const displayName = "Naily's ArkTS Support"
-export const description = "自用ArkTS扩展,支持代码跳转,欢迎PR! Naily's ArkTS Support."
+export const description = "功能最全的鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/OpenHarmony SDK下载管理/HarmonyOS模拟器下载管理, 欢迎PR!"
 export const extensionId = `${publisher}.${name}`
 
 /**
  * Type union of all commands
  */
-export type CommandKey = 
+export type CommandKey =
   | "ets.restartServer"
   | "ets.installSDK"
+  | "ets.createProject"
+  | "ets.resourceExplorer.refresh"
+  | "ets.resourceExplorer.openFile"
+  | "ets.resourceExplorer.openResourceQualifierEditor"
+  | "ets.openDeviceManager"
+  | "ets.copyHdcPathToClipboard"
 
 /**
- * Commands map registed by `NailyZero.vscode-naily-ets`
+ * Commands map registered by `NailyZero.vscode-naily-ets`
  */
 export const commands = {
   /**
-   * %command.restartServer%
+   * Restart ETS Language Server
    * @value `ets.restartServer`
    */
   etsRestartServer: "ets.restartServer",
   /**
-   * %command.installSDK%
+   * Install/Switch OpenHarmony SDK
    * @value `ets.installSDK`
    */
   etsInstallSDK: "ets.installSDK",
+  /**
+   * Create ArkTS Project
+   * @value `ets.createProject`
+   */
+  etsCreateProject: "ets.createProject",
+  /**
+   * Refresh Hvigor Resource Explorer
+   * @value `ets.resourceExplorer.refresh`
+   */
+  etsResourceExplorerRefresh: "ets.resourceExplorer.refresh",
+  /**
+   * Open File in Editor
+   * @value `ets.resourceExplorer.openFile`
+   */
+  etsResourceExplorerOpenFile: "ets.resourceExplorer.openFile",
+  /**
+   * Open Resource Qualifier Editor
+   * @value `ets.resourceExplorer.openResourceQualifierEditor`
+   */
+  etsResourceExplorerOpenResourceQualifierEditor: "ets.resourceExplorer.openResourceQualifierEditor",
+  /**
+   * Open Device Manager
+   * @value `ets.openDeviceManager`
+   */
+  etsOpenDeviceManager: "ets.openDeviceManager",
+  /**
+   * Copy HDC Path
+   * @value `ets.copyHdcPathToClipboard`
+   */
+  etsCopyHdcPathToClipboard: "ets.copyHdcPathToClipboard",
 } satisfies Record<string, CommandKey>
 
 /**
  * Type union of all languages
  */
-export type LanguageKey = 
+export type LanguageKey =
   | "ets"
-  | "hml"
 
 /**
  * Languages map registed by `NailyZero.vscode-naily-ets`
  */
 export const languages = {
   ets: "ets",
-  hml: "hml",
 } satisfies Record<string, LanguageKey>
 
 /**
  * Type union of all configs
  */
-export type ConfigKey = 
+export type ConfigKey =
   | "ets.sdkPath"
   | "ets.baseSdkPath"
   | "ets.hmsPath"
   | "ets.lspDebugMode"
-  | "ets.hdcPath"
   | "ets.ignoreWorkspaceLocalPropertiesFile"
+  | "ets.linterVersion"
   | "ets.resourceReferenceDiagnostic"
-  | "ets.sdkList"
+  | "ets.localImagePath"
+  | "ets.imageConfigPath"
+  | "ets.deployedEmulatorPath"
+  | "ets.emulatorLogPath"
 
 export interface ConfigKeyTypeMap {
   "ets.sdkPath": string,
   "ets.baseSdkPath": string,
   "ets.hmsPath": string,
   "ets.lspDebugMode": boolean,
-  "ets.hdcPath": string,
   "ets.ignoreWorkspaceLocalPropertiesFile": boolean,
+  "ets.linterVersion": ("1.0" | "1.1" | "off"),
   "ets.resourceReferenceDiagnostic": ("error" | "warning" | "none"),
-  "ets.sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
+  "ets.localImagePath": (string | undefined),
+  "ets.imageConfigPath": (string | undefined),
+  "ets.deployedEmulatorPath": (string | undefined),
+  "ets.emulatorLogPath": (string | undefined),
 }
 
 export interface ConfigShorthandMap {
@@ -76,10 +116,13 @@ export interface ConfigShorthandMap {
   etsBaseSdkPath: "ets.baseSdkPath",
   etsHmsPath: "ets.hmsPath",
   etsLspDebugMode: "ets.lspDebugMode",
-  etsHdcPath: "ets.hdcPath",
   etsIgnoreWorkspaceLocalPropertiesFile: "ets.ignoreWorkspaceLocalPropertiesFile",
+  etsLinterVersion: "ets.linterVersion",
   etsResourceReferenceDiagnostic: "ets.resourceReferenceDiagnostic",
-  etsSdkList: "ets.sdkList",
+  etsLocalImagePath: "ets.localImagePath",
+  etsImageConfigPath: "ets.imageConfigPath",
+  etsDeployedEmulatorPath: "ets.deployedEmulatorPath",
+  etsEmulatorLogPath: "ets.emulatorLogPath",
 }
 
 export interface ConfigShorthandTypeMap {
@@ -87,10 +130,13 @@ export interface ConfigShorthandTypeMap {
   etsBaseSdkPath: string,
   etsHmsPath: string,
   etsLspDebugMode: boolean,
-  etsHdcPath: string,
   etsIgnoreWorkspaceLocalPropertiesFile: boolean,
+  etsLinterVersion: ("1.0" | "1.1" | "off"),
   etsResourceReferenceDiagnostic: ("error" | "warning" | "none"),
-  etsSdkList: { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
+  etsLocalImagePath: (string | undefined),
+  etsImageConfigPath: (string | undefined),
+  etsDeployedEmulatorPath: (string | undefined),
+  etsEmulatorLogPath: (string | undefined),
 }
 
 export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
@@ -104,7 +150,7 @@ export interface ConfigItem<T extends keyof ConfigKeyTypeMap> {
  */
 export const configs = {
   /**
-   * %configuration.ets.sdkPath.description%
+   * OpenHarmony SDK path. The ETS Language Server will be restarted when this setting is changed. (This path corresponds to the `sdk/default/openharmony` path in the DevEco Studio installation directory)
    * @key `ets.sdkPath`
    * @default `""`
    * @type `string`
@@ -114,7 +160,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.sdkPath">,
   /**
-   * 
+   *
    * @key `ets.baseSdkPath`
    * @default `"${os.homedir}/OpenHarmony"`
    * @type `string`
@@ -124,7 +170,7 @@ export const configs = {
     default: "${os.homedir}/OpenHarmony",
   } as ConfigItem<"ets.baseSdkPath">,
   /**
-   * %configuration.ets.hmsPath.description%
+   * The path to the HMS SDK path. Because HMS SDK is independent of OpenHarmony SDK, it needs to be set separately. Generally, you can find the SDK in the DevEco Studio installation directory. (This path corresponds to the `sdk/default/harmony` path in the DevEco Studio installation directory)
    * @key `ets.hmsPath`
    * @default `""`
    * @type `string`
@@ -134,7 +180,7 @@ export const configs = {
     default: "",
   } as ConfigItem<"ets.hmsPath">,
   /**
-   * %configuration.ets.lspDebugMode.description%
+   * Enable ETS Language Server debug logging.
    * @key `ets.lspDebugMode`
    * @default `false`
    * @type `boolean`
@@ -144,17 +190,7 @@ export const configs = {
     default: false,
   } as ConfigItem<"ets.lspDebugMode">,
   /**
-   * %configuration.ets.hdcPath.description%
-   * @key `ets.hdcPath`
-   * @default `""`
-   * @type `string`
-   */
-  etsHdcPath: {
-    key: "ets.hdcPath",
-    default: "",
-  } as ConfigItem<"ets.hdcPath">,
-  /**
-   * 
+   *
    * @key `ets.ignoreWorkspaceLocalPropertiesFile`
    * @default `false`
    * @type `boolean`
@@ -163,6 +199,16 @@ export const configs = {
     key: "ets.ignoreWorkspaceLocalPropertiesFile",
     default: false,
   } as ConfigItem<"ets.ignoreWorkspaceLocalPropertiesFile">,
+  /**
+   * The version of the ArkTS linter to use. Set to 'off' to disable the linter.
+   * @key `ets.linterVersion`
+   * @default `"1.1"`
+   * @type `string`
+   */
+  etsLinterVersion: {
+    key: "ets.linterVersion",
+    default: "1.1",
+  } as ConfigItem<"ets.linterVersion">,
   /**
    * 未匹配到的 $r() 资源引用的诊断级别
    * @key `ets.resourceReferenceDiagnostic`
@@ -174,15 +220,53 @@ export const configs = {
     default: "error",
   } as ConfigItem<"ets.resourceReferenceDiagnostic">,
   /**
-   * A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10).
-   * @key `ets.sdkList`
-   * @default `{}`
-   * @type `object`
+   * The path of the local image folder. The local image folder is used to store the images of the devices. 
+
+In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default path is `%APPDATA%\Local\Huawei\Sdk`.
+   * @key `ets.localImagePath`
+   * @default `undefined`
+   * @type `string`
    */
-  etsSdkList: {
-    key: "ets.sdkList",
-    default: {},
-  } as ConfigItem<"ets.sdkList">,
+  etsLocalImagePath: {
+    key: "ets.localImagePath",
+    default: undefined,
+  } as ConfigItem<"ets.localImagePath">,
+  /**
+   * The path to store the HarmonyOS configuration files.
+
+ In macOS, it will be `~/Library/Application Support/Huawei/DevEcoStudio6.0` by default; In Windows, it will be `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0` by default; In other platforms, it will be `~/.huawei/DevEcoStudio6.0` by default.
+   * @key `ets.imageConfigPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsImageConfigPath: {
+    key: "ets.imageConfigPath",
+    default: undefined,
+  } as ConfigItem<"ets.imageConfigPath">,
+  /**
+   * The path to store the deployed devices. 
+
+ In Windows, the default path is `%APPDATA%\Local\Huawei\Emulator\deployed`; In other platforms, the default path is `~/.huawei/Emulator/deployed`.
+   * @key `ets.deployedEmulatorPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsDeployedEmulatorPath: {
+    key: "ets.deployedEmulatorPath",
+    default: undefined,
+  } as ConfigItem<"ets.deployedEmulatorPath">,
+  /**
+   * The path to store the emulator log files. 
+
+ In macOS, the default path is `~/Library/Logs/Huawei/DevEcoStudio6.0`; in Windows, the default path is `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; in other platforms, the default path is `~/.huawei/DevEcoStudio6.0/log`.
+   * @key `ets.emulatorLogPath`
+   * @default `undefined`
+   * @type `string`
+   */
+  etsEmulatorLogPath: {
+    key: "ets.emulatorLogPath",
+    default: undefined,
+  } as ConfigItem<"ets.emulatorLogPath">,
 }
 
 export interface ScopedConfigKeyTypeMap {
@@ -200,13 +284,49 @@ export interface NestedConfigs {
     "baseSdkPath": string,
     "hmsPath": string,
     "lspDebugMode": boolean,
-    "hdcPath": string,
     "ignoreWorkspaceLocalPropertiesFile": boolean,
+    "linterVersion": ("1.0" | "1.1" | "off"),
     "resourceReferenceDiagnostic": ("error" | "warning" | "none"),
-    "sdkList": { 'API10'?: string; 'API11'?: string; 'API12'?: string; 'API13'?: string; 'API14'?: string; 'API15'?: string; 'API18'?: string; 'API20'?: string },
+    "localImagePath": (string | undefined),
+    "imageConfigPath": (string | undefined),
+    "deployedEmulatorPath": (string | undefined),
+    "emulatorLogPath": (string | undefined),
   },
 }
 
 export interface NestedScopedConfigs {
 }
 
+
+/**
+ * Type union of all task definitions
+ */
+export type TaskType =
+  | "hdc-install-hap"
+  | "hdc-run-ability"
+  | "hvigor-assemble-hap"
+
+export interface TaskPropertiesMap {
+  "hdc-install-hap": {
+    "projectRoot": (string | undefined),
+    "moduleName": string,
+    "productName": string,
+    "hapPath": (string | undefined),
+    "abilityName": string,
+  },
+  "hdc-run-ability": {
+    "projectRoot": (string | undefined),
+    "abilityName": string,
+  },
+  "hvigor-assemble-hap": {
+    "projectRoot": (string | undefined),
+    "moduleName": string,
+    "productName": string,
+    "requiredDeviceType": (string | undefined),
+    "analyze": string,
+    "parallel": boolean,
+    "incremental": boolean,
+    "daemon": boolean,
+    "args": unknown,
+  },
+}

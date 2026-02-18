@@ -12,6 +12,7 @@ export default antfu({
     'packages/language-server/language-server-demo/*',
     'test-*.mjs',
     'test-*.cjs',
+    'e2e/apps/**/*',
   ],
   rules: {
     'ts/no-namespace': 'off',

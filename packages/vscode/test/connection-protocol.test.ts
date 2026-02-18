@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ProjectConnectionProtocol } from '../src/project/interfaces/connection-protocol'
+import { ProjectConnectionProtocol } from '../src/frontend/interfaces/project-connection-protocol'
 import projectMock from './project-mock.json'
 
 describe('connectionProtocol', () => {

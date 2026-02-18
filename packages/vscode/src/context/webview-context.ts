@@ -1,87 +1,67 @@
+import type { ExtensionLogger } from '@arkts/shared/vscode'
 import type { BirpcReturn } from 'birpc'
-import type { Disposable, IOnActivate } from 'unioc/vscode'
-import type { ProtocolContext } from './protocol-context'
+import type * as vscode from 'vscode'
 import fs from 'node:fs'
 import path from 'node:path'
 import { createBirpc } from 'birpc'
-import * as vscode from 'vscode'
 import { useCompiledWebviewPanel } from '../hook/compiled-webview'
 import { keepClassInstanceThis } from '../utils/keep-this'
 
-export abstract class WebviewContext<RemoteFunctions, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> implements IOnActivate, Disposable {
-  protected _currentWebviewPanel: vscode.WebviewPanel | undefined
-  protected _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
-  protected _extensionUri: vscode.Uri
-  protected _context: vscode.ExtensionContext | undefined
+export abstract class WebviewContext<RemoteFunctions extends WebviewContext.ClientFunction, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> {
+  private _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
+  protected abstract readonly logger: ExtensionLogger
 
-  protected abstract readonly serverFunction: LocalFunctions
-
-  onActivate(context: vscode.ExtensionContext): void {
-    this._extensionUri = context.extensionUri
+  getCurrentConnection(): BirpcReturn<RemoteFunctions, LocalFunctions> {
+    return this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>
   }
 
-  constructor(
-    /**
-     * Must call `super` with the HTML file name.
-     *
-     * @requires
-     */
-    private readonly htmlName: string,
-    private readonly viewType: string,
-    private readonly title: string,
-  ) {}
-
-  public dispose(): void {
-    if (this._currentWebviewPanel) {
-      this._currentWebviewPanel.dispose()
-      this._currentWebviewPanel = undefined
-      this._currentConnection?.$close()
-      this._currentConnection = undefined
-    }
+  disposeCurrentConnection(): void {
+    this._currentConnection?.$close()
+    this._currentConnection = undefined
   }
 
-  public async createWebviewPanel(): Promise<void> {
-    if (this._currentWebviewPanel) {
-      return this._currentWebviewPanel.reveal(vscode.ViewColumn.One)
-    }
-    this._currentWebviewPanel = vscode.window.createWebviewPanel(
-      this.viewType,
-      this.title,
-      vscode.ViewColumn.One,
-      {
-        enableScripts: true,
-        enableCommandUris: true,
-        enableForms: true,
-        retainContextWhenHidden: true,
-      },
-    )
-    this.serverFunction.onBeforeRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
-    this._currentWebviewPanel.webview.html = fs.readFileSync(path.resolve(this._extensionUri.fsPath, 'build', this.htmlName), 'utf-8')
-    const disposable = useCompiledWebviewPanel(this._currentWebviewPanel, path.resolve(this._extensionUri.fsPath, 'build', this.htmlName))
+  protected attachWebview<T extends vscode.WebviewPanel | vscode.WebviewView>(
+    webviewContainer: T,
+    extensionUri: vscode.Uri,
+    htmlName: string,
+    serverFunction: WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>,
+    initialURL?: string,
+  ): void {
+    serverFunction.onBeforeRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
+    webviewContainer.webview.html = fs.readFileSync(path.resolve(extensionUri.fsPath, 'build', htmlName), 'utf-8')
+    const disposable = useCompiledWebviewPanel(webviewContainer, path.resolve(extensionUri.fsPath, 'build', htmlName), initialURL)
     this._currentConnection = createBirpc<RemoteFunctions, LocalFunctions>(
-      keepClassInstanceThis(this.serverFunction),
+      keepClassInstanceThis(serverFunction as LocalFunctions),
       {
-        on: fn => this._currentWebviewPanel?.webview.onDidReceiveMessage(msg => fn(msg)),
-        post: data => this._currentWebviewPanel?.webview.postMessage(data),
+        on: fn => webviewContainer?.webview.onDidReceiveMessage(msg => fn(msg)),
+        post: data => webviewContainer?.webview.postMessage(data),
         serialize: data => JSON.stringify(data),
         deserialize: data => JSON.parse(data),
       },
     )
-    this.serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>, this)
-    this._context?.subscriptions.push(
-      this._currentWebviewPanel.onDidDispose(() => {
-        disposable.dispose()
-        this._currentConnection?.$close()
-        this.serverFunction.dispose?.()
-        this._currentWebviewPanel = undefined
-        this._currentConnection = undefined
-      }),
-    )
+    serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>, this)
+    this.logger.getConsola().info(`Webview ${htmlName} created.`)
+    webviewContainer.onDidDispose(() => {
+      this.logger.getConsola().info(`Webview ${htmlName} disposed.`)
+      disposable.dispose()
+      this._currentConnection?.$close()
+      serverFunction.dispose?.()
+      this._currentConnection = undefined
+    })
   }
 }
 
 export namespace WebviewContext {
-  export interface ServerFunction<RemoteFunctions, LocalFunctions extends ServerFunction<RemoteFunctions, LocalFunctions>> extends ProtocolContext {
+  export type PartialClientFunction<T extends WebviewContext.ClientFunction> = Omit<T, keyof WebviewContext.ClientFunction> & Partial<WebviewContext.ClientFunction>
+
+  export interface ClientFunction {
+    /**
+     * Called when the active color theme changes.
+     */
+    onDidChangeActiveColorTheme(): void
+  }
+
+  export interface ServerFunction<RemoteFunctions extends WebviewContext.ClientFunction, LocalFunctions extends ServerFunction<RemoteFunctions, LocalFunctions>> {
     /**
      * Called when the RPC connection is initialized.
      *

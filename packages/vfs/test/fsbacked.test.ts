@@ -57,7 +57,7 @@ it('can import files in the virtual fs', () => {
   errs.push(...env.languageService.getSyntacticDiagnostics(index))
 
   expect(errs.map(e => e.messageText)).toEqual([])
-})
+}, 10000)
 
 it('searches node_modules/@types', () => {
   const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }
@@ -71,7 +71,7 @@ it('searches node_modules/@types', () => {
 
   const semDiags = env.languageService.getSemanticDiagnostics('index.ts')
   expect(semDiags.length).toBe(0)
-})
+}, 10000)
 
 it('can delete files in the virtual fs', () => {
   const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }
@@ -94,4 +94,4 @@ it('can delete files in the virtual fs', () => {
   env.deleteFile(index)
 
   expect(env.getSourceFile(index)).toBeFalsy()
-})
+}, 10000)

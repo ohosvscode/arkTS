@@ -9,7 +9,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceRoot}/packages/vscode",
-        "--folder-uri=${workspaceRoot}/sample"
+        "--folder-uri=${workspaceRoot}/e2e/apps/21"
       ],
       "outFiles": [
         "${workspaceRoot}/packages/vscode/dist/*.js"

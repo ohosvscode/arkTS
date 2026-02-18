@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Hvigor AssembleHap",
+      "type": "hvigor-assemble-hap",
+      "projectRoot": "${workspaceFolder}",
+      "moduleName": "entry",
+      "productName": "default",
+      "problemMatcher": []
+    },
+    {
+      "label": "hdc install",
+      "type": "hdc-install-hap",
+      "dependsOn": ["Hvigor AssembleHap"],
+      "projectRoot": "${workspaceFolder}",
+      "moduleName": "entry",
+      "productName": "default",
+      "problemMatcher": []
+    },
+    {
+      "label": "hdc run",
+      "type": "hdc-run-ability",
+      "dependsOn": ["hdc install"],
+      "problemMatcher": []
+    }
+  ]
+}

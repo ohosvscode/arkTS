@@ -1,5 +1,6 @@
 import type { UserConfig } from 'vite'
 import path from 'node:path'
+import process from 'node:process'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import autoImport from 'unplugin-auto-import/vite'
@@ -12,7 +13,58 @@ import { InternalTransformHtmlPlugin } from './compiled-html-plugin'
 
 const EXTENSION_ROOT = path.resolve(__dirname, '..')
 
-export async function createViteConfig(projectSourceRoot: string, htmlPath: string, emptyOutDir: boolean = false, dts: boolean = true): Promise<UserConfig> {
+export interface CreateAppViteConfigOptions {
+  projectSourceRoot: string
+  htmlPath: string
+  /** @default false */
+  emptyOutDir?: boolean
+  /** @default true */
+  dts?: boolean
+}
+
+export interface CreateCommonViteConfigOptions {
+  /** @default true */
+  emptyOutDir?: boolean
+}
+
+export type CreateViteConfigOptions = CreateAppViteConfigOptions | CreateCommonViteConfigOptions
+
+function isCreateAppViteConfigOptions(options: CreateViteConfigOptions): options is CreateAppViteConfigOptions {
+  return 'projectSourceRoot' in options && 'htmlPath' in options
+}
+
+export async function createViteConfig(options: CreateAppViteConfigOptions): Promise<UserConfig>
+export async function createViteConfig(options: CreateCommonViteConfigOptions): Promise<UserConfig>
+export async function createViteConfig(options: CreateViteConfigOptions): Promise<UserConfig> {
+  if (isCreateAppViteConfigOptions(options)) return createAppViteConfig(options)
+  else return createCommonViteConfig(options)
+}
+
+async function createCommonViteConfig({ emptyOutDir = true }: CreateCommonViteConfigOptions = {}): Promise<UserConfig> {
+  return {
+    define: {
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    },
+
+    plugins: [
+      vue(),
+      vueJsx(),
+    ],
+
+    build: {
+      outDir: path.resolve(EXTENSION_ROOT, 'build', 'common'),
+      emptyOutDir,
+      lib: {
+        entry: path.resolve(EXTENSION_ROOT, 'src/frontend/common/index.ts'),
+        formats: ['es'],
+        fileName: 'index',
+      },
+      ssr: false,
+    },
+  }
+}
+
+async function createAppViteConfig({ projectSourceRoot, htmlPath, emptyOutDir = false, dts = true }: CreateAppViteConfigOptions): Promise<UserConfig> {
   const unoCSS = await import('unocss/vite')
 
   return {
@@ -65,7 +117,7 @@ export async function createViteConfig(projectSourceRoot: string, htmlPath: stri
     build: {
       outDir: path.resolve(EXTENSION_ROOT, 'build'),
       emptyOutDir,
-      assetsDir: '.',
+      assetsDir: process.env.NODE_ENV ? process.env.NODE_ENV : '.',
       rolldownOptions: {
         input: [
           path.resolve(EXTENSION_ROOT, htmlPath),

@@ -3,25 +3,36 @@ import 'reflect-metadata'
 import type { LabsInfo } from '@volar/vscode'
 import type { ExtensionContext } from 'vscode'
 import { extensionContext } from 'reactive-vscode'
-import { CommandPlugin, DisposablePlugin, VSCodeBootstrap, WatchConfigurationPlugin } from 'unioc/vscode'
+import { CommandPlugin, DebugPlugin, DisposablePlugin, L10nPlugin, TaskPlugin, VSCodeBootstrap, WatchConfigurationPlugin } from 'unioc/vscode'
 import { EtsLanguageServer } from './language-server'
 import type { IClassWrapper } from 'unioc'
 import * as vscode from 'vscode'
 import { ProjectDetectorManager } from '@arkts/language-service'
 import { Uri } from '@arkts/project-detector'
-import './project/command'
+import { ExtensionLogger } from '@arkts/shared/vscode'
+import './frontend/commands/project-command'
+import './frontend/commands/device-manager-command'
 import './views/resource-preview'
+import './views/hdc-manager'
+import './tasks/hvigor-assemble-hap'
+import './tasks/hdc-install-hap'
+import './tasks/hdc-run-ability'
+import './debugger/debugger-descriptor'
 
 class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
   async beforeInitialize(context: ExtensionContext): Promise<void> {
+    await this.createExtensionSideProjectDetectorManager(context)
+    this.use(L10nPlugin)
+    this.use(TaskPlugin)
+    this.use(DebugPlugin)
     this.use(CommandPlugin)
     this.use(DisposablePlugin)
     this.use(WatchConfigurationPlugin)
     extensionContext.value = context
-    await this.createExtensionSideProjectDetectorManager(context)
   }
 
   async onActivate(context: ExtensionContext): Promise<LabsInfo | undefined> {
+    await this.createClass(ExtensionLogger, ExtensionLogger).resolve()
     const languageServer = this.getGlobalContainer().findOne(EtsLanguageServer) as IClassWrapper<typeof EtsLanguageServer> | undefined
     const runResult = await languageServer?.getClassExecutor().execute({ methodName: 'run', arguments: [] })
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => this.autoSetLanguage(document, languageServer?.getInstance())))

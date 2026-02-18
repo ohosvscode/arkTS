@@ -9,10 +9,16 @@ declare function acquireVsCodeApi(): vscode
 
 declare interface vscode {
   postMessage(message: unknown): void
-  setState<T = unknown>(state: T): void
-  getState<T = unknown>(): T
+  setState(state: vscode.State): void
+  getState(): vscode.State
+}
+
+declare namespace vscode {
+  interface State {
+  }
 }
 
 declare interface Window {
-  vscode: vscode
+  vscode?: vscode
+  INITIAL_URL?: string
 }

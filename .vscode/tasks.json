@@ -38,8 +38,8 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "Build start",
-          // Match the vite build in xxxms
-          "endsPattern": "✔"
+          // Match the build in xxxms
+          "endsPattern": "Build finished."
         }
       },
       "group": "build"

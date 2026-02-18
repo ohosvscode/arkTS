@@ -92,14 +92,27 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 
 <!-- configs -->
 
-| Key                | Description                                                                                                | Type      | Default                       |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- | --------- | ----------------------------- |
-| `ets.sdkPath`      | %configuration.ets.sdkPath.description%                                                                    | `string`  | `""`                          |
-| `ets.baseSdkPath`  | %configuration.ets.baseSdkPath.description%                                                                | `string`  | `"${os.homedir}/OpenHarmony"` |
-| `ets.hmsPath`      | %configuration.ets.hmsPath.description%                                                                    | `string`  | `""`                          |
-| `ets.lspDebugMode` | %configuration.ets.lspDebugMode.description%                                                               | `boolean` | `false`                       |
-| `ets.hdcPath`      | %configuration.ets.hdcPath.description%                                                                    | `string`  | `""`                          |
-| `ets.sdkList`      | A list of installed OpenHarmony SDK paths. Keys should follow the pattern API[number] (e.g., API9, API10). | `object`  | `{}`                          |
+| Key                                      | Description                                                                 | Type      | Default                       |
+| ---------------------------------------- | --------------------------------------------------------------------------- | --------- | ----------------------------- |
+| `ets.sdkPath`                            | OpenHarmony SDK path. The ETS Language Server will be restarted when this setting is changed. (This path corresponds to the `sdk/default/openharmony` path in the DevEco Studio installation directory)                                     | `string`  | `""`                          |
+| `ets.baseSdkPath`                        | The default OpenHarmony SDK base path. All versions of SDKs will be installed under this path. (This path corresponds to the OpenHarmony SDK location in DevEco Studio settings)                                 | `string`  | `"${os.homedir}/OpenHarmony"` |
+| `ets.hmsPath`                            | The path to the HMS SDK path. Because HMS SDK is independent of OpenHarmony SDK, it needs to be set separately. Generally, you can find the SDK in the DevEco Studio installation directory. (This path corresponds to the `sdk/default/harmony` path in the DevEco Studio installation directory)                                     | `string`  | `""`                          |
+| `ets.lspDebugMode`                       | Enable ETS Language Server debug logging.                                | `boolean` | `false`                       |
+| `ets.ignoreWorkspaceLocalPropertiesFile` | Ignore auto infer the base SDK path from `local.properties` file in the local workspace.          | `boolean` | `false`                       |
+| `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
+| `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
+| `ets.localImagePath`                     | The path of the local image folder. The local image folder is used to store the images of the devices.
+
+In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default path is `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
+| `ets.imageConfigPath`                    | The path to store the HarmonyOS configuration files.
+
+ In macOS, it will be `~/Library/Application Support/Huawei/DevEcoStudio6.0` by default; In Windows, it will be `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0` by default; In other platforms, it will be `~/.huawei/DevEcoStudio6.0` by default.                             | `string`  | ``                            |
+| `ets.deployedEmulatorPath`               | The path to store the deployed devices.
+
+ In Windows, the default path is `%APPDATA%\Local\Huawei\Emulator\deployed`; In other platforms, the default path is `~/.huawei/Emulator/deployed`.                        | `string`  | ``                            |
+| `ets.emulatorLogPath`                    | The path to store the emulator log files.
+
+ In macOS, the default path is `~/Library/Logs/Huawei/DevEcoStudio6.0`; in Windows, the default path is `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; in other platforms, the default path is `~/.huawei/DevEcoStudio6.0/log`.                             | `string`  | ``                            |
 
 <!-- configs -->
 
@@ -107,10 +120,16 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 
 <!-- commands -->
 
-| Command             | Title                        |
-| ------------------- | ---------------------------- |
-| `ets.restartServer` | ETS: %command.restartServer% |
-| `ets.installSDK`    | ETS: %command.installSDK%    |
+| Command                                            | Title                                                       |
+| -------------------------------------------------- | ----------------------------------------------------------- |
+| `ets.restartServer`                                | ETS: Restart ETS Language Server                                |
+| `ets.installSDK`                                   | ETS: Install/Switch OpenHarmony SDK                                   |
+| `ets.createProject`                                | ETS: Create ArkTS Project                                |
+| `ets.resourceExplorer.refresh`                     | ETS: Refresh Hvigor Resource Explorer                     |
+| `ets.resourceExplorer.openFile`                    | ETS: Open File in Editor                    |
+| `ets.resourceExplorer.openResourceQualifierEditor` | ETS: Open Resource Qualifier Editor |
+| `ets.openDeviceManager`                            | ETS: Open Device Manager                            |
+| `ets.copyHdcPathToClipboard`                       | ETS: Copy HDC Path                       |
 
 <!-- commands -->
 

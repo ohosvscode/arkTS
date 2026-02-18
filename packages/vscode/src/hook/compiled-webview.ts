@@ -32,13 +32,13 @@ export function useCompiledWebview(htmlPath: MaybeRefOrGetter<string>, options: 
   return webviewView
 }
 
-export function useCompiledWebviewPanel(webviewPanel: vscode.WebviewPanel, htmlPath: string): vscode.Disposable {
+export function useCompiledWebviewPanel<T extends vscode.WebviewPanel | vscode.WebviewView>(webviewPanel: T, htmlPath: string, initialURL?: string): vscode.Disposable {
   function loadHtml(htmlPath: string): void {
     const content = fs.readFileSync(htmlPath, 'utf-8')
     webviewPanel.webview.html = content.replace(/\{\{(.*?)\}\}/g, (_, href) => {
       const resourceUri = webviewPanel.webview.asWebviewUri(vscode.Uri.file(path.resolve(path.dirname(htmlPath), href?.trim?.() || href)))
       return decodeURIComponent(resourceUri?.toString() || '')
-    })
+    }).replace(/<head>/, `<head>${initialURL ? `<script>window.INITIAL_URL = '${initialURL}'</script>` : ''}`)
   }
 
   const fsWatcher = createFileSystemWatcher(htmlPath)

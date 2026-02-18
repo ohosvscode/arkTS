@@ -19,8 +19,8 @@ export default defineConfig({
   sourcemap: isDev,
   external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector', '@ohos-rs/oxk'],
   tsconfig: './tsconfig.json',
+  onSuccess: 'vite-ssg build',
   clean: false,
-  onSuccess: 'vite build && cross-env NODE_ENV=qualifier-editor vite build',
   minify: {
     compress: {
       keepNames: {
@@ -39,6 +39,7 @@ export default defineConfig({
   inputOptions: {
     checks: {
       eval: false,
+      emptyImportMeta: false,
     },
   },
   dts: false,

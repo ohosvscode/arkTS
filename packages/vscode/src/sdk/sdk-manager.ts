@@ -2,19 +2,26 @@ import type { SdkVersion } from '@arkts/sdk-downloader'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Autowired, Service } from 'unioc'
+import { Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
-import { Environment } from '../environment'
-import { Translator } from '../translate'
+import { AbstractWatcher } from '../abstract-watcher'
 import { SdkAnalyzer } from './sdk-analyzer'
 import { SdkVersionGuesser } from './sdk-guesser'
 
 type IsInstalledVersion = keyof typeof SdkVersion extends `API${infer N}` ? N : never
 
 @Service
-export class SdkManager extends Environment {
-  @Autowired
+export class SdkManager {
+  @Autowired(Translator)
   public readonly translator: Translator
+
+  @Autowired
+  private readonly logger: ExtensionLogger
+
+  @Autowired
+  public readonly watcher: AbstractWatcher
 
   /**
    * Set the path to the OpenHarmony SDK.
@@ -86,7 +93,7 @@ export class SdkManager extends Environment {
   /** Get the path of the Ohos SDK from `local.properties` file. */
   async getOhosSdkPathFromLocalProperties(): Promise<string | undefined> {
     try {
-      const workspaceDir = this.getCurrentWorkspaceDir()
+      const workspaceDir = vscode.workspace.workspaceFolders?.[0]?.uri
       if (!workspaceDir) return undefined
       const localPropPath = vscode.Uri.joinPath(workspaceDir, 'local.properties')
       const stat = await vscode.workspace.fs.stat(localPropPath)
@@ -122,9 +129,9 @@ export class SdkManager extends Environment {
       globalAnalyzer,
     )
     const sdkPath = await choicedAnalyzer?.getSdkUri(force)
-    this.getConsola().info(`Analyzed OHOS SDK path: ${sdkPath}, current using analyzer: ${choicedAnalyzer?.getIdentifier() || 'unknown identifier'}`)
+    this.logger.getConsola().info(`Analyzed OHOS SDK path: ${sdkPath}, current using analyzer: ${choicedAnalyzer?.getIdentifier() || 'unknown identifier'}`)
     for (const status of analyzerStatus)
-      this.getConsola().info(`(${status.identifier || 'unknown identifier'}) Analyzer status: ${status.isValid ? 'available ✅' : 'no available ❌'} ${status.error ? status.error : ''}`)
+      this.logger.getConsola().info(`(${status.identifier || 'unknown identifier'}) Analyzer status: ${status.isValid ? 'available ✅' : 'no available ❌'} ${status.error ? status.error : ''}`)
     SdkManager._analyzedSdkPath = sdkPath?.fsPath
     SdkManager._sdkAnalyzer = choicedAnalyzer
     return SdkManager._analyzedSdkPath

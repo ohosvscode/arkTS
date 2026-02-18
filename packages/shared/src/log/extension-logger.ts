@@ -3,7 +3,7 @@ import { version } from '../../../vscode/package.json'
 import { OutputChannelReporter } from './ext-reporter'
 import { LanguageServerLogger } from './lsp-logger'
 
-export abstract class ExtensionLogger extends LanguageServerLogger {
+export class ExtensionLogger extends LanguageServerLogger {
   private static outputChannel: vscode.OutputChannel
   private static extensionVersionIsLogged = false
 

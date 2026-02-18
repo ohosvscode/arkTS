@@ -1,10 +1,9 @@
 import path from 'node:path'
 import { createDownloader, DownloadError, getSdkUrl, getSdkUrls, SdkVersion as SdkVersionEnum } from '@arkts/sdk-downloader'
 import { Autowired } from 'unioc'
-import { Command } from 'unioc/vscode'
+import { Command, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { Environment } from '../environment'
-import { Translator } from '../translate'
 import { SdkManager } from './sdk-manager'
 
 interface SdkQuickPickItem extends vscode.QuickPickItem {
@@ -16,7 +15,7 @@ interface SdkQuickPickItem extends vscode.QuickPickItem {
 
 @Command('ets.installSDK')
 export class SdkInstaller extends Environment implements Command {
-  @Autowired
+  @Autowired(Translator)
   protected readonly translator: Translator
 
   @Autowired
@@ -59,13 +58,13 @@ export class SdkInstaller extends Environment implements Command {
     const choice = await vscode.window.showQuickPick([
       {
         label: choiceSwitch,
-        description: this.translator.t('sdk.install.switchOrReinstall.switch.description', { args: [versionChoice.version] }),
+        description: this.translator.t('sdk.install.switchOrReinstall.switch.description', versionChoice.version),
         detail: this.translator.t('sdk.install.switchOrReinstall.switch.detail'),
         iconPath: new vscode.ThemeIcon('check'),
       },
       {
         label: choiceReinstall,
-        description: this.translator.t('sdk.install.switchOrReinstall.reinstall.description', { args: [versionChoice.version] }),
+        description: this.translator.t('sdk.install.switchOrReinstall.reinstall.description', versionChoice.version),
         detail: this.translator.t('sdk.install.switchOrReinstall.reinstall.detail'),
         iconPath: new vscode.ThemeIcon('refresh'),
       },
@@ -78,7 +77,7 @@ export class SdkInstaller extends Environment implements Command {
 
     if (choice?.label === choiceSwitch) {
       await this.sdkManager.setOhosSdkPath(path.join(await this.sdkManager.getOhosSdkBasePath(), versionChoice.version.split('API')[1]))
-      vscode.window.showInformationMessage(this.translator.t('sdk.install.switchOrReinstall.switch.success', { args: [versionChoice.version] }))
+      vscode.window.showInformationMessage(this.translator.t('sdk.install.switchOrReinstall.switch.success', versionChoice.version))
     }
     else if (choice?.label === choiceReinstall) {
       await this.installSdk(versionChoice.version)
@@ -108,7 +107,7 @@ export class SdkInstaller extends Environment implements Command {
     // Step 1: Download the SDK
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
-      title: this.translator.t('sdk.install.installing', { args: [version] }),
+      title: this.translator.t('sdk.install.installing', version),
       cancellable: true,
     }, async (progress, token) => {
       if (token.isCancellationRequested) return
@@ -117,7 +116,7 @@ export class SdkInstaller extends Environment implements Command {
         const abortController = new AbortController()
         token.onCancellationRequested(() => {
           abortController.abort()
-          vscode.window.showInformationMessage(this.translator.t('sdk.install.cancelled', { args: [version] }))
+          vscode.window.showInformationMessage(this.translator.t('sdk.install.cancelled', version))
         })
         downloader.on('download-progress', (e) => {
           progress.report({
@@ -146,7 +145,7 @@ export class SdkInstaller extends Environment implements Command {
     // Step 2: Check the SHA256 of the SDK
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
-      title: this.translator.t('sdk.install.checkingSha256', { args: [version] }),
+      title: this.translator.t('sdk.install.checkingSha256', version),
       cancellable: true,
     }, async (_progress, token) => {
       if (token.isCancellationRequested) return
@@ -156,20 +155,20 @@ export class SdkInstaller extends Environment implements Command {
     // Step 3: Extract the SDK (tar.gz)
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
-      title: this.translator.t('sdk.install.extractingTar', { args: [version] }),
+      title: this.translator.t('sdk.install.extractingTar', version),
       cancellable: false,
     }, async (progress, token) => {
       if (token.isCancellationRequested) return
 
       downloader.on('tar-extracted', (e) => {
         progress.report({
-          message: this.translator.t('sdk.install.extractingTar', { args: [e.path] }),
+          message: this.translator.t('sdk.install.extractingTar', e.path),
         })
         this.getConsola().info(`Extracting tar.gz API ${apiNumberVersion}: ${e.path}`)
       })
       downloader.on('zip-extracted', (e) => {
         progress.report({
-          message: this.translator.t('sdk.install.extractingZip', { args: [e.path] }),
+          message: this.translator.t('sdk.install.extractingZip', e.path),
         })
         this.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
       })
@@ -179,13 +178,13 @@ export class SdkInstaller extends Environment implements Command {
     // Step 4: Extract the SDK (zip, inside the tar.gz)
     await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
-      title: this.translator.t('sdk.install.extractingZip', { args: [version] }),
+      title: this.translator.t('sdk.install.extractingZip', version),
       cancellable: false,
     }, async (progress, token) => {
       if (token.isCancellationRequested) return
       downloader.on('zip-extracted', (e) => {
         progress.report({
-          message: this.translator.t('sdk.install.extractingZip', { args: [e.path] }),
+          message: this.translator.t('sdk.install.extractingZip', e.path),
         })
         this.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
       })
@@ -200,20 +199,20 @@ export class SdkInstaller extends Environment implements Command {
     // Step 5: Check the install status of the SDK
     const installStatus = await this.sdkManager.isInstalled(apiNumberVersion)
     if (installStatus === 'incomplete') {
-      await vscode.window.showWarningMessage(this.translator.t('sdk.install.mayBeIncomplete', { args: [version] }))
+      await vscode.window.showWarningMessage(this.translator.t('sdk.install.mayBeIncomplete', version))
       return
     }
     else if (!installStatus) {
-      await vscode.window.showErrorMessage(this.translator.t('sdk.install.mayBeError', { args: [version] }))
+      await vscode.window.showErrorMessage(this.translator.t('sdk.install.mayBeError', version))
       return
     }
 
     // Step 6: Show the success message, and ask the user if they want to switch to the new SDK
-    vscode.window.showInformationMessage(this.translator.t('sdk.install.success', { args: [version] }))
+    vscode.window.showInformationMessage(this.translator.t('sdk.install.success', version))
     const isSwitchToNewSdkYes = this.translator.t('sdk.install.isSwitchToNewSdk.yes')
     const isSwitchToNewSdkNo = this.translator.t('sdk.install.isSwitchToNewSdk.no')
     const isSwitchToNewSdk = await vscode.window.showInformationMessage(
-      this.translator.t('sdk.install.isSwitchToNewSdk.title', { args: [version] }),
+      this.translator.t('sdk.install.isSwitchToNewSdk.title', version),
       {
         modal: true,
       },
@@ -222,10 +221,10 @@ export class SdkInstaller extends Environment implements Command {
     )
     if (isSwitchToNewSdk === isSwitchToNewSdkYes) {
       await this.sdkManager.setOhosSdkPath(path.join(baseSdkPath, apiNumberVersion))
-      vscode.window.showInformationMessage(this.translator.t('sdk.install.isSwitchToNewSdk.success', { args: [version] }))
+      vscode.window.showInformationMessage(this.translator.t('sdk.install.isSwitchToNewSdk.success', version))
     }
     else {
-      vscode.window.showInformationMessage(this.translator.t('sdk.install.isSwitchToNewSdk.cancel', { args: [version] }))
+      vscode.window.showInformationMessage(this.translator.t('sdk.install.isSwitchToNewSdk.cancel', version))
     }
   }
 }
