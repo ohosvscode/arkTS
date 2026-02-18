@@ -101,16 +101,16 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 | `ets.ignoreWorkspaceLocalPropertiesFile` | Ignore auto infer the base SDK path from `local.properties` file in the local workspace.          | `boolean` | `false`                       |
 | `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
 | `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
-| `ets.localImagePath`                     | The path of the local image folder. The local image folder is used to store the images of the devices. 
+| `ets.localImagePath`                     | The path of the local image folder. The local image folder is used to store the images of the devices.
 
 In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default path is `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
 | `ets.imageConfigPath`                    | The path to store the HarmonyOS configuration files.
 
  In macOS, it will be `~/Library/Application Support/Huawei/DevEcoStudio6.0` by default; In Windows, it will be `%APPDATA%\Roaming\Huawei\DevEcoStudio6.0` by default; In other platforms, it will be `~/.huawei/DevEcoStudio6.0` by default.                             | `string`  | ``                            |
-| `ets.deployedEmulatorPath`               | The path to store the deployed devices. 
+| `ets.deployedEmulatorPath`               | The path to store the deployed devices.
 
  In Windows, the default path is `%APPDATA%\Local\Huawei\Emulator\deployed`; In other platforms, the default path is `~/.huawei/Emulator/deployed`.                        | `string`  | ``                            |
-| `ets.emulatorLogPath`                    | The path to store the emulator log files. 
+| `ets.emulatorLogPath`                    | The path to store the emulator log files.
 
  In macOS, the default path is `~/Library/Logs/Huawei/DevEcoStudio6.0`; in Windows, the default path is `%APPDATA%\Local\Huawei\DevEcoStudio6.0\log`; in other platforms, the default path is `~/.huawei/DevEcoStudio6.0/log`.                             | `string`  | ``                            |
 
