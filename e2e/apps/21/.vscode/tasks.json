@@ -10,7 +10,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Hvigor install",
+      "label": "hdc install",
       "type": "hdc-install-hap",
       "dependsOn": ["Hvigor AssembleHap"],
       "projectRoot": "${workspaceFolder}",
@@ -19,9 +19,9 @@
       "problemMatcher": []
     },
     {
-      "label": "Hvigor run",
+      "label": "hdc run",
       "type": "hdc-run-ability",
-      "dependsOn": ["Hvigor install"],
+      "dependsOn": ["hdc install"],
       "problemMatcher": []
     }
   ]
