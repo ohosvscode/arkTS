@@ -30,7 +30,7 @@ export class HvigorAssembleHapTaskProvider extends TaskContext implements TaskPr
       '--mode module',
       `-p module=${task?.moduleName}@${task?.productName}`,
       `-p product=${task?.productName}`,
-      `-p requiredDeviceType=${task?.requiredDeviceType ?? deviceType}`,
+      (task?.requiredDeviceType || deviceType) ? `-p requiredDeviceType=${task?.requiredDeviceType ?? deviceType}` : '',
       'assembleHap',
       `--analyze=${task?.analyze ?? 'normal'}`,
       task?.parallel === true || task?.parallel === undefined ? '--parallel' : '',
@@ -59,14 +59,15 @@ export class HvigorAssembleHapTaskProvider extends TaskContext implements TaskPr
     if (!hvigorPath) return this.createExitTask(task, this.translator.t('tasks.error.hvigorNotFoundInSystemEnvironmentVariables'))
 
     const currentConnectKey = this.hdcManager.getCurrentConnectKey()
+    let deviceType = ''
 
-    if (currentConnectKey === 0) return this.createExitTask(task, this.translator.t('tasks.error.deviceNotSelected'))
-    if (currentConnectKey === -1) return this.createExitTask(task, this.translator.t('tasks.error.deviceNotConnected'))
-
-    const deviceType = child_process.execSync(`${hdcPath} -t ${currentConnectKey} shell param get "const.product.devicetype"`, { encoding: 'utf-8' }).trim()
-    if (deviceType.includes('Fail')) return this.createExitTask(task, this.translator.t('tasks.error.deviceNotConnected'))
+    if (typeof currentConnectKey !== 'number') {
+      deviceType = child_process.execSync(`${hdcPath} -t ${currentConnectKey} shell param get "const.product.devicetype"`, { encoding: 'utf-8' }).trim()
+      if (deviceType.includes('Fail')) deviceType = ''
+    }
 
     typeAssert<HvigorAssembleHapTaskDefinition>(task.definition)
+
     return new vscode.Task(
       task.definition,
       vscode.TaskScope.Workspace,
