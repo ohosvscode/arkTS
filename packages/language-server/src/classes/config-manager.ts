@@ -259,7 +259,6 @@ export class LanguageServerConfigManager implements LanguageServerConfigurator {
       strict: true,
       strictPropertyInitialization: false,
       incremental: true,
-      composite: true,
       moduleDetection: ets.ModuleDetectionKind.Force,
       moduleResolution: ets.ModuleResolutionKind.NodeNext,
       module: ets.ModuleKind.ESNext,
