@@ -20,6 +20,10 @@
 
 这是一个基于[Volar](https://volarjs.dev)开发的ArkTS VSCode扩展。🌹为似乎到现在还没有支持VSCode，现有的VSCode市场中的ArkTS扩展大都非常简陋，所以决定自己写一个。
 
+## 使用方法和常见问题 📖
+
+详情请先阅读 [Arkcode 组织文档](https://arkcode.dev/arkts/install)。
+
 ## Features
 
 - 🌹 1.x版本开始具备完整的`ArkTS`语言支持，全量支持所有`ArkTS`语法。
@@ -41,10 +45,10 @@
 - 🍞 1.1.8+ 版本开始支持 `module.json5` 文件路径补全和跳转、引用表达式错误诊断、`requestPermissions` 权限补全等一系列 new feature ✨
 - 🌾 1.2.10+ 版本增加 hvigor 资源管理器面板，支持资源限定符文件夹创建、资源引用索引等功能
 - 🎨 1.2.12+ 版本增加 [oxk](https://github.com/ohos-rs/oxc-ark) 代码格式化支持
-
-## 食用方法 📖
-
-详情请见 [Arkcode 组织文档](https://arkcode.dev/arkts/install)。
+- 🚀 1.3.0+ 版本开始支持任务 `tasks`，支持以下任务：
+  - `hdc-install-hap`: 通过 `hdc` 命令安装 `hap` 包到设备上；
+  - `hdc-run-ability`: 通过 `hdc` 命令运行设备上已安装应用的 `ability`;
+  - `hvigor-assemble-hap`: 通过 `hvigor` 命令编译并组装 `hap` 包。
 
 ## VSCode 文件图标主题 🖼️
 
