@@ -125,7 +125,7 @@
   "hdcManager.deviceManager.creator.screenHeight.title": "Screen Height",
   "hdcManager.deviceManager.creator.screenHeight.description": "The number of vertical pixels of the screen, the range is {0} to {1} pixels.",
   "hdcManager.deviceManager.creator.screenDensity.title": "DPI",
-  "hdcManager.deviceManager.creator.screenDensity.description": "The pixel density specified in the system software, the higher the dpi setting, the more pixels the interface components will occupy, thus providing a more精细的显示效果。可选范围:{0}至{1}。",
+  "hdcManager.deviceManager.creator.screenDensity.description": "The pixel density specified in the system software, the higher the dpi setting, the more pixels the interface components will occupy, thus providing a more fine display effect. Optional range: {0} to {1}.",
   "hdcManager.deviceManager.creator.memory.title": "Device RAM",
   "hdcManager.deviceManager.creator.memory.description": "Recommended configuration: 4GB. Minimum configuration: application memory +2GB. If the RAM is too small, it may cause the application to crash due to system memory exhaustion.",
   "hdcManager.deviceManager.creator.storage.title": "Device ROM",

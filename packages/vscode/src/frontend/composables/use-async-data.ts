@@ -20,7 +20,8 @@ export function useAsyncData<T>(callback: () => Promise<T>, immediate: boolean =
     catch (err) {
       data.value = null
       error.value = err as Error
-      console.error(error)
+      console.error(`Error in useAsyncData:`)
+      console.error(err)
     }
     finally {
       loading.value = false

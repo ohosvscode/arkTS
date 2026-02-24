@@ -1,8 +1,8 @@
+import type { BirpcReturn } from 'birpc'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { createScreen, createScreenPreset, Device, FullDeployedImageOptions, LocalImage, ProductPreset, RemoteImage, RequestUrlError, Screen, SnakecaseDeviceType, version } from '@arkts/image-manager'
-import { BirpcReturn } from 'birpc'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
@@ -70,7 +70,7 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
 
   async isValidLocalImagePath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidLocalImagePath.Response> {
     if (!await this.fsx.isExists(vscode.Uri.file(path))) return 'not-exists'
-    if (!this.fsx.isDirectory(vscode.Uri.file(path))) return 'not-folder'
+    if (!await this.fsx.isDirectory(vscode.Uri.file(path))) return 'not-folder'
     return true
   }
 
@@ -307,7 +307,7 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
         const child_process = await image.start(device)
         this.extensionContext.subscriptions.push(
           new vscode.Disposable(() => {
-            if (child_process.exitCode !== null) image.stop(device)
+            if (child_process.exitCode === null) image.stop(device)
           }),
         )
         this.getConsola().success('Device start command executed successfully.')

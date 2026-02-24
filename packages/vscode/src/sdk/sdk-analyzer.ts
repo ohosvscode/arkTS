@@ -383,7 +383,7 @@ export class SdkAnalyzer {
 
     const paths: import('typescript').MapLike<string[]> = {}
     const apiFiles = await vscode.workspace.fs.readDirectory(hmsApiFolder)
-    const kitsFiles = await vscode.workspace.fs.readDirectory(hmsApiFolder)
+    const kitsFiles = await vscode.workspace.fs.readDirectory(hmsKitsFolder)
     for (const [fileNameWithExtension, fileType] of apiFiles) {
       if (fileType !== vscode.FileType.File) continue
       const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
