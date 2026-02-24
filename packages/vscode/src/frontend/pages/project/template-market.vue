@@ -9,7 +9,7 @@ const viewMode = ref<'list' | 'grid'>('list')
 const isLoading = ref(false)
 const error = ref<Error | null>(null)
 const { isOnline } = useNetwork()
-const connection = useProjectConnection()
+const { connection } = useProjectConnection()
 
 async function fetchData(returnValue?: UnwrapNestedRefs<UseOffsetPaginationReturn>) {
   try {

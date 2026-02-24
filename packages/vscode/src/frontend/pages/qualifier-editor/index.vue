@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const connection = useQualifierEditorConnection()
+const { connection } = useQualifierEditorConnection()
 
 const mccAndMnc = reactive({ mcc: [], mnc: [] })
 const locale = reactive({ language: 'zh', region: undefined })

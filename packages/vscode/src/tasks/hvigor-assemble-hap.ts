@@ -15,11 +15,8 @@ export interface HvigorAssembleHapTaskDefinition extends vscode.TaskDefinition, 
 @Disposable
 @TaskProvider('hvigor-assemble-hap')
 export class HvigorAssembleHapTaskProvider extends TaskContext implements TaskProvider {
-  @Autowired(Translator)
-  private readonly translator: Translator
-
-  @Autowired
-  private readonly hdcManager: HdcManager
+  @Autowired(Translator) private readonly translator: Translator
+  @Autowired private readonly hdcManager: HdcManager
 
   private getHvigorPath(): string | null {
     return which.sync('hvigorw', { nothrow: true }) ?? which.sync('hvigor', { nothrow: true })

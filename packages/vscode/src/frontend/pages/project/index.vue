@@ -2,7 +2,9 @@
 import type { Ref } from 'vue'
 import type { ProjectConfiguration } from '../../composables/project-configuration'
 
-const { projectConfigurations, currentProjectId, currentProject } = await useProjectConfiguration()
+const { connection } = useProjectConnection()
+const { data: homeDirectory } = useAsyncData(async () => connection.getHomeDirectory?.())
+const { projectConfigurations, currentProjectId, currentProject } = createProjectConfigContext(homeDirectory)
 const formRef = useTemplateRef<import('naive-ui').FormInst>('formRef')
 
 async function handleSubmit(e: Event) {
@@ -54,13 +56,13 @@ function callItemOnClick(item: import('../../composables/project-configuration')
                 {{ item.label }}
               </div>
             </template>
-            <NInput v-if="item.type === 'text'" v-model:value="item.value" :placeholder="item.placeholder" :required="item.required" @change="handleChange" />
-            <NSelect v-else-if="item.type === 'select'" v-model:value="item.value" :options="item.options" :required="item.required" @change="handleChange" />
-            <NCheckboxGroup v-else-if="item.type === 'checkbox'" v-model:value="item.value" :required="item.required" @change="handleChange">
+            <NInput v-if="item.type === 'text'" v-model:value="item.value" :placeholder="item.placeholder" :required="item.required" @update:value="handleChange" />
+            <NSelect v-else-if="item.type === 'select'" v-model:value="item.value" :options="item.options" :required="item.required" @update:value="handleChange" />
+            <NCheckboxGroup v-else-if="item.type === 'checkbox'" v-model:value="item.value" :required="item.required" @update:value="handleChange">
               <NCheckbox v-for="(option, jndex) in item.options" :key="jndex" :value="option.value" :label="option.label" />
             </NCheckboxGroup>
             <NInputGroup v-else-if="item.type === 'text-button-group'">
-              <NInput v-model:value="item.value" :placeholder="item.placeholder" :required="item.required" @change="handleChange" />
+              <NInput v-model:value="item.value" :placeholder="item.placeholder" :required="item.required" @update:value="handleChange" />
               <NButton type="primary" @click="callItemOnClick(item, currentProject)">
                 <span v-if="Array.isArray(item.buttonContent)" flex="~ gap-1 items-center">
                   <NIcon><div :class="item.buttonContent[1].icon" /></NIcon>

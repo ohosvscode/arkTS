@@ -2,7 +2,6 @@
 import 'reflect-metadata'
 import type { LabsInfo } from '@volar/vscode'
 import type { ExtensionContext } from 'vscode'
-import { extensionContext } from 'reactive-vscode'
 import { CommandPlugin, DebugPlugin, DisposablePlugin, L10nPlugin, TaskPlugin, VSCodeBootstrap, WatchConfigurationPlugin } from 'unioc/vscode'
 import { EtsLanguageServer } from './language-server'
 import type { IClassWrapper } from 'unioc'
@@ -28,7 +27,6 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
     this.use(CommandPlugin)
     this.use(DisposablePlugin)
     this.use(WatchConfigurationPlugin)
-    extensionContext.value = context
   }
 
   async onActivate(context: ExtensionContext): Promise<LabsInfo | undefined> {

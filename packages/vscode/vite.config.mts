@@ -53,6 +53,7 @@ export default defineConfig({
       dirs: [
         path.resolve(PROJECT_SOURCE_ROOT, 'composables'),
         path.resolve(PROJECT_SOURCE_ROOT, 'functions'),
+        path.resolve(PROJECT_SOURCE_ROOT, 'connections'),
       ],
       dts: path.resolve(PROJECT_SOURCE_ROOT, 'auto-imports.d.ts'),
     }),

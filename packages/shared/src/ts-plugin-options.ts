@@ -12,7 +12,6 @@ export interface TypescriptLanguageFeatures {
 }
 
 export interface ETSPluginOptions {
-  workspaceFolder: string | undefined
   lspOptions: EtsServerClientOptions
 }
 

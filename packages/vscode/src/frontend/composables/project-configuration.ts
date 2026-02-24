@@ -71,10 +71,10 @@ export interface ProjectConfigurationContext {
   currentProject: Ref<ProjectConfiguration | undefined>
 }
 
-export async function useProjectConfiguration(): Promise<ProjectConfigurationContext> {
+export function createProjectConfigContext(homeDirectory: Ref<string | null>): ProjectConfigurationContext {
   const { t } = useI18n()
-  const connection = useProjectConnection()
-  const defaultBasePath = path.join(await connection.getHomeDirectory?.() ?? '', 'DevEcoStudioProjects')
+  const { connection, createOpenDialog } = useProjectConnection()
+  const defaultBasePath = path.join(homeDirectory.value ?? '/', 'DevEcoStudioProjects')
   const subscriptions = new Set<() => void>()
   const modelVersionToSdkVersionMap = new Map(
     [

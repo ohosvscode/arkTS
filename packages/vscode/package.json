@@ -157,7 +157,7 @@
             "default": true
           },
           "args": {
-            "types": "array",
+            "type": "array",
             "default": [],
             "description": "额外参数",
             "items": {

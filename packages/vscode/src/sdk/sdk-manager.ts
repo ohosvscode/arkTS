@@ -1,12 +1,11 @@
 import type { SdkVersion } from '@arkts/sdk-downloader'
-import fs from 'node:fs'
 import os from 'node:os'
-import path from 'node:path'
 import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Autowired, Service } from 'unioc'
 import { Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { AbstractWatcher } from '../abstract-watcher'
+import { FileSystemContext } from '../context/file-system-context'
 import { SdkAnalyzer } from './sdk-analyzer'
 import { SdkVersionGuesser } from './sdk-guesser'
 
@@ -14,14 +13,10 @@ type IsInstalledVersion = keyof typeof SdkVersion extends `API${infer N}` ? N : 
 
 @Service
 export class SdkManager {
-  @Autowired(Translator)
-  public readonly translator: Translator
-
-  @Autowired
-  private readonly logger: ExtensionLogger
-
-  @Autowired
-  public readonly watcher: AbstractWatcher
+  @Autowired(Translator) public readonly translator: Translator
+  @Autowired private readonly logger: ExtensionLogger
+  @Autowired public readonly watcher: AbstractWatcher
+  @Autowired private readonly fsx: FileSystemContext
 
   /**
    * Set the path to the OpenHarmony SDK.
@@ -40,20 +35,22 @@ export class SdkManager {
   async getOhosSdkBasePath(): Promise<string> {
     const ignoreWorkspaceLocalPropertiesFile = await this.isIgnoreWorkspaceLocalPropertiesFile()
     if (!ignoreWorkspaceLocalPropertiesFile) {
-      const localPropertiesPath = path.join(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '', 'local.properties')
-      if (fs.existsSync(localPropertiesPath)) {
-        const localProperties = fs.readFileSync(localPropertiesPath, 'utf-8')
-        const sdkDir = localProperties.split('sdk.dir=')[1]?.trim()
-        if (sdkDir && typeof sdkDir === 'string' && fs.existsSync(sdkDir) && fs.statSync(sdkDir).isDirectory()) return sdkDir
+      const workspaceDir = this.fsx.getCurrentWorkspaceDir()
+      if (workspaceDir) {
+        const localPropertiesPath = vscode.Uri.joinPath(workspaceDir, 'local.properties')
+        if (await this.fsx.isFile(localPropertiesPath)) {
+          const localProperties = await this.fsx.readFileToString(localPropertiesPath)
+          const sdkDir = localProperties.split('sdk.dir=')[1]?.trim()
+          if (sdkDir && typeof sdkDir === 'string' && await this.fsx.isDirectory(vscode.Uri.file(sdkDir))) return sdkDir
+        }
       }
     }
-    const baseSdkPath = vscode.workspace.getConfiguration('ets').get(
+
+    return vscode.workspace.getConfiguration('ets').get(
       'baseSdkPath',
       // eslint-disable-next-line no-template-curly-in-string
       '${os.homedir}/OpenHarmony',
-    ) as string
-
-    return baseSdkPath.replace(/\$\{os\.homedir\}/g, os.homedir())
+    ).replace(/\$\{os\.homedir\}/g, os.homedir())
   }
 
   /**
@@ -72,11 +69,10 @@ export class SdkManager {
    * @returns `true` if the SDK is installed, `false` if the SDK is not installed, `'incomplete'` if the SDK is installed but is incomplete.
    */
   async isInstalled(version: IsInstalledVersion | (string & {})): Promise<boolean | 'incomplete'> {
-    const sdkPath = path.join(await this.getOhosSdkBasePath(), version)
-    const haveFolder = fs.existsSync(sdkPath) && fs.statSync(sdkPath).isDirectory()
-    if (!haveFolder) return false
+    const sdkPath = vscode.Uri.joinPath(vscode.Uri.file(await this.getOhosSdkBasePath()), version)
+    if (!await this.fsx.isDirectory(sdkPath)) return false
 
-    const dirs = fs.readdirSync(sdkPath)
+    const dirs = (await vscode.workspace.fs.readDirectory(sdkPath)).map(([name]) => name)
     if (
       !dirs.includes('ets')
       || !dirs.includes('js')

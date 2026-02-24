@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { sleep } from '../../utils'
+
 const route = useRoute()
 const { isOnline } = useNetwork()
 const isBack = ref(false)
@@ -76,6 +78,13 @@ const isThrowErrorIfNoNetwork = computed(() => {
   return false
 })
 watch(isThrowErrorIfNoNetwork, () => key.value++)
+
+async function onResolve() {
+  if (import.meta.env.SSR) return
+  await sleep(500)
+  const globalLoading = document.getElementById('global-loading')
+  if (globalLoading) globalLoading.style.display = 'none'
+}
 </script>
 
 <template>
@@ -85,43 +94,13 @@ watch(isThrowErrorIfNoNetwork, () => key.value++)
         <Transition v-bind="transitionClasses">
           <div :key="$route.path" class="w-full">
             <KeepAlive>
-              <Suspense>
+              <Suspense @resolve="onResolve">
                 <template #default>
                   <!-- Bind key to force re-render when isThrowErrorIfNoNetwork changes. -->
                   <component :is="Component" :key />
                 </template>
                 <template #fallback>
-                  <div class="relative top-[-6rem] left-[-1rem] right-[-1rem] bottom-0 flex flex-col items-center justify-center gap-2 z-50 w-[calc(100%+2rem)] h-screen">
-                    <div v-if="error" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
-                      <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
-                      <div select-none>
-                        加载失败, 请提交 issue 或联系开发者修复此问题：
-                      </div>
-                      <a href="https://github.com/ohosvscode/arkTS/issues">
-                        https://github.com/ohosvscode/arkTS/issues
-                      </a>
-                      <NCode class="text-sm whitespace-pre-wrap">
-                        {{ error?.stack }}
-                      </NCode>
-                      <NButton type="primary" mt-2 @click="$router.back()">
-                        {{ $t('goback') }}
-                      </NButton>
-                    </div>
-
-                    <div v-else-if="isThrowErrorIfNoNetwork" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
-                      <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
-                      <div select-none>
-                        {{ $t('noNetwork') }}
-                      </div>
-                      <NButton type="primary" mt-2 @click="$router.back()">
-                        {{ $t('goback') }}
-                      </NButton>
-                    </div>
-
-                    <div v-else class="flex flex-col items-center justify-center gap-2">
-                      <LoadingSpinner size-full />
-                    </div>
-                  </div>
+                  <ErrorFallback :error="error" :is-throw-error-if-no-network="isThrowErrorIfNoNetwork" />
                 </template>
               </Suspense>
             </KeepAlive>

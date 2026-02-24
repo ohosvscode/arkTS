@@ -6,7 +6,7 @@ const props = defineProps<{
   viewMode: 'list' | 'grid'
 }>()
 
-const connection = useProjectConnection()
+const { connection } = useProjectConnection()
 
 async function handleUseTemplate() {
   const response = await connection.requestTemplateMarketDetail?.(props.data.productId)

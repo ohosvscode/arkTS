@@ -1,11 +1,12 @@
 import type { Arrayable } from '@vueuse/core'
 import * as child_process from 'node:child_process'
-import { Autowired, Service } from 'unioc'
+import { Autowired } from 'unioc'
+import { Disposable } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { HdcManager } from './hdc-manager'
 
-@Service
-export class HilogController {
+@Disposable
+export class HilogController implements Disposable {
   @Autowired
   private readonly hdcManager: HdcManager
 
@@ -15,6 +16,10 @@ export class HilogController {
   private connectKey: string | undefined
 
   async setLogLevel(logLevel: Arrayable<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>, connectKey: string): Promise<void> {
+    if (Array.isArray(logLevel) && logLevel.length === 0) {
+      this.outputChannel.appendLine(`[INFO:${connectKey}] Log level is empty, hilog will not be started, please select a log level in the hdc manager panel.`)
+      return
+    }
     // 已在同一设备、同一级别运行则不要 kill/重启，避免设备列表短暂为空又恢复时误杀进程
     if (this.child_process && this.connectKey === connectKey && this.logLevel === logLevel) return
     if (this.child_process) {
@@ -49,5 +54,14 @@ export class HilogController {
 
   async openHilog(): Promise<void> {
     this.outputChannel.show()
+  }
+
+  dispose(): void {
+    if (this.child_process) {
+      this.connectKey = undefined
+      this.outputChannel.clear()
+      this.child_process.kill()
+      this.child_process = undefined
+    }
   }
 }

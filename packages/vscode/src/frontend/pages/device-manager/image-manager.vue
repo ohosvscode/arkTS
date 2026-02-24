@@ -4,11 +4,13 @@ import type { TableColumns } from 'naive-ui/es/data-table/src/interface'
 
 const { t } = useI18n()
 const router = useRouter()
-const loading = ref(false)
-const connection = useHdcConnection()
-const images = ref<(RemoteImage.Stringifiable | LocalImage.Stringifiable)[]>([])
-const isValidLocalImagePath = ref(await connection.isValidLocalImagePath?.(await connection.getLocalImagePath?.() ?? ''))
-const localImagePath = ref(await connection.getLocalImagePath?.())
+const { connection, onDidChangeLocalImagePath, onDidRefresh } = useDeviceManagerConnection()
+
+const { data: isValidLocalImagePath } = useAsyncData(async () => {
+  const localImagePath = await connection.getLocalImagePath?.() ?? ''
+  return connection.isValidLocalImagePath?.(localImagePath)
+})
+const { data: localImagePath } = useAsyncData(() => connection.getLocalImagePath?.())
 const feedback = computed(() => {
   switch (isValidLocalImagePath.value) {
     case 'not-folder':
@@ -26,6 +28,7 @@ onDidChangeLocalImagePath((path, isValid) => {
   localImagePath.value = path
   isValidLocalImagePath.value = isValid
 })
+
 const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable> = [
   {
     title: 'Device Name',
@@ -76,7 +79,14 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
         )
       : (
           <div class="flex items-center gap-3">
-            <NButton size="small" type="info" onClick={() => router.push('/device-manager/create-device')}>
+            <NButton
+              size="small"
+              type="info"
+              onClick={() => router.push({
+                path: '/device-manager/create-device',
+                query: { imagePath: row.path },
+              })}
+            >
               {{ default: () => t('create'), icon: () => <div class="i-ph-plus" /> }}
             </NButton>
             <NButton size="small" type="error" onClick={() => deleteLocalImage(row)}>
@@ -87,12 +97,10 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
   },
 ]
 
-async function requestRemoteImageList() {
-  loading.value = true
-  images.value = await connection.requestRemoteImageList?.().then(res => res.images)
-  loading.value = false
-}
-onDidRefresh(() => requestRemoteImageList(), { immediate: true })
+const { data: images, loading, execute: requestRemoteImageList } = useAsyncData(async () => {
+  return await connection.requestRemoteImageList?.().then(res => res.images)
+})
+onDidRefresh(() => requestRemoteImageList())
 
 function downloadImage(serializedImage: RemoteImage.Stringifiable) {
   connection.requestRemoteImageDownload?.(serializedImage)
@@ -124,7 +132,7 @@ function deleteLocalImage(serializedLocalImage: LocalImage.Stringifiable) {
         <NButton text type="info">编辑</NButton>
       </a>
     </NFormItem>
-    <NDataTable :scroll-x="300" striped mt-1 size="small" :columns :data="images" :loading="loading" />
+    <NDataTable :scroll-x="300" striped mt-1 size="small" :columns :data="images ?? []" :loading="loading" />
   </div>
 </template>
 

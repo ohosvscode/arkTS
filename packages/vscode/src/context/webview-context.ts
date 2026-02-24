@@ -1,15 +1,20 @@
 import type { ExtensionLogger } from '@arkts/shared/vscode'
 import type { BirpcReturn } from 'birpc'
-import type * as vscode from 'vscode'
-import fs from 'node:fs'
+import type { FileSystemContext } from './file-system-context'
 import path from 'node:path'
 import { createBirpc } from 'birpc'
-import { useCompiledWebviewPanel } from '../hook/compiled-webview'
-import { keepClassInstanceThis } from '../utils/keep-this'
+import * as vscode from 'vscode'
+import { keepClassInstanceThis } from '../utils'
+
+export interface WebviewContainer {
+  webview: vscode.Webview
+  onDidDispose(callback: () => void): void
+}
 
 export abstract class WebviewContext<RemoteFunctions extends WebviewContext.ClientFunction, LocalFunctions extends WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>> {
   private _currentConnection: BirpcReturn<RemoteFunctions, LocalFunctions> | undefined
   protected abstract readonly logger: ExtensionLogger
+  protected abstract readonly fsx: FileSystemContext
 
   getCurrentConnection(): BirpcReturn<RemoteFunctions, LocalFunctions> {
     return this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>
@@ -20,16 +25,37 @@ export abstract class WebviewContext<RemoteFunctions extends WebviewContext.Clie
     this._currentConnection = undefined
   }
 
-  protected attachWebview<T extends vscode.WebviewPanel | vscode.WebviewView>(
+  private async loadHtml<Container extends WebviewContainer>(webviewContainer: Container, htmlPath: string, initialURL?: string): Promise<void> {
+    const content = await this.fsx.readFileToString(vscode.Uri.file(htmlPath))
+    webviewContainer.webview.html = content.replace(/\{\{(.*?)\}\}/g, (_, href) => {
+      const resourceUri = webviewContainer.webview.asWebviewUri(vscode.Uri.joinPath(vscode.Uri.file(path.dirname(htmlPath)), href?.trim?.() || href))
+      return decodeURIComponent(resourceUri?.toString() || '')
+    }).replace(/<head>/, `<head>${initialURL ? `<script>window.INITIAL_URL = '${initialURL}'</script>` : ''}`)
+  }
+
+  private createHtmlWatcher<Container extends WebviewContainer>(webviewContainer: Container, htmlPath: string, initialURL?: string): vscode.Disposable {
+    const fsWatcher = vscode.workspace.createFileSystemWatcher(htmlPath)
+    const onDidChangeDisposable = fsWatcher.onDidChange(() => this.loadHtml(webviewContainer, htmlPath, initialURL))
+    const onDidAddDisposable = fsWatcher.onDidCreate(() => this.loadHtml(webviewContainer, htmlPath, initialURL))
+    this.loadHtml(webviewContainer, htmlPath, initialURL)
+
+    return new vscode.Disposable(() => {
+      onDidChangeDisposable.dispose()
+      onDidAddDisposable.dispose()
+      fsWatcher.dispose()
+    })
+  }
+
+  protected async attachWebview<T extends WebviewContainer>(
     webviewContainer: T,
     extensionUri: vscode.Uri,
     htmlName: string,
     serverFunction: WebviewContext.ServerFunction<RemoteFunctions, LocalFunctions>,
     initialURL?: string,
-  ): void {
+  ): Promise<void> {
     serverFunction.onBeforeRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>)
-    webviewContainer.webview.html = fs.readFileSync(path.resolve(extensionUri.fsPath, 'build', htmlName), 'utf-8')
-    const disposable = useCompiledWebviewPanel(webviewContainer, path.resolve(extensionUri.fsPath, 'build', htmlName), initialURL)
+    webviewContainer.webview.html = await this.fsx.readFileToString(vscode.Uri.joinPath(extensionUri, 'build', htmlName))
+    const disposable = this.createHtmlWatcher(webviewContainer, vscode.Uri.joinPath(extensionUri, 'build', htmlName).fsPath, initialURL)
     this._currentConnection = createBirpc<RemoteFunctions, LocalFunctions>(
       keepClassInstanceThis(serverFunction as LocalFunctions),
       {
@@ -37,6 +63,10 @@ export abstract class WebviewContext<RemoteFunctions extends WebviewContext.Clie
         post: data => webviewContainer?.webview.postMessage(data),
         serialize: data => JSON.stringify(data),
         deserialize: data => JSON.parse(data),
+        onFunctionError: (error, functionName, functionArgs) => {
+          console.error('Error in WebviewContext createBirpc onFunctionError, functionName: ', functionName, 'functionArgs: ', functionArgs)
+          console.error(error)
+        },
       },
     )
     serverFunction.onRpcInitialized?.(this._currentConnection as BirpcReturn<RemoteFunctions, LocalFunctions>, this)

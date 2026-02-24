@@ -1,27 +1,20 @@
 import type { SdkVersion } from '@arkts/sdk-downloader'
-import fs from 'node:fs'
-import path from 'node:path'
 import { ExtensionLogger } from '@arkts/shared/vscode'
 import JSON5 from 'json5'
 import { Autowired, Service } from 'unioc'
 import { IOnActivate, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { FileSystemContext } from '../context/file-system-context'
 import { SdkInstaller } from './sdk-installer'
 import { SdkManager } from './sdk-manager'
 
 @Service
 export class SdkVersionGuesser implements IOnActivate {
-  @Autowired
-  protected readonly sdkManager: SdkManager
-
-  @Autowired
-  protected readonly sdkInstaller: SdkInstaller
-
-  @Autowired(Translator)
-  protected readonly translator: Translator
-
-  @Autowired
-  protected readonly logger: ExtensionLogger
+  @Autowired protected readonly sdkManager: SdkManager
+  @Autowired protected readonly sdkInstaller: SdkInstaller
+  @Autowired protected readonly logger: ExtensionLogger
+  @Autowired protected readonly fsx: FileSystemContext
+  @Autowired(Translator) protected readonly translator: Translator
 
   onActivate(): void {
     this.openGuessOhosSdkVersionDialog()
@@ -37,9 +30,9 @@ export class SdkVersionGuesser implements IOnActivate {
 
     // Check if the current SDK is the same as the guessed SDK.
     if (currentSdkPath) {
-      const ohUniPackageJsonPath = path.resolve(currentSdkPath, 'ets', 'oh-uni-package.json')
-      if (fs.existsSync(ohUniPackageJsonPath)) {
-        const ohUniPackageJson = JSON.parse(fs.readFileSync(ohUniPackageJsonPath, 'utf-8'))
+      const ohUniPackageJsonPath = vscode.Uri.joinPath(vscode.Uri.file(currentSdkPath), 'ets', 'oh-uni-package.json')
+      if (await this.fsx.isFile(ohUniPackageJsonPath)) {
+        const ohUniPackageJson = JSON.parse(await this.fsx.readFileToString(ohUniPackageJsonPath))
         const compileSdkVersion: string = ohUniPackageJson?.apiVersion || ''
         if (compileSdkVersion === String(sdkNumberVersion)) return
       }
@@ -56,8 +49,8 @@ export class SdkVersionGuesser implements IOnActivate {
       )
       if (choiceResult === choiceYes) {
         const inferredSdkPosition = currentSdkAnalyzer?.getIdentifier()
-        const targetSdkPath = path.join(await this.sdkManager.getOhosSdkBasePath(), sdkNumberVersion.toString())
-        await this.sdkManager.setOhosSdkPath(targetSdkPath, inferredSdkPosition === 'global' ? vscode.ConfigurationTarget.Global : vscode.ConfigurationTarget.Workspace)
+        const targetSdkPath = vscode.Uri.joinPath(vscode.Uri.file(await this.sdkManager.getOhosSdkBasePath()), sdkNumberVersion.toString())
+        await this.sdkManager.setOhosSdkPath(targetSdkPath.fsPath, inferredSdkPosition === 'global' ? vscode.ConfigurationTarget.Global : vscode.ConfigurationTarget.Workspace)
         vscode.window.showInformationMessage(this.translator.t('sdk.guess.switch.success', sdkStringVersion))
       }
       return
@@ -114,14 +107,14 @@ export class SdkVersionGuesser implements IOnActivate {
       if (!sdkVersion || Number.isNaN(sdkVersion)) return
 
       switch (sdkVersion) {
-        case 10: return ['API10', 10]
-        case 11: return ['API11', 11]
-        case 12: return ['API12', 12]
-        case 13: return ['API13', 13]
-        case 14: return ['API14', 14]
-        case 15: return ['API15', 15]
-        case 18: return ['API18', 18]
-        case 20: return ['API20', 20]
+        case 10: return ['API10', 10] as [keyof typeof SdkVersion, number]
+        case 11: return ['API11', 11] as [keyof typeof SdkVersion, number]
+        case 12: return ['API12', 12] as [keyof typeof SdkVersion, number]
+        case 13: return ['API13', 13] as [keyof typeof SdkVersion, number]
+        case 14: return ['API14', 14] as [keyof typeof SdkVersion, number]
+        case 15: return ['API15', 15] as [keyof typeof SdkVersion, number]
+        case 18: return ['API18', 18] as [keyof typeof SdkVersion, number]
+        case 20: return ['API20', 20] as [keyof typeof SdkVersion, number]
       }
     }
     catch (error) {

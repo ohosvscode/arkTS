@@ -3,7 +3,7 @@ import type { ProjectConnectionProtocol } from '../../interfaces/project-connect
 import MarkdownIt from 'markdown-it'
 
 const route = useRoute()
-const connection = useProjectConnection()
+const { connection } = useProjectConnection()
 const productId = route.query.productId as string | undefined
 
 const isLoading = ref(false)

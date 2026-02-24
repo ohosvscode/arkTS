@@ -6,6 +6,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const DeviceManagerFunction: typeof import('./functions/device-manager-function').DeviceManagerFunction
+  const DeviceManagerFunctionImpl: typeof import('./functions/device-manager-function').DeviceManagerFunctionImpl
   const EffectScope: typeof import('vue').EffectScope
   const HdcServerFunctionImpl: typeof import('./functions/hdc-server-function').HdcServerFunctionImpl
   const ProjectServerFunctionImpl: typeof import('./functions/project-server-function').ProjectServerFunctionImpl
@@ -26,6 +28,7 @@ declare global {
   const createGlobalState: typeof import('@vueuse/core').createGlobalState
   const createInjectionState: typeof import('@vueuse/core').createInjectionState
   const createOpenDialog: typeof import('./composables/on-open-dialog').createOpenDialog
+  const createProjectConfigContext: typeof import('./composables/project-configuration').createProjectConfigContext
   const createReactiveFn: typeof import('@vueuse/core').createReactiveFn
   const createRef: typeof import('@vueuse/core').createRef
   const createReusableTemplate: typeof import('@vueuse/core').createReusableTemplate
@@ -137,6 +140,7 @@ declare global {
   const useArrayReduce: typeof import('@vueuse/core').useArrayReduce
   const useArraySome: typeof import('@vueuse/core').useArraySome
   const useArrayUnique: typeof import('@vueuse/core').useArrayUnique
+  const useAsyncData: typeof import('./composables/use-async-data').useAsyncData
   const useAsyncQueue: typeof import('@vueuse/core').useAsyncQueue
   const useAsyncState: typeof import('@vueuse/core').useAsyncState
   const useAttrs: typeof import('vue').useAttrs
@@ -165,6 +169,7 @@ declare global {
   const useDebounce: typeof import('@vueuse/core').useDebounce
   const useDebounceFn: typeof import('@vueuse/core').useDebounceFn
   const useDebouncedRefHistory: typeof import('@vueuse/core').useDebouncedRefHistory
+  const useDeviceManagerConnection: typeof import('./connections/device-manager-connection').useDeviceManagerConnection
   const useDeviceMotion: typeof import('@vueuse/core').useDeviceMotion
   const useDeviceOrientation: typeof import('@vueuse/core').useDeviceOrientation
   const useDevicePixelRatio: typeof import('@vueuse/core').useDevicePixelRatio
@@ -192,7 +197,7 @@ declare global {
   const useFullscreen: typeof import('@vueuse/core').useFullscreen
   const useGamepad: typeof import('@vueuse/core').useGamepad
   const useGeolocation: typeof import('@vueuse/core').useGeolocation
-  const useHdcConnection: typeof import('./composables/hdc-connection').useHdcConnection
+  const useHdcConnection: typeof import('./connections/hdc-connection').useHdcConnection
   const useI18n: typeof import('vue-i18n').useI18n
   const useId: typeof import('vue').useId
   const useIdle: typeof import('@vueuse/core').useIdle
@@ -203,6 +208,7 @@ declare global {
   const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
   const useKeyModifier: typeof import('@vueuse/core').useKeyModifier
   const useLastChanged: typeof import('@vueuse/core').useLastChanged
+  const useLoadingFn: typeof import('./composables/use-loading-fn').useLoadingFn
   const useLocalStorage: typeof import('@vueuse/core').useLocalStorage
   const useLocaleData: typeof import('./composables/locale-data').useLocaleData
   const useMagicKeys: typeof import('@vueuse/core').useMagicKeys
@@ -239,8 +245,8 @@ declare global {
   const usePreferredReducedTransparency: typeof import('@vueuse/core').usePreferredReducedTransparency
   const usePrevious: typeof import('@vueuse/core').usePrevious
   const useProjectConfiguration: typeof import('./composables/project-configuration').useProjectConfiguration
-  const useProjectConnection: typeof import('./composables/project-connection').useProjectConnection
-  const useQualifierEditorConnection: typeof import('./composables/qualifier-editor-connection').useQualifierEditorConnection
+  const useProjectConnection: typeof import('./connections/project-connection').useProjectConnection
+  const useQualifierEditorConnection: typeof import('./connections/qualifier-editor-connection').useQualifierEditorConnection
   const useRafFn: typeof import('@vueuse/core').useRafFn
   const useRefHistory: typeof import('@vueuse/core').useRefHistory
   const useResizeObserver: typeof import('@vueuse/core').useResizeObserver
@@ -320,11 +326,17 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { CreateOpenDialogOptions } from './composables/on-open-dialog'
-  import('./composables/on-open-dialog')
-  // @ts-ignore
   export type { Input, TextInput, SelectInput, CheckboxInput, TextButtonContent, IconButtonContent, ButtonContent, TextButtonGroupInput, BaseInput, ProjectInput, ProjectConfiguration, ProjectConfigurationContext } from './composables/project-configuration'
   import('./composables/project-configuration')
+  // @ts-ignore
+  export type { UseAsyncDataReturn } from './composables/use-async-data'
+  import('./composables/use-async-data')
+  // @ts-ignore
+  export type { UseLoadingFnReturn, UseLoadingFnFunctionOptions, UseLoadingFnObjectOptions, UseLoadingFnOptions } from './composables/use-loading-fn'
+  import('./composables/use-loading-fn')
+  // @ts-ignore
+  export type { DeviceManagerFunctionImpl } from './functions/device-manager-function'
+  import('./functions/device-manager-function')
   // @ts-ignore
   export type { HdcServerFunctionImpl } from './functions/hdc-server-function'
   import('./functions/hdc-server-function')
@@ -334,4 +346,10 @@ declare global {
   // @ts-ignore
   export type { QualifierEditorServerFunctionImpl } from './functions/qualifier-editor-server-function'
   import('./functions/qualifier-editor-server-function')
+  // @ts-ignore
+  export type { DeviceManagerConnection } from './connections/device-manager-connection'
+  import('./connections/device-manager-connection')
+  // @ts-ignore
+  export type { ProjectConnection, CreateOpenDialogOptions } from './connections/project-connection'
+  import('./connections/project-connection')
 }

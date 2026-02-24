@@ -1,38 +1,56 @@
 import path from 'node:path'
-import { createDownloader, DownloadError, getSdkUrl, getSdkUrls, SdkVersion as SdkVersionEnum } from '@arkts/sdk-downloader'
+import process from 'node:process'
+import { createDownloader, DownloadError, getSdkUrl, getSdkUrls, SdkArch, SdkOS, SdkVersion } from '@arkts/sdk-downloader'
+import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Autowired } from 'unioc'
 import { Command, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
-import { Environment } from '../environment'
 import { SdkManager } from './sdk-manager'
 
 interface SdkQuickPickItem extends vscode.QuickPickItem {
   /** Current install status of the SDK. */
   installStatus: 'incomplete' | boolean
   /** The version of the SDK. */
-  version: keyof typeof SdkVersionEnum
+  version: keyof typeof SdkVersion
 }
 
 @Command('ets.installSDK')
-export class SdkInstaller extends Environment implements Command {
-  @Autowired(Translator)
-  protected readonly translator: Translator
+export class SdkInstaller implements Command {
+  @Autowired(Translator) protected readonly translator: Translator
+  @Autowired protected readonly sdkManager: SdkManager
+  @Autowired protected readonly logger: ExtensionLogger
 
-  @Autowired
-  protected readonly sdkManager: SdkManager
+  getArch(): SdkArch {
+    const arch = process.arch
+
+    if (arch === 'arm' || arch === 'arm64') return SdkArch.ARM
+    else if (arch === 'x64') return SdkArch.X86
+    else
+      throw new Error(`Unsupported arch: ${arch}.`)
+  }
+
+  getOS(): SdkOS {
+    const os = process.platform
+
+    if (os === 'darwin') return SdkOS.MacOS
+    else if (os === 'win32') return SdkOS.Windows
+    else if (os === 'linux') return SdkOS.Linux
+    else
+      throw new Error(`Unsupported os: ${os}.`)
+  }
 
   private async buildQuickPickItem(urls: ReturnType<typeof getSdkUrls>): Promise<SdkQuickPickItem[]> {
     return (await Promise.all(Object.entries(urls).map(async ([openHarmonyVersion]) => {
-      const apiVersion = Object.keys(SdkVersionEnum).find(key => SdkVersionEnum[key as keyof typeof SdkVersionEnum] === openHarmonyVersion) as keyof typeof SdkVersionEnum
+      const apiVersion = Object.keys(SdkVersion).find(key => SdkVersion[key as keyof typeof SdkVersion] === openHarmonyVersion) as keyof typeof SdkVersion
       const installStatus = await this.sdkManager.isInstalled(apiVersion.toString().split('API')[1])
       const installStatusTranslation = installStatus === 'incomplete' ? this.translator.t('sdk.install.incomplete') : installStatus ? this.translator.t('sdk.install.installed') : this.translator.t('sdk.install.notInstalled')
 
       return {
         label: apiVersion,
         description: `OpenHarmony ${apiVersion} Release`,
-        detail: `OpenHarmony ${SdkVersionEnum[apiVersion as keyof typeof SdkVersionEnum]} Release (${installStatusTranslation})`,
+        detail: `OpenHarmony ${SdkVersion[apiVersion as keyof typeof SdkVersion]} Release (${installStatusTranslation})`,
         installStatus,
-        version: apiVersion as keyof typeof SdkVersionEnum,
+        version: apiVersion as keyof typeof SdkVersion,
       } satisfies SdkQuickPickItem
     }))).filter(Boolean) as SdkQuickPickItem[]
   }
@@ -91,9 +109,9 @@ export class SdkInstaller extends Environment implements Command {
    *
    * @param version - The version of the SDK.
    */
-  async installSdk(version: keyof typeof SdkVersionEnum): Promise<void> {
+  async installSdk(version: keyof typeof SdkVersion): Promise<void> {
     const baseSdkPath = await this.sdkManager.getOhosSdkBasePath()
-    const url = getSdkUrl(SdkVersionEnum[version], this.getArch(), this.getOS())
+    const url = getSdkUrl(SdkVersion[version], this.getArch(), this.getOS())
     if (!url) throw new Error('Current SDK version is not supported by the current platform.')
     const apiNumberVersion = version.toString().split('API')[1]
 
@@ -123,7 +141,7 @@ export class SdkInstaller extends Environment implements Command {
             increment: e.increment,
             message: `${e.percentage.toFixed(2)}% ${e.network.toFixed(2)}${e.unit}/s`,
           })
-          this.getConsola().info(`Downloading SDK ${apiNumberVersion}: ${e.percentage.toFixed(2)}% ${e.network.toFixed(2)}${e.unit}/s`)
+          this.logger.getConsola().info(`Downloading SDK ${apiNumberVersion}: ${e.percentage.toFixed(2)}% ${e.network.toFixed(2)}${e.unit}/s`)
         })
 
         await downloader.startDownload({ signal: abortController.signal })
@@ -164,13 +182,13 @@ export class SdkInstaller extends Environment implements Command {
         progress.report({
           message: this.translator.t('sdk.install.extractingTar', e.path),
         })
-        this.getConsola().info(`Extracting tar.gz API ${apiNumberVersion}: ${e.path}`)
+        this.logger.getConsola().info(`Extracting tar.gz API ${apiNumberVersion}: ${e.path}`)
       })
       downloader.on('zip-extracted', (e) => {
         progress.report({
           message: this.translator.t('sdk.install.extractingZip', e.path),
         })
-        this.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
+        this.logger.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
       })
       await downloader.extractTar()
     })
@@ -186,14 +204,14 @@ export class SdkInstaller extends Environment implements Command {
         progress.report({
           message: this.translator.t('sdk.install.extractingZip', e.path),
         })
-        this.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
+        this.logger.getConsola().info(`Extracting zip API ${apiNumberVersion}: ${e.path}`)
       })
       await downloader.extractZip()
     })
 
     downloader.clean().catch((error) => {
       console.error(error)
-      this.getConsola().error(`Failed to clean up the SDK installer: ${error.message}`)
+      this.logger.getConsola().error(`Failed to clean up the SDK installer: ${error.message}`)
     })
 
     // Step 5: Check the install status of the SDK

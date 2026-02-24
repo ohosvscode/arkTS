@@ -125,7 +125,6 @@
     "oxlint": "catalog:lint",
     "path-browserify": "catalog:polyfill",
     "pnpm": "catalog:scripts",
-    "reactive-vscode": "catalog:dev",
     "readdirp": "catalog:prod",
     "rimraf": "catalog:dev",
     "rollup-plugin-jsshaker": "^0.2.5",

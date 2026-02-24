@@ -16,9 +16,6 @@ catalogs:
     fast-glob:
       specifier: ^3.3.3
       version: 3.3.3
-    reactive-vscode:
-      specifier: ^0.3.2
-      version: 0.3.3
     rimraf:
       specifier: ^6.0.1
       version: 6.0.1
@@ -29,8 +26,8 @@ catalogs:
       specifier: ^4.41.0
       version: 4.41.0
     vscode-ext-gen:
-      specifier: npm:naily-vscode-ext-gen@latest
-      version: 1.5.1-beta.2
+      specifier: ^1.6.0
+      version: 1.6.0
   frontend:
     '@css-render/vue3-ssr':
       specifier: ^0.15.14
@@ -111,8 +108,8 @@ catalogs:
       specifier: 0.0.2-alpha.1
       version: 0.0.2-alpha.1
     '@arkts/image-manager':
-      specifier: ^0.1.5
-      version: 0.1.5
+      specifier: ^0.4.1
+      version: 0.4.1
     '@arkts/project-detector':
       specifier: ^1.1.3-alpha.29
       version: 1.1.3-alpha.29
@@ -451,7 +448,7 @@ importers:
         version: 0.0.2-alpha.1(@types/node@25.2.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.20.6)(yaml@2.8.2)
       '@arkts/image-manager':
         specifier: catalog:prod
-        version: 0.1.5
+        version: 0.4.1
       '@arkts/language-service':
         specifier: workspace:*
         version: link:packages/language-service
@@ -710,9 +707,6 @@ importers:
       pnpm:
         specifier: catalog:scripts
         version: 10.19.0
-      reactive-vscode:
-        specifier: catalog:dev
-        version: 0.3.3(@types/vscode@1.109.0)
       readdirp:
         specifier: catalog:prod
         version: 4.1.2
@@ -772,7 +766,7 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@25.2.3)(@vitest/ui@3.2.4)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.20.6)(yaml@2.8.2)
       vscode-ext-gen:
         specifier: catalog:dev
-        version: naily-vscode-ext-gen@1.5.1-beta.2
+        version: 1.6.0
       vscode-languageserver-textdocument:
         specifier: catalog:prod
         version: 1.0.12
@@ -1184,8 +1178,8 @@ packages:
   '@arkts/debugger@0.0.2-alpha.1':
     resolution: {integrity: sha512-5s4PYhoo0WjptvaOzS0Mxr8oE8qwpG2JupObD4p7XYVNYTc1qt1huGeApXNX5DMOhk/kJmr8vjKHgcHeR1ByhA==, tarball: https://registry.npmjs.org/@arkts/debugger/-/debugger-0.0.2-alpha.1.tgz}
 
-  '@arkts/image-manager@0.1.5':
-    resolution: {integrity: sha512-/qjqYY4LVQEhjH1ny2xiOQuLoVwXv21SplXGIFto9yBJiga8HcwNLApmIWK2ji8MNY1ZVEXXjf+utWXq9/Cf/g==, tarball: https://registry.npmjs.org/@arkts/image-manager/-/image-manager-0.1.5.tgz}
+  '@arkts/image-manager@0.4.1':
+    resolution: {integrity: sha512-mjTDSHhdSghk58+S9VUVkSScufInrz1anTaHrw6hHF+/rnKqD0IuDzM4rFKBXmNHXSn0mih6KTYtY5UcIvOZIA==, tarball: https://registry.npmjs.org/@arkts/image-manager/-/image-manager-0.4.1.tgz}
 
   '@arkts/project-detector-android-arm-eabi@1.1.3-alpha.29':
     resolution: {integrity: sha512-MWJlYZkFW2OCgqA5rhx5U8h/XYfFbeFRrN5oRcEYDXUJTI+zONHx2GqkyEUz5cc6ZWJ7UXd315GKytMBXbWefg==, tarball: https://registry.npmjs.org/@arkts/project-detector-android-arm-eabi/-/project-detector-android-arm-eabi-1.1.3-alpha.29.tgz}
@@ -2652,9 +2646,6 @@ packages:
 
   '@quansync/fs@0.1.5':
     resolution: {integrity: sha512-lNS9hL2aS2NZgNW7BBj+6EBl4rOf8l+tQ0eRY6JWCI8jI2kc53gSoqbjojU0OnAWhzoXiOjFyGsHcDGePB3lhA==, tarball: https://registry.npmjs.org/@quansync/fs/-/fs-0.1.5.tgz}
-
-  '@reactive-vscode/reactivity@0.3.3':
-    resolution: {integrity: sha512-AGRL6EtRd3fwjTag84ze10V4qxQM8L7O3e3G9syyXu2VomMIdXYnKHPEVgRpXfsMg3u2hBlTE76TiKg1wWzabg==, tarball: https://registry.npmjs.org/@reactive-vscode/reactivity/-/reactivity-0.3.3.tgz}
 
   '@rolldown/binding-android-arm64@1.0.0-beta.44':
     resolution: {integrity: sha512-g9ejDOehJFhxC1DIXQuZQ9bKv4lRDioOTL42cJjFjqKPl1L7DVb9QQQE1FxokGEIMr6FezLipxwnzOXWe7DNPg==, tarball: https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.0.0-beta.44.tgz}
@@ -5877,6 +5868,10 @@ packages:
   ini@1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==, tarball: https://registry.npmjs.org/ini/-/ini-1.3.8.tgz}
 
+  ini@6.0.0:
+    resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==, tarball: https://registry.npmjs.org/ini/-/ini-6.0.0.tgz}
+    engines: {node: ^20.17.0 || >=22.9.0}
+
   internal-slot@1.1.0:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==, tarball: https://registry.npmjs.org/internal-slot/-/internal-slot-1.1.0.tgz}
     engines: {node: '>= 0.4'}
@@ -6712,10 +6707,6 @@ packages:
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==, tarball: https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz}
 
-  naily-vscode-ext-gen@1.5.1-beta.2:
-    resolution: {integrity: sha512-rxVd56sjW2RNYOSOOaxqw9EjsDF7YMEGkiYQ3eXtCPGO1ggEj90QyxUQpYRXdKhJ+FZIIoEmvMgNW7k0aGDo2A==, tarball: https://registry.npmjs.org/naily-vscode-ext-gen/-/naily-vscode-ext-gen-1.5.1-beta.2.tgz}
-    hasBin: true
-
   naive-ui@2.43.1:
     resolution: {integrity: sha512-w52W0mOhdOGt4uucFSZmP0DI44PCsFyuxeLSs9aoUThfIuxms90MYjv46Qrr7xprjyJRw5RU6vYpCx4o9ind3A==, tarball: https://registry.npmjs.org/naive-ui/-/naive-ui-2.43.1.tgz}
     peerDependencies:
@@ -7248,11 +7239,6 @@ packages:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==, tarball: https://registry.npmjs.org/rc/-/rc-1.2.8.tgz}
     hasBin: true
 
-  reactive-vscode@0.3.3:
-    resolution: {integrity: sha512-OlYT/G83se2zJFt8Tcfu1W24XgDnoEnGaJKzJLXTX6AZmZ+v1TYAkYPpw/fJXg7iNV1xTXjsHg45MTAKDQp9rA==, tarball: https://registry.npmjs.org/reactive-vscode/-/reactive-vscode-0.3.3.tgz}
-    peerDependencies:
-      '@types/vscode': ^1.101.0
-
   read-pkg@9.0.1:
     resolution: {integrity: sha512-9viLL4/n1BJUCT1NXVTdS1jtm80yDEgR5T4yCelII49Mbj0v1rZdKqj7zCiYdbB0CuCgdrvHcNogAKTFPBocFA==, tarball: https://registry.npmjs.org/read-pkg/-/read-pkg-9.0.1.tgz}
     engines: {node: '>=18'}
@@ -7538,6 +7524,11 @@ packages:
 
   semver@7.7.3:
     resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==, tarball: https://registry.npmjs.org/semver/-/semver-7.7.3.tgz}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==, tarball: https://registry.npmjs.org/semver/-/semver-7.7.4.tgz}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -8453,6 +8444,10 @@ packages:
   vscode-css-languageservice@6.3.8:
     resolution: {integrity: sha512-dBk/9ullEjIMbfSYAohGpDOisOVU1x2MQHOeU12ohGJQI7+r0PCimBwaa/pWpxl/vH4f7ibrBfxIZY3anGmHKQ==, tarball: https://registry.npmjs.org/vscode-css-languageservice/-/vscode-css-languageservice-6.3.8.tgz}
 
+  vscode-ext-gen@1.6.0:
+    resolution: {integrity: sha512-oYg4QCx56hs1+EOVInhQMeuO4jKOCHuBrG9uppivGac8Cu9crJ7YKZg8bviDO60iX9IHqX7o5oRIV/Y+f96XwA==, tarball: https://registry.npmjs.org/vscode-ext-gen/-/vscode-ext-gen-1.6.0.tgz}
+    hasBin: true
+
   vscode-html-languageservice@5.6.0:
     resolution: {integrity: sha512-FIVz83oGw2tBkOr8gQPeiREInnineCKGCz3ZD1Pi6opOuX3nSRkc4y4zLLWsuop+6ttYX//XZCI6SLzGhRzLmA==, tarball: https://registry.npmjs.org/vscode-html-languageservice/-/vscode-html-languageservice-5.6.0.tgz}
 
@@ -8843,13 +8838,15 @@ snapshots:
       - utf-8-validate
       - yaml
 
-  '@arkts/image-manager@0.1.5':
+  '@arkts/image-manager@0.4.1':
     dependencies:
       '@types/progress-stream': 2.0.5
       '@types/unzipper': 0.10.11
       axios: 1.13.5
+      ini: 6.0.0
       mitt: 3.0.1
       progress-stream: 2.0.0
+      semver: 7.7.4
       unzipper: 0.12.3
     transitivePeerDependencies:
       - debug
@@ -10401,8 +10398,6 @@ snapshots:
     dependencies:
       quansync: 0.2.11
 
-  '@reactive-vscode/reactivity@0.3.3': {}
-
   '@rolldown/binding-android-arm64@1.0.0-beta.44':
     optional: true
 
@@ -11100,7 +11095,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.54.0
       debug: 4.4.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.7.4
       tinyglobby: 0.2.15
       ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -12984,7 +12979,7 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
       eslint: 9.39.2(jiti@2.6.1)
-      semver: 7.7.3
+      semver: 7.7.4
 
   eslint-compat-utils@0.6.5(eslint@9.39.2(jiti@2.6.1)):
     dependencies:
@@ -14024,6 +14019,8 @@ snapshots:
   ini@1.3.8:
     optional: true
 
+  ini@6.0.0: {}
+
   internal-slot@1.1.0:
     dependencies:
       es-errors: 1.3.0
@@ -14362,7 +14359,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.7.3
+      semver: 7.7.4
 
   jsshaker@0.2.5:
     optionalDependencies:
@@ -15045,11 +15042,6 @@ snapshots:
 
   mute-stream@0.0.8: {}
 
-  naily-vscode-ext-gen@1.5.1-beta.2:
-    dependencies:
-      cac: 6.7.14
-      tinyglobby: 0.2.15
-
   naive-ui@2.43.1(vue@3.5.22(typescript@5.9.3)):
     dependencies:
       '@css-render/plugin-bem': 0.15.14(css-render@0.15.14)
@@ -15099,7 +15091,7 @@ snapshots:
 
   node-abi@3.78.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
     optional: true
 
   node-addon-api@4.3.0:
@@ -15136,7 +15128,7 @@ snapshots:
   normalize-package-data@6.0.2:
     dependencies:
       hosted-git-info: 7.0.2
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -15630,11 +15622,6 @@ snapshots:
       strip-json-comments: 2.0.1
     optional: true
 
-  reactive-vscode@0.3.3(@types/vscode@1.109.0):
-    dependencies:
-      '@reactive-vscode/reactivity': 0.3.3
-      '@types/vscode': 1.109.0
-
   read-pkg@9.0.1:
     dependencies:
       '@types/normalize-package-data': 2.4.4
@@ -15974,6 +15961,8 @@ snapshots:
   semver@6.3.1: {}
 
   semver@7.7.3: {}
+
+  semver@7.7.4: {}
 
   send@1.2.0:
     dependencies:
@@ -17054,6 +17043,11 @@ snapshots:
       vscode-languageserver-textdocument: 1.0.12
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
+
+  vscode-ext-gen@1.6.0:
+    dependencies:
+      cac: 6.7.14
+      tinyglobby: 0.2.15
 
   vscode-html-languageservice@5.6.0:
     dependencies:

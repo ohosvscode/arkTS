@@ -1,9 +1,9 @@
+import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Disposable } from 'unioc/vscode'
 import * as vscode from 'vscode'
-import { FileSystem } from './fs/file-system'
 
 @Disposable
-export class AbstractWatcher extends FileSystem implements Disposable {
+export class AbstractWatcher extends ExtensionLogger implements Disposable {
   private _vscodeWatcher: vscode.FileSystemWatcher | undefined
 
   get vscodeWatcher(): vscode.FileSystemWatcher {
@@ -15,9 +15,5 @@ export class AbstractWatcher extends FileSystem implements Disposable {
 
   async dispose(): Promise<void> {
     this._vscodeWatcher?.dispose()
-  }
-
-  async [Symbol.asyncDispose](): Promise<void> {
-    await this.dispose()
   }
 }

@@ -1,9 +1,9 @@
 import type { Translator } from 'unioc/vscode'
-import { FileSystemException } from '../fs/file-system-exception'
+import { FileSystemException } from '../errors/file-system-exception'
 
 export class SdkAnalyzerException extends FileSystemException {
-  constructor(public code: SdkAnalyzerException.Code, public translator: Translator) {
-    super(code, translator.t(`sdk.error.${Object.keys(SdkAnalyzerException.Code)[Object.values(SdkAnalyzerException.Code).indexOf(code)]}`))
+  constructor(public code: SdkAnalyzerException.SdkAnalyzerExceptionCode, public translator: Translator) {
+    super(code, translator.t(`sdk.error.${Object.keys(SdkAnalyzerException.SdkAnalyzerExceptionCode)[Object.values(SdkAnalyzerException.SdkAnalyzerExceptionCode).indexOf(code)]}`))
   }
 
   /**
@@ -13,12 +13,12 @@ export class SdkAnalyzerException extends FileSystemException {
    * @returns {SdkAnalyzerException} The converted `SdkAnalyzerException`.
    */
   static fromFileSystemException(error: FileSystemException, translator: Translator): SdkAnalyzerException {
-    return new SdkAnalyzerException(error.code as SdkAnalyzerException.Code, translator)
+    return new SdkAnalyzerException(error.code as SdkAnalyzerException.SdkAnalyzerExceptionCode, translator)
   }
 }
 
 export namespace SdkAnalyzerException {
-  export enum Code {
+  export enum SdkAnalyzerExceptionCode {
     SDKPathNotFound = 'SDK_PATH_NOT_FOUND',
     SDKPathNotDirectory = 'SDK_PATH_NOT_DIRECTORY',
     EtsComponentPathNotFound = 'ETS_COMPONENT_PATH_NOT_FOUND',
