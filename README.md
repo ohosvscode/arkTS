@@ -21,23 +21,29 @@
 
 这是一个基于Volar开发的ArkTS VSCode扩展。🌹为似乎到现在还没有支持VSCode，现有的VSCode市场中的ArkTS扩展大都非常简陋，所以决定自己写一个。
 
-## Features
+## 功能 ✨
 
-- 🌹 1.x版本开始具备完整的`ArkTS`语言支持，全量支持所有`ArkTS`语法。
-- 🎨 **内置文件图标主题**：提供`ArkTS Icons`主题，支持ArkTS文件类型（`.ets`、`.json5`等）和常见Web项目文件（JavaScript、React、CSS、Markdown等），适用于Nx monorepo等混合项目。
+- 🌹 具备完整的`ArkTS`语言的语法高亮、补全、跳转、诊断等基础功能 (1.x)
+- 🎨 ArkTS支持右键一键快速格式化，格式化支持由 `oxk` 工具链提供, 工具链采用 `Rust编写`，由 `oxc project` 项目 Fork 修改而来，速度极快 ⚡️ 独立使用Demo仓库地址: [https://github.com/ohos-rs/oxc-ark](https://github.com/ohos-rs/oxc-ark) 感谢 GitHub @richerfu 大佬的贡献！ (1.2.12+)
+- 💿 支持和 `DevEco Studio` 一致的模拟器镜像管理器，支持创建/删除设备以及下载/删除模拟器镜像，由 [@arkts/image-manager](https://github.com/ohosvscode/image-manager) 提供强力支撑 ✊ (1.3.0+)
+- 🚀 支持任务 `tasks.json` 和启动配置 `launch.json`，配置后可一键运行 hvigor 任务编译项目，并通过 `hdc` 命令运行或调试到模拟器/真机 (1.3.0+)
+- 📦 支持安装和管理`OpenHarmony SDK`，并且支持根据当前打开的项目自动探测`API版本`，发出弹窗提示`下载`或`切换` (1.x)
+- ✂️ 支持和`TypeScript`基本一致的`snippets`，并且添加了`Struct Declaration`等`ArkTS`独有的`Snippets`
+- 🥇 支持完美的 `$r` 函数补全和跳转、支持 `module.json5` 文件的补全和跳转、`resources/element/` 下所有`json`文件点击查询全局引用；由 Rust 编写的 [@arkts/project-detector](https://github.com/ohosvscode/project-detector) hvigor项目分析器提供强力支撑 ✊ (1.1.6+)
+- 🍞 支持 `module.json5` 文件路径补全和跳转、引用表达式错误诊断、`requestPermissions` 权限补全等一系列 new feature ✨ (1.1.8+)
+- 🌾 hvigor 资源管理器面板，支持资源限定符文件夹创建、资源引用索引等功能 （基于 `@arkts/project-detector` 项目分析器打造） (1.2.10+)
+- 🎨 内置文件图标主题：提供`ArkTS Icons`主题，支持ArkTS文件类型（`.ets`、`.json5`等）和常见Web项目文件（JavaScript、React、CSS、Markdown等），适用于Nx monorepo等混合项目。
 - 🖊️ 完善的JSON Schema支持。支持以下文件的JSON Schema：
   - `build-profile.json5` 模块级别/项目级别配置
   - `oh-package.json5` 模块级别/项目级别配置
-  - `module.json5` 模块级别/项目级别配置
   - `code-linter.json5` 模块级别/项目级别配置
-  - `resources/element/`下所有的`color.json`、`string.json`等的kv值配置
+  - `resources/element/`下所有的`color.json`等的kv值配置
+  - `module.json5` 配置
+  - `mock-config.json5`配置
+  - `hvigor-config.json5`配置
   - `main_pages.json5`配置
   - `AppScope/app.json5`配置
-- 📦 1.x版本开始支持安装和管理`OpenHarmony SDK`，并且支持根据当前打开的项目自动探测`API版本`，发出弹窗提示`下载`或`切换`
-- 🥇 1.1.6+ 版本开始支持完美的 `$r` 函数补全和跳转、支持 `module.json5` 文件的补全和跳转、`resources/element/` 下所有`json`文件点击查询全局引用；由 [@arkts/project-detector](https://github.com/ohosvscode/project-detector) hvigor项目分析器提供强力支撑 ✊
-- 🍞 1.1.8+ 版本开始支持 `module.json5` 文件路径补全和跳转、引用表达式错误诊断、`requestPermissions` 权限补全等一系列 new feature ✨
-- 🌾 1.2.10+ 版本增加 hvigor 资源管理器面板，支持资源限定符文件夹创建、资源引用索引等功能
-- 🎨 1.2.12+ 版本增加 [oxk](https://github.com/ohos-rs/oxc-ark) 代码格式化支持
+  - ...未来会支持更多文件的JSON Schema
 
 ![截图](./screenshots/edit.gif)
 

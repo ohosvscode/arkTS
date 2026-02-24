@@ -4,7 +4,7 @@
   "displayName": "Naily's ArkTS Support",
   "version": "1.2.13",
   "private": true,
-  "description": "功能最全的鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/OpenHarmony SDK下载管理/HarmonyOS模拟器下载管理, 欢迎PR!",
+  "description": "功能最全鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/SDK下载管理/模拟器下载管理/调试运行, 欢迎PR!",
   "author": "Naily Zero <zero@naily.cc>",
   "license": "MIT",
   "repository": {
@@ -31,7 +31,8 @@
     "Linters",
     "Snippets",
     "Formatters",
-    "Themes"
+    "Themes",
+    "Debuggers"
   ],
   "main": "./dist/client.js",
   "icon": "assets/icon.png",
