@@ -33,7 +33,7 @@ export class WebviewHtmlLoader<Container extends WebviewContainer = WebviewConta
     const content = (await this.fsx.readFileToString(this.htmlUri)).replace(/\{\{(.*?)\}\}/g, (_, href) => {
       const resourceUri = this.webviewContainer.webview.asWebviewUri(vscode.Uri.joinPath(this.getBuildUri(), href?.trim?.() || href))
       return decodeURIComponent(resourceUri?.toString() || '')
-    }).replace(/<head>/, `<head>${this.initialURL ? `<script>window.INITIAL_URL = '${this.initialURL}'</script>` : ''}`)
+    }).replace(/<head>/, `<head>${this.initialURL ? `<script>window.INITIAL_URL = ${JSON.stringify(this.initialURL)}</script>` : ''}`)
     this.webviewContainer.webview.html = content
   }
 
