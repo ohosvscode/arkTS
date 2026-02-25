@@ -9,6 +9,10 @@ export namespace DeviceManagerProtocol {
      */
     onDidChangeLocalImagePath(path: string, isValid: ServerFunction.isValidLocalImagePath.Response): void
     /**
+     * Called when the deployed emulator path changes.
+     */
+    onDidChangeDeployedEmulatorPath(path: string, isValid: DeviceManagerProtocol.ServerFunction.isValidDeployedEmulatorPath.Response): void
+    /**
      * Called when the webview panel is refreshed.
      */
     onDidRefresh(): void
@@ -23,6 +27,14 @@ export namespace DeviceManagerProtocol {
      * Check if the given path is a valid local image folder.
      */
     isValidLocalImagePath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidLocalImagePath.Response>
+    /**
+     * Get the path of the deployed emulator folder.
+     */
+    getDeployedEmulatorPath(): Promise<string>
+    /**
+     * Check if the given path is a valid deployed emulator folder.
+     */
+    isValidDeployedEmulatorPath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidDeployedEmulatorPath.Response>
     /**
      * Check if the current emulator is compatible with the @arkts/image-manager.
      */
@@ -92,6 +104,10 @@ export namespace DeviceManagerProtocol {
 
   export namespace ServerFunction {
     export namespace isValidLocalImagePath {
+      export type Response = 'not-folder' | 'not-exists' | 'invalid-permission' | true
+    }
+
+    export namespace isValidDeployedEmulatorPath {
       export type Response = 'not-folder' | 'not-exists' | 'invalid-permission' | true
     }
 

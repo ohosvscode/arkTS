@@ -14,17 +14,18 @@ const { data: localImagePath } = useAsyncData(() => connection.getLocalImagePath
 const feedback = computed(() => {
   switch (isValidLocalImagePath.value) {
     case 'not-folder':
-      return t('hdcManager.deviceManager.localImagePath.feedback.not-folder')
+      return t('hdcManager.deviceManager.localImagePath.not-folder')
     case 'not-exists':
-      return t('hdcManager.deviceManager.localImagePath.feedback.not-exists')
+      return t('hdcManager.deviceManager.localImagePath.not-exists')
     case 'invalid-permission':
-      return t('hdcManager.deviceManager.localImagePath.feedback.invalid-permission')
+      return t('hdcManager.deviceManager.localImagePath.invalid-permission')
     default:
       return t('hdcManager.deviceManager.localImagePath.feedback')
   }
 })
 const canDownload = computed(() => isValidLocalImagePath.value === true)
 onDidChangeLocalImagePath((path, isValid) => {
+  console.warn(`path: ${path}, isValid: ${isValid}`)
   localImagePath.value = path
   isValidLocalImagePath.value = isValid
 })
@@ -82,6 +83,7 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
             <NButton
               size="small"
               type="info"
+              disabled={!canDownload.value}
               onClick={() => router.push({
                 path: '/device-manager/create-device',
                 query: { imagePath: row.path },
@@ -89,7 +91,7 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
             >
               {{ default: () => t('create'), icon: () => <div class="i-ph-plus" /> }}
             </NButton>
-            <NButton size="small" type="error" onClick={() => deleteLocalImage(row)}>
+            <NButton size="small" type="error" disabled={!canDownload.value} onClick={() => deleteLocalImage(row)}>
               {{ default: () => t('delete'), icon: () => <div class="i-ph-trash-duotone" /> }}
             </NButton>
           </div>

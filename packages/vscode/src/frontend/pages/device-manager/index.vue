@@ -2,8 +2,23 @@
 import type { FullDeployedImageOptions } from '@arkts/image-manager'
 import { getIconByDeviceType } from '../../composables/device-type-icon'
 
-const { connection } = useDeviceManagerConnection()
-const deployedEmulatorPath = computed(() => '/Users/naily/.huawei/Emulator/deployed')
+const { t } = useI18n()
+const { connection, onDidChangeDeployedEmulatorPath } = useDeviceManagerConnection()
+const { data: deployedEmulatorPath } = useAsyncData(() => connection.getDeployedEmulatorPath?.())
+const { data: isValidDeployedEmulatorPath } = useAsyncData(() => connection.isValidDeployedEmulatorPath?.(deployedEmulatorPath.value ?? ''))
+const feedback = computed(() => {
+  switch (isValidDeployedEmulatorPath.value) {
+    case 'not-folder':
+      return t('hdcManager.deviceManager.deployedEmulatorPath.not-folder')
+    case 'not-exists':
+      return t('hdcManager.deviceManager.deployedEmulatorPath.not-exists')
+    case 'invalid-permission':
+      return t('hdcManager.deviceManager.deployedEmulatorPath.invalid-permission')
+    default:
+      return t('hdcManager.deviceManager.deployedEmulatorPath.feedback')
+  }
+})
+const canCreateDevice = computed(() => isValidDeployedEmulatorPath.value === true)
 
 const { data: version = 'unknown' } = useAsyncData(() => connection.getImageManagerVersion?.())
 const { data: isCompatible = true } = useAsyncData(() => connection.isCompatible?.())
@@ -12,6 +27,12 @@ const { data: devices, execute: getLocalDevices, loading: getLocalDevicesLoading
 function deleteDevice(device: FullDeployedImageOptions) {
   connection.deleteDevice?.(device.name, device.imageDir).finally(() => getLocalDevices())
 }
+
+onDidChangeDeployedEmulatorPath((path, isValid) => {
+  deployedEmulatorPath.value = path
+  isValidDeployedEmulatorPath.value = isValid
+  getLocalDevices()
+})
 </script>
 
 <template>
@@ -31,7 +52,8 @@ function deleteDevice(device: FullDeployedImageOptions) {
       :label="$t('hdcManager.deviceManager.deployedEmulatorPath.title')"
       label-placement="left"
       class="opacity-feedback mb-1"
-      :feedback="$t('hdcManager.deviceManager.deployedEmulatorPath.feedback')"
+      :feedback="feedback"
+      :validation-status="canCreateDevice ? undefined : 'error'"
     >
       <NInput v-model:value="deployedEmulatorPath" readonly mr-2 />
       <a href="command:workbench.action.openSettings?%7B%22query%22%3A%22ets.deployedEmulatorPath%22%7D">

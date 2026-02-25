@@ -1,7 +1,5 @@
 import type { BirpcReturn } from 'birpc'
-import os from 'node:os'
 import path from 'node:path'
-import process from 'node:process'
 import { createScreen, createScreenPreset, Device, FullDeployedImageOptions, LocalImage, ProductPreset, RemoteImage, RequestUrlError, Screen, SnakecaseDeviceType, version } from '@arkts/image-manager'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
@@ -9,6 +7,7 @@ import * as vscode from 'vscode'
 import { FileSystemContext } from '../../context/file-system-context'
 import { ProtocolContext } from '../../context/protocol-context'
 import { WebviewContext } from '../../context/webview-context'
+import { ConfigKey } from '../../generated/meta'
 import { HdcManager } from '../../hdc-manager'
 import { DeviceManagerProtocol } from '../interfaces/device-manager-protocol'
 
@@ -25,11 +24,18 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
     super.onRpcInitialized(connection, context)
     this.extensionContext.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration(async (e) => {
-        if (!e.affectsConfiguration('ets.localImagePath')) return
-        connection.onDidChangeLocalImagePath(
-          await this.getLocalImagePath(),
-          await this.isValidLocalImagePath(await this.getLocalImagePath()),
-        )
+        if (e.affectsConfiguration('ets.localImagePath' satisfies ConfigKey)) {
+          connection.onDidChangeLocalImagePath(
+            await this.getLocalImagePath(),
+            await this.isValidLocalImagePath(await this.getLocalImagePath()),
+          )
+        }
+        else if (e.affectsConfiguration('ets.deployedEmulatorPath' satisfies ConfigKey)) {
+          connection.onDidChangeDeployedEmulatorPath(
+            await this.getDeployedEmulatorPath(),
+            await this.isValidDeployedEmulatorPath(await this.getDeployedEmulatorPath()),
+          )
+        }
       }),
     )
     this.connection = connection
@@ -52,23 +58,23 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
     }
   }
 
-  private getDefaultLocalImagePath(): vscode.Uri {
-    switch (process.platform) {
-      case 'win32':
-        return process.env.APPDATA ? vscode.Uri.joinPath(vscode.Uri.file(process.env.APPDATA), 'Local', 'Huawei', 'Sdk') : vscode.Uri.joinPath(vscode.Uri.file(os.homedir()), 'AppData', 'Local', 'Huawei', 'Sdk')
-      case 'darwin':
-        return vscode.Uri.joinPath(vscode.Uri.file(os.homedir()), 'Library', 'Huawei', 'Sdk')
-      // Although linux and other platforms are not supported, we still return a default path for them
-      default:
-        return vscode.Uri.joinPath(vscode.Uri.file(os.homedir()), '.local', 'share', 'Huawei', 'Sdk')
-    }
-  }
-
   async getLocalImagePath(): Promise<string> {
-    return (await vscode.workspace.getConfiguration('ets').get('localImagePath')) || this.getDefaultLocalImagePath().fsPath
+    const imageManager = await this.hdcManager.createImageManager()
+    return imageManager.getOptions().imageBasePath
   }
 
   async isValidLocalImagePath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidLocalImagePath.Response> {
+    if (!await this.fsx.isExists(vscode.Uri.file(path))) return 'not-exists'
+    if (!await this.fsx.isDirectory(vscode.Uri.file(path))) return 'not-folder'
+    return true
+  }
+
+  async getDeployedEmulatorPath(): Promise<string> {
+    const imageManager = await this.hdcManager.createImageManager()
+    return imageManager.getOptions().deployedPath
+  }
+
+  async isValidDeployedEmulatorPath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidDeployedEmulatorPath.Response> {
     if (!await this.fsx.isExists(vscode.Uri.file(path))) return 'not-exists'
     if (!await this.fsx.isDirectory(vscode.Uri.file(path))) return 'not-folder'
     return true

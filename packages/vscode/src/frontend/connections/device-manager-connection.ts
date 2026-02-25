@@ -6,6 +6,7 @@ import { createConnection } from '../utils/connection'
 export interface DeviceManagerConnection extends Connection<DeviceManagerProtocol.ServerFunction, DeviceManagerProtocol.ClientFunction> {
   connection: BirpcReturn<DeviceManagerProtocol.ServerFunction, DeviceManagerProtocol.ClientFunction>
   onDidChangeLocalImagePath(callback: DeviceManagerProtocol.ClientFunction['onDidChangeLocalImagePath']): void
+  onDidChangeDeployedEmulatorPath(callback: DeviceManagerProtocol.ClientFunction['onDidChangeDeployedEmulatorPath']): void
   onDidRefresh(callback: () => void): void
 }
 
@@ -20,14 +21,21 @@ export function useDeviceManagerConnection(): DeviceManagerConnection {
     onDidRefreshCallbacks.add(callback)
   }
 
+  const onDidChangeDeployedEmulatorPathCallbacks = new Set<DeviceManagerProtocol.ClientFunction['onDidChangeDeployedEmulatorPath']>()
+  const onDidChangeDeployedEmulatorPath = (callback: DeviceManagerProtocol.ClientFunction['onDidChangeDeployedEmulatorPath']): void => {
+    onDidChangeDeployedEmulatorPathCallbacks.add(callback)
+  }
+
   const connection = createConnection<DeviceManagerProtocol.ServerFunction, DeviceManagerProtocol.ClientFunction>({
     onDidChangeLocalImagePath: (path, isValid) => onDidChangeLocalImagePathCallbacks.forEach(callback => callback(path, isValid)),
+    onDidChangeDeployedEmulatorPath: (path, isValid) => onDidChangeDeployedEmulatorPathCallbacks.forEach(callback => callback(path, isValid)),
     onDidRefresh: () => onDidRefreshCallbacks.forEach(callback => callback()),
   })
 
   return {
     onDidChangeLocalImagePath,
     onDidRefresh,
+    onDidChangeDeployedEmulatorPath,
     ...connection,
   }
 }
