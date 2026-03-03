@@ -1,5 +1,38 @@
 # vscode-naily-ets
 
+## 1.3.0
+
+### Minor Changes
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - Merge all SPA front-end projects related to webview into one SSG project, allowing vite to achieve cross-project tree-shaking
+
+  > Result: Originally with 2 panels, the volume occupied was close to 4MB; after reduction, including the panels created in this submission (total of 4 panels), the overall volume is approximately 3MB, significantly reducing space occupation.
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add hdc manager panel and device manager panel
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add debugger `@arkts/debugger` into vscode extension (beta stage, not ready for production use)
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add vscode tasks
+
+  - hdc-run-ability: run an ability using `hdc`
+  - hdc-install-hap: install compiled `.hap` file to device using `hdc`
+  - hvigor-assemble-hap: compile and assemble the project to `.hap` file using `hvigor`
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: update `@arkts/sdk-downloader` to v0.1.32:
+  - fix problems on Windows
+  - update API20-Beta1 to API20-Release
+  - fix native toolchains symlink issue [#17](https://github.com/ohosvscode/sdk-downloader/issues/17)
+
+### Patch Changes
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: update hdc manager panel, update baseline-browser-mapping deps
+
+- [#263](https://github.com/ohosvscode/arkTS/pull/263) [`eea518a`](https://github.com/ohosvscode/arkTS/commit/eea518a65110c68c8ffc53f371e942020eddca6e) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat(vscode): Add a help button in the language server error dialog box (#260)
+
+- [#262](https://github.com/ohosvscode/arkTS/pull/262) [`2067c24`](https://github.com/ohosvscode/arkTS/commit/2067c24d45e715afb06b05fd1b89fa709806b936) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: update README, add upload when release new version
+
+- [#269](https://github.com/ohosvscode/arkTS/pull/269) [`166250f`](https://github.com/ohosvscode/arkTS/commit/166250f8db7ea29145ab3f53794d7a382af85158) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: update READMEs
+
 ## 1.2.13
 
 ### Patch Changes
