@@ -1,5 +1,11 @@
 # @arkts/language-server
 
+## 1.3.0
+
+### Minor Changes
+
+- [#268](https://github.com/ohosvscode/arkTS/pull/268) [`1bf8f32`](https://github.com/ohosvscode/arkTS/commit/1bf8f32afaca4fbe482985f81f15772b363f543e) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: remove composite: true in default tsconfig, fix #267
+
 ## 1.2.12
 
 ### Patch Changes
