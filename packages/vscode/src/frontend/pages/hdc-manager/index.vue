@@ -1,14 +1,11 @@
 <script lang="ts" setup>
 import type { HdcManagerConnectionProtocol } from '../../interfaces/hdc-connection-protocol'
 
-const connection = useHdcConnection()
+const { connection } = useHdcConnection()
 const devices = ref<HdcManagerConnectionProtocol.ServerFunction.GetConnectedDevices.Device[]>([])
 const currentDevice = ref<string | undefined>(undefined)
 const deviceInfo = ref<HdcManagerConnectionProtocol.ServerFunction.GetDeviceInfo.Response | undefined>(undefined)
 const deviceInfoLoading = ref(false)
-const hilogLevel = shallowRef<Array<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>>(['DEBUG'])
-const hilogPackageName = shallowRef<string | undefined>(undefined)
-const hilogProcessId = shallowRef<number | undefined>(undefined)
 /** 设备列表清空前的 connectKey，用于恢复时优先选回同一设备，避免误触发 hilog 重启 */
 let lastConnectKeyBeforeDisconnect: string | undefined
 
@@ -40,12 +37,6 @@ useIntervalFn(async () => {
   }
 }, 1000, { immediate: true, immediateCallback: true })
 
-watch([currentDevice, hilogLevel], () => {
-  if (!currentDevice.value) return
-  connection.setLogLevel?.(hilogLevel.value, currentDevice.value)
-  refreshDeviceInfo(true)
-})
-
 watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value || -1))
 </script>
 
@@ -57,7 +48,9 @@ watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value |
     <template #extra>
       <NButton type="primary" size="small" @click="connection.openConnectDeviceDialog?.()">
         连接设备
-        <template #icon><div i-ph-plug-duotone /></template>
+        <template #icon>
+          <div i-ph-plug-duotone />
+        </template>
       </NButton>
     </template>
   </NEmpty>
@@ -74,7 +67,7 @@ watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value |
     @close="connectKey => connection.disconnectDevice?.(connectKey)"
   >
     <NTabPane v-for="(device, index) in devices" :key="index" :name="device.connectKey">
-      <Hilog v-model:hilog-level="hilogLevel" v-model:hilog-package-name="hilogPackageName" v-model:hilog-process-id="hilogProcessId" :device-info-loading="deviceInfoLoading" @open-hilog="connection.openHilog?.()" />
+      <Hilog :current-device="currentDevice" :device-info-loading="deviceInfoLoading" @open-hilog="connection.openHilog?.()" />
       <NSplit direction="horizontal" :default-size="0.70" :max="0.70" :min="0.60" pane1-class="pr-0.5" pane2-class="pl-0.5">
         <template #1>
           <div flex="~ col gap-2">

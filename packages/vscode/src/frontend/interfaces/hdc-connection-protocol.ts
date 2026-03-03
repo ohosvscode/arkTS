@@ -1,20 +1,10 @@
-import type { FullDeployedImageOptions, LocalImage, RemoteImage } from '@arkts/image-manager'
 import type { Arrayable } from '@vueuse/core'
 import type { ProtocolContext } from '../../context/protocol-context'
 import type { WebviewContext } from '../../context/webview-context'
 import type { ParsedIfconfig } from '../utils/parse-ifconfig'
 
 export namespace HdcManagerConnectionProtocol {
-  export interface ClientFunction extends WebviewContext.ClientFunction {
-    /**
-     * Called when the local image path changes.
-     */
-    onDidChangeLocalImagePath(path: string, isValid: ServerFunction.isValidLocalImagePath.Response): void
-    /**
-     * Called when the webview panel is refreshed.
-     */
-    onDidRefresh(): void
-  }
+  export interface ClientFunction extends WebviewContext.ClientFunction {}
 
   export interface ServerFunction extends ProtocolContext<ClientFunction, ServerFunction> {
     /**
@@ -25,17 +15,6 @@ export namespace HdcManagerConnectionProtocol {
      * Set the current connect key.
      */
     setCurrentConnectKey(connectKey: string | -1): void
-    /**
-     * Get the path of the local image folder.
-     */
-    getLocalImagePath(): Promise<string>
-    /**
-     * Check if the given path is a valid local image folder.
-     *
-     * @param path The path to check.
-     * @returns `'not-folder'` if the path is not a folder, `'not-exists'` if the path does not exist, `true` if the path is a valid local image folder.
-     */
-    isValidLocalImagePath(path: string): Promise<'not-folder' | 'not-exists' | 'invalid-permission' | true>
     /**
      * Get the list of connected devices.
      */
@@ -68,41 +47,9 @@ export namespace HdcManagerConnectionProtocol {
      * @param connectKey The connect key of the device.
      */
     disconnectDevice(connectKey: string): Promise<void>
-    /**
-     * Get the list of local devices.
-     */
-    getLocalDevices(): Promise<HdcManagerConnectionProtocol.ServerFunction.GetLocalDevices.Response>
-    /**
-     * Request the list of remote images by operating system and architecture.
-     *
-     * @returns The list of remote images by operating system and architecture.
-     */
-    requestRemoteImageList(): Promise<ServerFunction.RequestRemoteImageList.Response>
-    /**
-     * Download the remote image.
-     *
-     * @param image The remote image to download.
-     */
-    requestRemoteImageDownload(image: RemoteImage.Stringifiable): Promise<void>
-    /**
-     * Delete the local image.
-     *
-     * @param localImage The local image to delete.
-     */
-    deleteLocalImage(localImage: LocalImage.Stringifiable): Promise<void>
-    /**
-     * Start the device.
-     *
-     * @param device The device to start.
-     */
-    startDevice(device: FullDeployedImageOptions): Promise<void>
   }
 
   export namespace ServerFunction {
-    export namespace isValidLocalImagePath {
-      export type Response = 'not-folder' | 'not-exists' | 'invalid-permission' | true
-    }
-
     export namespace GetConnectedDevices {
       export interface Device {
         /**
@@ -118,15 +65,6 @@ export namespace HdcManagerConnectionProtocol {
          * The list of connected devices.
          */
         devices: Device[]
-      }
-    }
-
-    export namespace GetLocalDevices {
-      export interface Response {
-        /**
-         * The list of local devices.
-         */
-        devices: FullDeployedImageOptions[]
       }
     }
 
@@ -198,14 +136,6 @@ export namespace HdcManagerConnectionProtocol {
         batteryTechnology: '',
         batteryStatus: 0,
         network: [],
-      }
-    }
-    export namespace RequestRemoteImageList {
-      export interface Response {
-        /**
-         * The list of remote images.
-         */
-        images: (LocalImage.Stringifiable | RemoteImage.Stringifiable)[]
       }
     }
   }

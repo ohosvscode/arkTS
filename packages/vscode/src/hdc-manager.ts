@@ -1,7 +1,11 @@
 import { createImageManager, ImageManager } from '@arkts/image-manager'
+import axios from 'axios'
 import { Autowired, Service } from 'unioc'
 import { Command, ExtensionContext, Translator } from 'unioc/vscode'
+import unzipper from 'unzipper'
 import * as vscode from 'vscode'
+import { createNodeFileSystem, FileSystem } from 'vscode-fs'
+import { createVSCodeFileSystem } from 'vscode-fs/vscode'
 import which from 'which'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
@@ -16,17 +20,10 @@ export type CurrentConnectKey = |
 @Service
 @Command('ets.copyHdcPathToClipboard')
 export class HdcManager implements Command {
-  @Autowired
-  private readonly sdkManager: SdkManager
-
-  @Autowired(Translator)
-  private readonly translator: Translator
-
-  @Autowired(ExtensionContext)
-  private readonly extensionContext: vscode.ExtensionContext
-
-  @Autowired
-  private readonly sdkVersionGuesser: SdkVersionGuesser
+  @Autowired private readonly sdkManager: SdkManager
+  @Autowired(Translator) private readonly translator: Translator
+  @Autowired(ExtensionContext) private readonly extensionContext: vscode.ExtensionContext
+  @Autowired private readonly sdkVersionGuesser: SdkVersionGuesser
 
   private async getHdcPathFromConfiguration(): Promise<string | null> {
     const sdkPath = await this.sdkManager.getAnalyzedSdkPath(this.sdkVersionGuesser)
@@ -56,12 +53,26 @@ export class HdcManager implements Command {
 
   getCurrentConnectKey(): CurrentConnectKey {
     if (this.currentConnectKey !== 0) return this.currentConnectKey
-    const stored = this.extensionContext.globalState.get<string | number>(GLOBAL_STATE_KEY_CURRENT_CONNECT)
+    const stored = this.extensionContext.globalState.get<CurrentConnectKey>(GLOBAL_STATE_KEY_CURRENT_CONNECT)
     if (stored === undefined || stored === '0') return 0
     if (stored === -1) return -1
-    const key = stored as CurrentConnectKey
-    this.currentConnectKey = key
-    return key
+    this.currentConnectKey = stored
+    return stored
+  }
+
+  private _fs: FileSystem | null = null
+
+  private async getPatchedFileSystem(): Promise<FileSystem> {
+    if (this._fs) return this._fs
+    const fs = await createVSCodeFileSystem()
+    const nodeFS = await createNodeFileSystem()
+    const originalFsDelete = fs.delete
+    fs.delete = async (path, options) => {
+      if (options?.useTrash === true) return originalFsDelete.call(fs, path, options)
+      else return nodeFS.delete(path, options)
+    }
+    this._fs = fs
+    return this._fs
   }
 
   async createImageManager(): Promise<ImageManager> {
@@ -72,6 +83,12 @@ export class HdcManager implements Command {
       emulatorPath: await vscode.workspace.getConfiguration('ets').get('emulatorPath'),
       logPath: await vscode.workspace.getConfiguration('ets').get('emulatorLogPath'),
       sdkPath: await this.sdkManager.getAnalyzedSdkPath(this.sdkVersionGuesser),
+      adapter: {
+        axios,
+        fs: await this.getPatchedFileSystem(),
+        unzipper,
+        isAxiosError: axios.isAxiosError as any,
+      },
     })
   }
 

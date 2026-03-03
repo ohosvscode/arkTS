@@ -109,7 +109,7 @@ interface LanguageService {
 
 ## Usage
 
-#### When working with Web
+### When working with Web
 
 It's **very** likely that you will need to set up your lib `*.d.ts` files to use this.
 
@@ -186,7 +186,7 @@ The CDN cache:
 - Automatically purges items which use a different version of ArkTS to save space
 - Can use a copy of the lz-string module for compressing/decompressing the lib files
 
-#### When working with node
+### When working with node
 
 If you can reliably access the file-system, then you can have a simpler time:
 

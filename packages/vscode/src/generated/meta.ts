@@ -327,6 +327,6 @@ export interface TaskPropertiesMap {
     "parallel": boolean,
     "incremental": boolean,
     "daemon": boolean,
-    "args": unknown,
+    "args": string[],
   },
 }

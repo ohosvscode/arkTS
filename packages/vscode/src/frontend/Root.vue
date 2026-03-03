@@ -2,7 +2,7 @@
 import type { GlobalThemeOverrides } from 'naive-ui'
 import { NConfigProvider } from 'naive-ui'
 import { inject, provide, ref } from 'vue'
-import { onDidChangeActiveColorTheme } from './composables/on-did-change-active-color-theme'
+import { useConnection } from './utils/connection'
 
 provide('vscode', typeof window !== 'undefined' ? window.vscode : undefined)
 const locale = inject<any | undefined>('naiveui:locale')
@@ -86,6 +86,8 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     colorInfoPressed: 'var(--vscode-infoForeground)',
     colorInfoFocus: 'var(--vscode-infoForeground)',
     borderInfo: 'var(--vscode-editorInfo-foreground)',
+    textColorGhostPrimary: 'var(--vscode-button-background)',
+    textColorGhostPrimaryHover: 'var(--vscode-button-hoverBackground)',
   },
   Checkbox: {
     colorChecked: 'var(--vscode-checkbox-selectBackground)',
@@ -170,7 +172,8 @@ const rawThemeOverrides: GlobalThemeOverrides = {
 
 /** 必须在首次渲染前解析，否则 DataTable 等组件内部会因 seemly 解析 var() 报错 */
 const themeOverrides = ref<GlobalThemeOverrides>(resolveTheme(rawThemeOverrides))
-onDidChangeActiveColorTheme(() => themeOverrides.value = resolveTheme(rawThemeOverrides))
+const { onDidChangeActiveColorTheme } = useConnection() ?? {}
+onDidChangeActiveColorTheme?.(() => themeOverrides.value = resolveTheme(rawThemeOverrides))
 
 const route = useRoute()
 const { isOnline } = useNetwork()
@@ -194,31 +197,7 @@ watch(isThrowErrorIfNoNetwork, () => key.value++)
       <RouterView />
     </NConfigProvider>
     <template #fallback>
-      <div class="relative top-[-6rem] left-[-1rem] right-[-1rem] bottom-0 flex flex-col items-center justify-center gap-2 z-50 w-[calc(100%+2rem)] h-screen">
-        <div v-if="error" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
-          <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
-          <div select-none>
-            加载失败, 请提交 issue 或联系开发者修复此问题：
-          </div>
-          <a href="https://github.com/ohosvscode/arkTS/issues">
-            https://github.com/ohosvscode/arkTS/issues
-          </a>
-          <NCode class="text-sm whitespace-pre-wrap">
-            {{ error?.stack }}
-          </NCode>
-        </div>
-
-        <div v-else-if="isThrowErrorIfNoNetwork" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">
-          <div class="i-ph-warning-duotone font-size-10 text-[var(--vscode-errorForeground)]" />
-          <div select-none>
-            {{ $t('noNetwork') }}
-          </div>
-        </div>
-
-        <div v-else class="flex flex-col items-center justify-center gap-2">
-          <LoadingSpinner size-full />
-        </div>
-      </div>
+      <ErrorFallback :error="error" :is-throw-error-if-no-network="isThrowErrorIfNoNetwork" />
     </template>
   </Suspense>
 </template>

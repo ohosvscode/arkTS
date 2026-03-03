@@ -14,11 +14,8 @@ export interface HdcRunAbilityTaskDefinition extends vscode.TaskDefinition, HdcR
 @Disposable
 @TaskProvider('hdc-run-ability')
 export class HdcRunAbilityTaskProvider extends HdcTaskContext implements TaskProvider {
-  @Autowired
-  private readonly hdcManager: HdcManager
-
-  @Autowired(Translator)
-  private readonly translator: Translator
+  @Autowired private readonly hdcManager: HdcManager
+  @Autowired(Translator) private readonly translator: Translator
 
   provideTasks(): vscode.ProviderResult<vscode.Task[]> {
     return [

@@ -29,7 +29,9 @@ function formatBytes(bytes: number): string {
 <template>
   <NSpin :show="deviceInfoLoading">
     <NCard size="small">
-      <template #header>网络</template>
+      <template #header>
+        网络
+      </template>
       <NEmpty v-if="interfaces.length === 0 && !deviceInfoLoading" text-secondary text-3.2>
         暂无网卡信息
       </NEmpty>
@@ -41,8 +43,12 @@ function formatBytes(bytes: number): string {
             </template>
             <template #header-extra>
               <span v-if="iface.inet" text-2.8 ml-1>{{ iface.inet }}</span>
-              <NTag v-if="iface.up" size="tiny" type="success" ml-1>UP</NTag>
-              <NTag v-else size="tiny" type="default" ml-1>DOWN</NTag>
+              <NTag v-if="iface.up" size="tiny" type="success" ml-1>
+                UP
+              </NTag>
+              <NTag v-else size="tiny" type="default" ml-1>
+                DOWN
+              </NTag>
             </template>
             <template #description>
               <div v-if="iface.linkEncap" text-2.6 text-secondary>

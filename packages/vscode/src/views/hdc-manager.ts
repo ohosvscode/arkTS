@@ -3,20 +3,17 @@ import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Autowired, Service } from 'unioc'
 import { Disposable, ExtensionContext, IOnActivate } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { FileSystemContext } from '../context/file-system-context'
 import { WebviewContext } from '../context/webview-context'
 import { HdcServerFunctionImpl } from '../frontend/functions/hdc-server-function'
 
 @Service
 @Disposable
 export class HdcManagerView extends WebviewContext<HdcManagerConnectionProtocol.ClientFunction, HdcManagerConnectionProtocol.ServerFunction> implements IOnActivate, vscode.WebviewViewProvider {
-  @Autowired(ExtensionContext)
-  private readonly extensionContext: ExtensionContext
-
-  @Autowired
-  private readonly serverFunction: HdcServerFunctionImpl
-
-  @Autowired
-  protected readonly logger: ExtensionLogger
+  @Autowired(ExtensionContext) private readonly extensionContext: ExtensionContext
+  @Autowired private readonly serverFunction: HdcServerFunctionImpl
+  @Autowired protected readonly logger: ExtensionLogger
+  @Autowired protected readonly fsx: FileSystemContext
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
     webviewView.webview.options = {

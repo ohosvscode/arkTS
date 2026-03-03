@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./packages/vscode/assets/icon.png" width="100" />
+<img src="./packages/vscode/assets/icon.png" width="100" alt="Icon" />
 
 # Naily's ArkTS Support
 
@@ -23,21 +23,27 @@ This is an ArkTS VSCode extension developed based on Volar. 🌹 It appears that
 
 ## Features
 
-- 🌹 Starting from version 1.x, complete `ArkTS` language support is available, fully supporting all `ArkTS` syntax.
-- 🎨 **Built-in File Icon Theme**: Provides the `ArkTS Icons` theme, supporting ArkTS file types (`.ets`, `.json5`, etc.) and common web project files (JavaScript, React, CSS, Markdown, etc.), perfect for Nx monorepos and mixed projects.
+- 🌹 Complete basic syntax highlighting, completion, jump, and diagnostic features for `ArkTS` language (1.x)
+- 🎨 ArkTS supports right-click one-key quick formatting, formatting supported by `oxk` toolchain, toolchain written in `Rust`, forked from `oxc project` project, extremely fast ⚡️ Demo repository address: [https://github.com/ohos-rs/oxc-ark](https://github.com/ohos-rs/oxc-ark) Thanks to GitHub @richerfu for his contribution! (1.2.12+)
+- 💿 Support the same as `DevEco Studio` emulator image manager, support creating/deleting devices and downloading/deleting emulator images, provided by [@arkts/image-manager](https://github.com/ohosvscode/image-manager) ✊ (1.3.0+)
+- 🚀 Support task `tasks.json` and launch configuration `launch.json`, after configuration, you can run hvigor tasks compile project, and run or debug to emulator/real device through `hdc` command (1.3.0+)
+- 📦 Support installation and management of `OpenHarmony SDK`, and automatically detect the `API version` of the currently opened project, show popup prompts for `download` or `switch` (1.x)
+- ✂️ Support the same as `TypeScript` basic `snippets`, and add `Struct Declaration` and other `ArkTS` unique `Snippets`
+- 🥇 Perfect `$r` function completion and jump, support `module.json5` file completion and jump, support global reference query for all `json` files under `resources/element/`; supported by [@arkts/project-detector](https://github.com/ohosvscode/project-detector) hvigor project analyzer ✊ (1.1.6+)
+- 🍞 Support `module.json5` file path completion and jump, reference expression error diagnosis, `requestPermissions` permission completion and other new features ✨ (1.1.8+)
+- 🌾 hvigor resource explorer panel, support resource qualifier folder creation, resource reference indexing and other functions (based on `@arkts/project-detector` project analyzer) (1.2.10+)
+- 🎨 Built-in file icon theme: provide `ArkTS Icons` theme, supporting ArkTS file types (`.ets`, `.json5`, etc.) and common web project files (JavaScript, React, CSS, Markdown, etc.), perfect for Nx monorepos and mixed projects.
 - 🖊️ Comprehensive JSON Schema support. Supports the following JSON Schema files:
   - `build-profile.json5` Module-level/Project-level configuration
   - `oh-package.json5` Module-level/Project-level configuration
-  - `module.json5` Module-level/Project-level configuration
   - `code-linter.json5` Module-level/Project-level configuration
   - All `color.json` files under `resources/element/` for kv value configuration
-  - `main_pages.json5`file configuration
+  - `module.json5` file configuration
+  - `mock-config.json5` file configuration
+  - `hvigor-config.json5` file configuration
+  - `main_pages.json5` file configuration
   - `AppScope/app.json5` file configuration
-- 📦 Starting from version 1.x, supports installation and management of `OpenHarmony SDK`, and automatically detects the `API version` of the currently opened project, showing popup prompts for `download` or `switch`
-- 🥇 Starting from version 1.1.6+, supports perfect `$r` function completion and jump, supports `module.json5` file completion and jump, supports global reference query for all `json` files under `resources/element/`; supported by [@arkts/project-detector](https://github.com/ohosvscode/project-detector) hvigor project analyzer ✊
-- 🍞 Starting from version 1.1.8+, supports `module.json5` file path completion and jump, reference expression error diagnosis, `requestPermissions` permission completion and other new features ✨
-- 🌾 Starting from version 1.2.10+, adds the hvigor resource explorer panel, supporting resource qualifier folder creation and resource reference indexing ✨
-- 🎨 Starting from version 1.2.12+, adds [oxk](https://github.com/ohos-rs/oxc-ark) code formatting support ✨
+  - ...will support more JSON Schema files in the future
 
 ![Screenshot](./screenshots/edit.gif)
 
@@ -154,11 +160,11 @@ You can also join the QQ group for further discussions (Group ID: 746153004)
 
 <div style="display: flex; gap: 5px;">
 
-<img src="./screenshots/wechat-pay.JPG" width="200" />
+<img src="./screenshots/wechat-pay.JPG" width="200" alt="WeChat" />
 
-<img src="./screenshots/alipay.JPG" width="200" />
+<img src="./screenshots/alipay.JPG" width="200" alt="Alipay" />
 
-<img src="./screenshots/qq.JPG" width="200" />
+<img src="./screenshots/qq.JPG" width="200" alt="QQ" />
 
 </div>
 

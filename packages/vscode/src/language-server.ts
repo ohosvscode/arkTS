@@ -5,10 +5,10 @@ import * as serverProtocol from '@volar/language-server/protocol'
 import { activateAutoInsertion, createLabsInfo, getTsdk } from '@volar/vscode'
 import { LanguageClient, TransportKind } from '@volar/vscode/node'
 import defu from 'defu'
-import { executeCommand } from 'reactive-vscode'
 import { Autowired } from 'unioc'
 import { Command, Disposable, ExtensionContext, Translator, WatchConfiguration } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { FileSystemContext } from './context/file-system-context'
 import { LanguageServerContext } from './context/server-context'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
@@ -17,17 +17,11 @@ import { sleep } from './utils'
 @Disposable
 @Command('ets.restartServer')
 export class EtsLanguageServer extends LanguageServerContext implements Command, Disposable, vscode.DocumentFormattingEditProvider {
-  @Autowired(Translator)
-  protected readonly translator: Translator
-
-  @Autowired(ExtensionContext)
-  protected readonly context: ExtensionContext
-
-  @Autowired
-  protected readonly sdkManager: SdkManager
-
-  @Autowired
-  protected readonly sdkVersionGuesser: SdkVersionGuesser
+  @Autowired(Translator) protected readonly translator: Translator
+  @Autowired(ExtensionContext) protected readonly context: ExtensionContext
+  @Autowired protected readonly fsx: FileSystemContext
+  @Autowired protected readonly sdkManager: SdkManager
+  @Autowired protected readonly sdkVersionGuesser: SdkVersionGuesser
 
   onExecuteCommand(): void {
     this.restart().catch(e => this.handleLanguageServerError(e))
@@ -262,7 +256,7 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
    */
   async restart(force: boolean = false, overrideClientOptions: LanguageClientOptions = {}): Promise<void> {
     this.getConsola().info(`======================= Restarting ETS Language Server =======================`)
-    await executeCommand('typescript.restartTsServer')
+    await vscode.commands.executeCommand('typescript.restartTsServer')
     await this.stop()
     await this.start(force, overrideClientOptions)
     const reloadWindow = this.translator.t('ets.language-server.restart.reloadWindow.button')
@@ -271,8 +265,8 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
       reloadWindow,
     )
     if (reloadWindowChoice === reloadWindow) {
-      await executeCommand('workbench.action.closeActiveEditor')
-      await executeCommand('workbench.action.reloadWindow')
+      await vscode.commands.executeCommand('workbench.action.closeActiveEditor')
+      await vscode.commands.executeCommand('workbench.action.reloadWindow')
     }
   }
 }

@@ -1,13 +1,11 @@
-import type { DeviceType } from '@arkts/image-manager'
+import type { EmulatorFile } from '@arkts/image-manager'
 
-export function getIconByDeviceType(deviceType: DeviceType | '2in1_foldable' | string & {}): string {
+export function getIconByDeviceType(deviceType: EmulatorFile.DeviceTypeWithString): string {
   switch (deviceType) {
     case 'phone':
       return 'i-ph-device-mobile-camera-duotone'
     case 'tablet':
       return 'i-ph-device-tablet-camera-duotone'
-    case 'pc':
-      return 'i-ph-devices-duotone'
     case 'wearable':
       return 'i-ph-watch-duotone'
     case 'tv':
@@ -20,6 +18,8 @@ export function getIconByDeviceType(deviceType: DeviceType | '2in1_foldable' | s
       return 'i-ph-laptop-duotone'
     case '2in1_foldable':
       return 'i-ph-laptop-duotone'
+    case 'triplefold':
+      return 'i-ph-device-tablet-speaker-duotone'
     default:
       return 'i-ph-question-duotone'
   }

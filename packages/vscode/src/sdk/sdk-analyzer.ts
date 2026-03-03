@@ -1,13 +1,12 @@
 import type { OhosClientOptions } from '@arkts/shared'
 import type { Translator } from 'unioc/vscode'
-import type { AbstractWatcher } from '../abstract-watcher'
 import type { SdkVersionGuesser } from './sdk-guesser'
 import type { SdkManager } from './sdk-manager'
-import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import fg from 'fast-glob'
 import * as vscode from 'vscode'
+import { FileSystemException } from '../errors/file-system-exception'
 import { SdkAnalyzerException } from './sdk-analyzer-exception'
 
 interface ChoiceValidSdkPathStatus {
@@ -26,7 +25,6 @@ export class SdkAnalyzer {
   private constructor(
     private readonly sdkUri: vscode.Uri,
     private readonly hmsSdkUri: vscode.Uri | undefined,
-    private readonly fileSystem: AbstractWatcher,
     private readonly translator: Translator,
     private readonly identifier: SdkAnalyzer.Identifier,
   ) {}
@@ -132,7 +130,6 @@ export class SdkAnalyzer {
     return new SdkAnalyzer(
       sdkUri,
       hmsSdkUri,
-      sdkManager.watcher,
       sdkManager.translator,
       identifier,
     )
@@ -176,7 +173,12 @@ export class SdkAnalyzer {
     if (this.isSdkUriExists && !force) return this.sdkUri
 
     try {
-      await this.fileSystem.mustBeDirectory(this.sdkUri, SdkAnalyzerException.Code.SDKPathNotFound, SdkAnalyzerException.Code.SDKPathNotDirectory)
+      const statInfo = await vscode.workspace.fs.stat(this.sdkUri).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.SDKPathNotFound, `Path ${this.sdkUri.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.Directory) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.SDKPathNotDirectory, `Path ${this.sdkUri.fsPath} is not a directory.`)
       this.isSdkUriExists = true
       return this.sdkUri
     }
@@ -199,7 +201,12 @@ export class SdkAnalyzer {
     const etsComponentUri = vscode.Uri.joinPath(this.sdkUri, 'ets', 'component')
 
     try {
-      await this.fileSystem.mustBeDirectory(etsComponentUri, SdkAnalyzerException.Code.EtsComponentPathNotFound, SdkAnalyzerException.Code.EtsComponentPathNotDirectory)
+      const statInfo = await vscode.workspace.fs.stat(etsComponentUri).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.EtsComponentPathNotFound, `Path ${etsComponentUri.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.Directory) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.EtsComponentPathNotDirectory, `Path ${etsComponentUri.fsPath} is not a directory.`)
       this._cachedEtsComponentFolder = etsComponentUri
       return etsComponentUri
     }
@@ -253,7 +260,12 @@ export class SdkAnalyzer {
     const etsLoaderConfigUri = vscode.Uri.joinPath(this.sdkUri, 'ets', 'build-tools', 'ets-loader', 'tsconfig.json')
 
     try {
-      await this.fileSystem.mustBeFile(etsLoaderConfigUri, SdkAnalyzerException.Code.EtsLoaderConfigPathNotFound, SdkAnalyzerException.Code.EtsLoaderConfigPathNotFile)
+      const statInfo = await vscode.workspace.fs.stat(etsLoaderConfigUri).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.EtsLoaderConfigPathNotFound, `Path ${etsLoaderConfigUri.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.File) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.EtsLoaderConfigPathNotFile, `Path ${etsLoaderConfigUri.fsPath} is not a file.`)
       this._cachedEtsLoaderConfigPath = etsLoaderConfigUri
       return etsLoaderConfigUri
     }
@@ -277,7 +289,12 @@ export class SdkAnalyzer {
     if (this.isHmsSdkUriExists && !force) return this.hmsSdkUri
     if (!this.hmsSdkUri) return undefined
     try {
-      await this.fileSystem.mustBeDirectory(this.hmsSdkUri, SdkAnalyzerException.Code.HmsSdkPathNotFound, SdkAnalyzerException.Code.HmsSdkPathNotDirectory)
+      const statInfo = await vscode.workspace.fs.stat(this.hmsSdkUri).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsSdkPathNotFound, `Path ${this.hmsSdkUri.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.Directory) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsSdkPathNotDirectory, `Path ${this.hmsSdkUri.fsPath} is not a directory.`)
       this.isHmsSdkUriExists = true
       return this.hmsSdkUri
     }
@@ -303,7 +320,12 @@ export class SdkAnalyzer {
     if (!hmsSdkPath) return undefined
     const hmsApiFolder = vscode.Uri.joinPath(hmsSdkPath, 'ets', 'api')
     try {
-      await this.fileSystem.mustBeDirectory(hmsApiFolder, SdkAnalyzerException.Code.HmsApiPathNotFound, SdkAnalyzerException.Code.HmsApiPathNotDirectory)
+      const statInfo = await vscode.workspace.fs.stat(hmsApiFolder).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsApiPathNotFound, `Path ${hmsApiFolder.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.Directory) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsApiPathNotDirectory, `Path ${hmsApiFolder.fsPath} is not a directory.`)
       this._cachedHmsApiFolder = hmsApiFolder
       return hmsApiFolder
     }
@@ -329,7 +351,12 @@ export class SdkAnalyzer {
     if (!hmsSdkPath) return undefined
     const hmsKitsFolder = vscode.Uri.joinPath(hmsSdkPath, 'ets', 'kits')
     try {
-      await this.fileSystem.mustBeDirectory(hmsKitsFolder, SdkAnalyzerException.Code.HmsKitsPathNotFound, SdkAnalyzerException.Code.HmsKitsPathNotDirectory)
+      const statInfo = await vscode.workspace.fs.stat(hmsKitsFolder).then(
+        statInfo => statInfo,
+        () => undefined,
+      )
+      if (!statInfo) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsKitsPathNotFound, `Path ${hmsKitsFolder.fsPath} does not exist.`)
+      if (statInfo.type !== vscode.FileType.Directory) throw new FileSystemException(SdkAnalyzerException.SdkAnalyzerExceptionCode.HmsKitsPathNotDirectory, `Path ${hmsKitsFolder.fsPath} is not a directory.`)
       this._cachedHmsKitsFolder = hmsKitsFolder
       return hmsKitsFolder
     }
@@ -355,14 +382,16 @@ export class SdkAnalyzer {
     if (!hmsSdkPath || !hmsApiFolder || !hmsKitsFolder) return {}
 
     const paths: import('typescript').MapLike<string[]> = {}
-    const apiFiles = fs.readdirSync(hmsApiFolder.fsPath)
-    const kitsFiles = fs.readdirSync(hmsKitsFolder.fsPath)
-    for (const fileNameWithExtension of apiFiles) {
+    const apiFiles = await vscode.workspace.fs.readDirectory(hmsApiFolder)
+    const kitsFiles = await vscode.workspace.fs.readDirectory(hmsKitsFolder)
+    for (const [fileNameWithExtension, fileType] of apiFiles) {
+      if (fileType !== vscode.FileType.File) continue
       const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
       paths[fileName] = [vscode.Uri.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
       paths[`${fileName}/*`] = [vscode.Uri.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
     }
-    for (const fileNameWithExtension of kitsFiles) {
+    for (const [fileNameWithExtension, fileType] of kitsFiles) {
+      if (fileType !== vscode.FileType.File) continue
       const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
       paths[fileName] = [vscode.Uri.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
       paths[`${fileName}/*`] = [vscode.Uri.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
@@ -424,7 +453,7 @@ export namespace SdkAnalyzer {
 
   export class NotFoundError extends SdkAnalyzerException {
     constructor(private readonly identifier: SdkAnalyzer.Identifier, translator: Translator) {
-      super(SdkAnalyzerException.Code.SDKPathNotFound, translator)
+      super(SdkAnalyzerException.SdkAnalyzerExceptionCode.SDKPathNotFound, translator)
       this.message = `SDK analyzer with identifier ${identifier} not found, please check your ${identifier} configuration.`
     }
 

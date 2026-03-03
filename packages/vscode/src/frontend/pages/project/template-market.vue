@@ -9,7 +9,7 @@ const viewMode = ref<'list' | 'grid'>('list')
 const isLoading = ref(false)
 const error = ref<Error | null>(null)
 const { isOnline } = useNetwork()
-const connection = useProjectConnection()
+const { connection } = useProjectConnection()
 
 async function fetchData(returnValue?: UnwrapNestedRefs<UseOffsetPaginationReturn>) {
   try {
@@ -85,7 +85,9 @@ watch(isOnline, newValue => newValue === true ? error.value = null : null)
       <div flex="~ col gap-2 items-center" p-4 rounded bg="[var(--vscode-editor-background)]">
         <div i-ph-warning-duotone font-size="2xl" />
         <div>{{ error.message }}</div>
-        <NButton type="primary" @click="error = null">{{ $t('retry') }}</NButton>
+        <NButton type="primary" @click="error = null">
+          {{ $t('retry') }}
+        </NButton>
       </div>
     </div>
   </div>

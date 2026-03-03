@@ -3,7 +3,7 @@ import type { ProjectConnectionProtocol } from '../../interfaces/project-connect
 import MarkdownIt from 'markdown-it'
 
 const route = useRoute()
-const connection = useProjectConnection()
+const { connection } = useProjectConnection()
 const productId = route.query.productId as string | undefined
 
 const isLoading = ref(false)
@@ -63,7 +63,9 @@ async function handleUseTemplate(fileUrl: string) {
 <template>
   <div>
     <Heading :title="$t('project.templateMarket.templateDetail')" back>
-      <NText op-70>productId: {{ productId }}</NText>
+      <NText op-70>
+        productId: {{ productId }}
+      </NText>
     </Heading>
 
     <div v-if="isLoading" flex="~ justify-center items-center" my-10>
@@ -87,7 +89,9 @@ async function handleUseTemplate(fileUrl: string) {
           </NCarousel>
 
           <div>
-            <NH2 class="mb0!">{{ data?.productEntity.productName ?? $t('project.templateMarket.noProductName') }}</NH2>
+            <NH2 class="mb0!">
+              {{ data?.productEntity.productName ?? $t('project.templateMarket.noProductName') }}
+            </NH2>
             <NP>{{ data?.productEntity.briefInfo ?? $t('project.templateMarket.noBriefInfo') }}</NP>
 
             <div flex="~ col gap-2">
@@ -100,7 +104,9 @@ async function handleUseTemplate(fileUrl: string) {
               </div>
             </div>
 
-            <NButton type="primary" class="mt-5!" @click="handleUseTemplate(data?.productTemplateList?.[0]?.fileUrl ?? '')">使用此模版</NButton>
+            <NButton type="primary" class="mt-5!" @click="handleUseTemplate(data?.productTemplateList?.[0]?.fileUrl ?? '')">
+              使用此模版
+            </NButton>
           </div>
         </div>
 
@@ -116,9 +122,15 @@ async function handleUseTemplate(fileUrl: string) {
           </NTabPane>
           <NTabPane :name="$t('project.templateMarket.versionHistory')" flex="~ col gap-2">
             <div v-for="(template, templateIndex) in data?.productTemplateList ?? []" :key="templateIndex">
-              <NH2 class="m0! p0!">{{ template.version }}</NH2>
-              <NP class="m0! p0!">{{ template.desc }}</NP>
-              <NButton type="primary" mt-5 @click="handleUseTemplate(template.fileUrl)">使用此模版</NButton>
+              <NH2 class="m0! p0!">
+                {{ template.version }}
+              </NH2>
+              <NP class="m0! p0!">
+                {{ template.desc }}
+              </NP>
+              <NButton type="primary" mt-5 @click="handleUseTemplate(template.fileUrl)">
+                使用此模版
+              </NButton>
               <hr v-if="templateIndex !== (data?.productTemplateList?.length ?? 0) - 1" op-50 mt-3>
             </div>
           </NTabPane>

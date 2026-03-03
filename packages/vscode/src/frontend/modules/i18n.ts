@@ -39,7 +39,7 @@ export async function loadLanguageAsync(lang: string): Promise<Locale> {
 
 export const install: UserModule = async ({ app }, connection) => {
   const currentLanguage = await connection?.getCurrentLanguage?.() ?? 'en'
-  loadLanguageAsync(currentLanguage)
+  await loadLanguageAsync(currentLanguage)
   app.provide('vscode:currentLanguage', currentLanguage)
   app.provide('naiveui:locale', await loadCurrentNaiveUILocale(currentLanguage))
   app.use(i18n)

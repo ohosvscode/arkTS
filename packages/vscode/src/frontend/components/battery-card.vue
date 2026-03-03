@@ -42,23 +42,33 @@ const batteryPowerW = computed(() => Number((batteryVoltage.value * batteryNowCu
             <span inline-flex relative top-0.5 :class="batteryIcon" />
             <span v-if="deviceInfo?.batteryStatus === 1" inline-flex relative top-0.5 font-size-5 i-ph-lightning-duotone />
           </template>
-          <template #suffix>%</template>
+          <template #suffix>
+            %
+          </template>
         </NStatistic>
         <NStatistic w-full label="功率" tabular-nums>
           <NumberAnimationEffect :to="batteryPowerW" />
-          <template #suffix>W</template>
+          <template #suffix>
+            W
+          </template>
         </NStatistic>
         <NStatistic w-full label="电压" tabular-nums>
           <NumberAnimationEffect :to="batteryVoltage" />
-          <template #suffix>V</template>
+          <template #suffix>
+            V
+          </template>
         </NStatistic>
         <NStatistic w-full label="电流" tabular-nums>
           <NumberAnimationEffect :to="batteryNowCurrentA" />
-          <template #suffix>A</template>
+          <template #suffix>
+            A
+          </template>
         </NStatistic>
         <NStatistic w-full label="电池温度" tabular-nums>
           <NumberAnimationEffect :precision="0" :to="(deviceInfo?.batteryTemperature ?? 0) / 10" />
-          <template #suffix>℃</template>
+          <template #suffix>
+            ℃
+          </template>
         </NStatistic>
       </div>
       <div w-full font-size-2.2 flex="~ gap-1">
