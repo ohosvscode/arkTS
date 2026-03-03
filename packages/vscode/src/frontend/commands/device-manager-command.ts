@@ -13,7 +13,7 @@ export class OpenHdcManagerCommand extends WebviewPanelContext<DeviceManagerProt
   @Autowired protected readonly fsx: FileSystemContext
 
   constructor() {
-    super('device-manager.html', 'ets.deviceManager', 'ETS Device Manager', '/device-manager')
+    super('device-manager.html', 'ets.deviceManager', 'HarmonyOS Device Manager (Beta)', '/device-manager')
   }
 
   onExecuteCommand(): void {

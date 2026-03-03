@@ -48,7 +48,9 @@ watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value |
     <template #extra>
       <NButton type="primary" size="small" @click="connection.openConnectDeviceDialog?.()">
         连接设备
-        <template #icon><div i-ph-plug-duotone /></template>
+        <template #icon>
+          <div i-ph-plug-duotone />
+        </template>
       </NButton>
     </template>
   </NEmpty>

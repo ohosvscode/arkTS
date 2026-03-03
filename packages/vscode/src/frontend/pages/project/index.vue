@@ -24,18 +24,24 @@ function callItemOnClick(item: import('../../composables/project-configuration')
   <div>
     <Heading :title="$t('project.createProject.title')">
       <NButton type="info" @click="$router.push('/project/template-market')">
-        <NIcon mr-1><div i-ph-storefront-duotone /></NIcon>
+        <NIcon mr-1>
+          <div i-ph-storefront-duotone />
+        </NIcon>
         {{ $t('project.templateMarket.title') }}
       </NButton>
       <NButton type="primary" @click="handleSubmit">
-        <NIcon mr-1><div i-ph-plus-circle-duotone /></NIcon>
+        <NIcon mr-1>
+          <div i-ph-plus-circle-duotone />
+        </NIcon>
         {{ $t('project.createProject.submit') }}
       </NButton>
     </Heading>
 
     <div flex="~ gap-4 col sm:row justify-between">
       <div class="w-full md:w-2/5">
-        <h2 class="text-lg font-bold mb-2">{{ $t('project.createProject.application') }}</h2>
+        <h2 class="text-lg font-bold mb-2">
+          {{ $t('project.createProject.application') }}
+        </h2>
         <ul v-for="(item, index) in projectConfigurations" :key="index">
           <li :key="index">
             <ProjectChoice

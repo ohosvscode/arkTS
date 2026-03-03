@@ -1,6 +1,5 @@
 import type { BirpcReturn } from 'birpc'
-import path from 'node:path'
-import { createScreen, createScreenPreset, Device, FullDeployedImageOptions, LocalImage, ProductPreset, RemoteImage, RequestUrlError, Screen, SnakecaseDeviceType, version } from '@arkts/image-manager'
+import { Device, DeviceTypeConverter, EmulatorFile, Image, LocalImage, RemoteImage, version } from '@arkts/image-manager'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
@@ -41,26 +40,53 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
     this.connection = connection
   }
 
-  private async findDeviceByName(name: string, image: LocalImage): Promise<Device | undefined> {
-    const devices = await image.getDevices()
-    for (const device of devices) {
-      const deviceList = device.buildList()
-      if (deviceList.name === name) return device
+  async getConfigByLocalImage(imagePath: Image.RelativePath, deviceType: EmulatorFile.DeviceType): Promise<DeviceManagerProtocol.ServerFunction.GetConfigByLocalImage.Response> {
+    const imageManager = await this.hdcManager.createImageManager()
+    const productConfigFile = await imageManager.readProductConfigFile()
+    const emulatorFile = await imageManager.readEmulatorFile()
+    const images = await imageManager.getLocalImages()
+    const image = images.find(image => image.getRelativePath() === imagePath)
+    if (!image) return { productConfig: [] }
+
+    const productConfig = productConfigFile.findProductConfigItems({
+      deviceType: DeviceTypeConverter.snakecaseToCamelcase(deviceType),
+    }).map(productConfigItem => productConfigItem.toJSON())
+    const emulatorConfig = emulatorFile.findDeviceItem({
+      deviceType,
+      apiVersion: image.getApiVersion(),
+    })?.getContent()
+
+    return {
+      productConfig,
+      emulatorConfig,
+      localImage: image.toJSON(),
     }
-    return undefined
   }
 
-  private async findDeviceByUuid(uuid: string, image: LocalImage): Promise<Device | undefined> {
-    const devices = await image.getDevices()
-    for (const device of devices) {
-      const deviceList = device.buildList()
-      if (deviceList.uuid === uuid) return device
-    }
+  async getEmulatorConfig(): Promise<DeviceManagerProtocol.ServerFunction.GetEmulatorConfig.Response[]> {
+    const imageManager = await this.hdcManager.createImageManager()
+    const emulatorFile = await imageManager.readEmulatorFile()
+    const remoteImages = await imageManager.getRemoteImages()
+    if (!Array.isArray(remoteImages)) return []
+
+    return await Promise.all(
+      emulatorFile.getDeviceItems().map(
+        async (item) => {
+          const remoteImage = emulatorFile.findRemoteImageByDeviceItem(item, remoteImages)
+          if (!remoteImage) return null
+          return {
+            content: item.getContent(),
+            remoteImage: remoteImage.toJSON(),
+            localImage: await remoteImage.getLocalImage().then(image => image?.toJSON()),
+          }
+        },
+      ),
+    ).then(items => items.filter(item => item !== null))
   }
 
   async getLocalImagePath(): Promise<string> {
     const imageManager = await this.hdcManager.createImageManager()
-    return imageManager.getOptions().imageBasePath
+    return imageManager.getOptions().imageBasePath.fsPath
   }
 
   async isValidLocalImagePath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidLocalImagePath.Response> {
@@ -71,7 +97,7 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
 
   async getDeployedEmulatorPath(): Promise<string> {
     const imageManager = await this.hdcManager.createImageManager()
-    return imageManager.getOptions().deployedPath
+    return imageManager.getOptions().deployedPath.fsPath
   }
 
   async isValidDeployedEmulatorPath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidDeployedEmulatorPath.Response> {
@@ -82,86 +108,70 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
 
   async requestRemoteImageList(): Promise<DeviceManagerProtocol.ServerFunction.RequestRemoteImageList.Response> {
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
+    const images = await imageManager.getRemoteImages()
+    if (!Array.isArray(images)) return { images: [] }
 
-    return {
-      images: images.map(image => image.toJSON()),
-    }
+    return { images: images.map(image => image.toJSON()) }
   }
 
-  async getLocalImageProductConfig(imagePath: string): Promise<DeviceManagerProtocol.ServerFunction.GetLocalImageProductConfig.Response> {
+  async getLocalImageByPath(imagePath: Image.RelativePath): Promise<LocalImage.Serializable | null> {
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const image = images.find(image => image.getPath() === imagePath)
-    if (!image) return null
-    if (image.imageType !== 'local') return null
-    const deviceType = await image.getPascalCaseDeviceType()
-    if (!deviceType) return null
-    const productConfig = await image.getProductConfig()
-
-    return {
-      productConfig,
-      deviceType,
-      snakecaseDeviceType: image.getSnakecaseDeviceType() as SnakecaseDeviceType,
-    }
-  }
-
-  async getLocalImageByPath(imagePath: string): Promise<LocalImage.Stringifiable | null> {
-    const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const image = images.find(image => image.getPath() === imagePath)
+    const images = await imageManager.getLocalImages()
+    const image = images.find(image => image.getRelativePath() === imagePath)
     if (!image) return null
     if (image.imageType !== 'local') return null
     return image.toJSON()
   }
 
-  async deployLocalImage(options: Omit<Device.Options, 'screen'>, screen: Screen.Options | ProductPreset.Stringifiable, imagePath: string): Promise<boolean> {
+  async deployLocalImage(imagePath: string, options: DeviceManagerProtocol.ServerFunction.DeployLocalImage.SerializableCreateDeviceOptions): Promise<boolean> {
     try {
       const imageManager = await this.hdcManager.createImageManager()
-      const images = await imageManager.getImages()
-      const image = images.find(image => image.getPath() === imagePath)
+      const images = await imageManager.getLocalImages()
+      const image = images.find(image => image.getRelativePath() === imagePath)
       if (!image) return false
-      if (image.imageType !== 'local') return false
-      const pascalCaseDeviceType = await image.getPascalCaseDeviceType()
-      if (!pascalCaseDeviceType) return false
-
-      await image.createDevice({
+      this.getConsola().info(`Creating device ${options.name} with options: ${JSON.stringify(options)}`)
+      const emulatorFile = await imageManager.readEmulatorFile()
+      const emulatorDeviceItem = emulatorFile.findDeviceItem({
+        deviceType: options.screen.emulatorDeviceItem.deviceType,
+        apiVersion: options.screen.emulatorDeviceItem.api,
+      })
+      const productConfigFile = await imageManager.readProductConfigFile()
+      const productConfigItem = productConfigFile.findProductConfigItem({
+        deviceType: options.screen.productConfigItem.deviceType,
+        name: options.screen.productConfigItem.content.name,
+      })
+      if (!productConfigItem) throw new Error('Product config item not found.')
+      if (!emulatorDeviceItem) throw new Error('Emulator device item not found.')
+      const device = await image.createDevice({
         ...options,
-        screen: 'density' in screen
-          ? createScreen(screen)
-          : createScreenPreset({
-              image,
-              pascalCaseDeviceType,
-              productConfig: screen.product,
-            }),
-      }).deploy()
+        screen: {
+          emulatorDeviceItem,
+          productConfigItem,
+          customizeScreen: options.screen.customizeScreen,
+          customizeFoldableScreen: options.screen.customizeFoldableScreen,
+        } as any,
+      })
+      console.warn(device.getScreen().getEmulatorDeviceItem())
+      this.getConsola().info(`Device ${options.name} created and deployed successfully.`)
       return true
     }
     catch (error) {
-      vscode.window.showErrorMessage(`设备部署失败: ${error instanceof Error ? error.message : String(error)}`)
-      this.getConsola().error('设备部署失败: ', error instanceof Error ? error.message : String(error))
+      vscode.window.showErrorMessage(`Device ${options.name} deployment failed: ${error instanceof Error ? error.message : String(error)}`)
+      this.getConsola().error(`Device ${options.name} deployment failed: ${error instanceof Error ? error.message : String(error)}`)
+      if (error instanceof Error) this.getConsola().error(error.stack)
       console.error(error)
       return false
     }
   }
 
-  async deleteDevice(name: string, imagePath: string): Promise<void> {
+  async deleteDevice(name: string): Promise<void> {
     const yes = this.translator.t('yes')
     const res = await vscode.window.showInformationMessage('是否要删除该设备？', { modal: true }, yes)
     if (res !== yes) return
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const image = images.find(image => image.getFsPath() === path.resolve(imageManager.getOptions().imageBasePath, imagePath))
-    if (!image) {
-      vscode.window.showErrorMessage('镜像未找到')
-      return
-    }
-    if (image.imageType !== 'local') return
-    const device = await this.findDeviceByName(name, image)
-    if (!device) {
-      vscode.window.showErrorMessage('设备未找到')
-      return
-    }
+    const devices = await imageManager.getDeployedDevices()
+    const device = devices.find(device => device.getListsFileItem().getContent().name === name)
+    if (!device) return
     await device.delete()
     vscode.window.showInformationMessage('设备删除成功')
   }
@@ -171,27 +181,32 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
   }
 
   async isCompatible(): Promise<boolean> {
-    const imageManager = await this.hdcManager.createImageManager()
-    return imageManager.isCompatible()
+    try {
+      const imageManager = await this.hdcManager.createImageManager()
+      return imageManager.isCompatible()
+    }
+    catch (error) {
+      console.error(error)
+      return false
+    }
   }
 
   private currentDownloadTask: Thenable<void> | undefined
 
-  async requestRemoteImageDownload(serializedImage: RemoteImage.Stringifiable): Promise<void> {
+  async requestRemoteImageDownload(serializedImage: RemoteImage.Serializable): Promise<void> {
     if (this.currentDownloadTask) {
       vscode.window.showInformationMessage(this.translator.t('hdcManager.imageManager.downloading.alreadyInProgress'))
       return
     }
 
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const image = images.find(image => image.getPath() === serializedImage.path)
+    const images = await imageManager.getRemoteImages()
+    if (!Array.isArray(images)) return
+    const image = images.find(image => image.getRelativePath() === serializedImage.relativePath)
     if (!image) return
-    if (image.imageType === 'local') return
     const downloader = await image.createDownloader()
-    if (downloader instanceof RequestUrlError) return
-
-    const version = `${image.getTargetOS()} ${image.getTargetVersion()}(API${image.getApiVersion()})`
+    const sdk = image.getRemoteImageSDK()
+    const version = `${sdk.path?.split(',')?.[1]?.split('-')[0]} ${sdk.version}(API${image.getApiVersion()})`
     this.currentDownloadTask = vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
       title: this.translator.t('hdcManager.imageManager.downloading.title', version),
@@ -203,22 +218,25 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
       token.onCancellationRequested(() => {
         abortController.abort()
         vscode.window.showInformationMessage(this.translator.t('hdcManager.imageManager.downloading.cancelled', version))
+        this.getConsola().info(`Downloading ${version} cancelled.`)
+        this.currentDownloadTask = undefined
       })
 
-      downloader.on('download-progress', e => (
+      downloader.onDownloadProgress((e) => {
         progress.report({
           increment: e.increment,
           message: this.translator.t(
             'hdcManager.imageManager.downloading.progress',
-            e.progress ? (e.progress * 100).toFixed(2) : 0,
+            e.progress ? e.progress.toFixed(2) : 0,
             e.network.toFixed(2),
             e.unit,
-            e.estimated ? e.estimated.toFixed() : 0,
           ),
         })
-      ))
+        this.getConsola().info(`Downloading ${version} progress: ${e.progress ? e.progress.toFixed(2) : 0}, network: ${e.network.toFixed(2)}, unit: ${e.unit}`)
+      })
 
-      await downloader.startDownload(abortController.signal)
+      this.getConsola().info(`Downloading ${version} started.`)
+      await downloader.startDownload()
     }).then(() =>
       vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
@@ -230,20 +248,20 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
         token.onCancellationRequested(() => {
           abortController.abort()
           vscode.window.showInformationMessage(this.translator.t('hdcManager.imageManager.extracting.cancelled', version))
+          this.getConsola().info(`Extracting ${version} cancelled.`)
+          this.currentDownloadTask = undefined
         })
 
-        downloader.on('extract-progress', e => (
+        downloader.onExtractProgress((e) => {
           progress.report({
-            increment: e.delta,
-            message: this.translator.t(
-              'hdcManager.imageManager.extracting.progress',
-              e.percentage ? e.percentage.toFixed(2) : 0,
-              e.eta ? e.eta.toFixed() : 0,
-            ),
+            increment: e.increment,
+            message: this.translator.t('hdcManager.imageManager.extracting.progress', e.progress ? e.progress.toFixed(2) : 0),
           })
-        ))
+          this.getConsola().info(`Extracting ${version} progress: ${e.progress ? e.progress.toFixed(2) : 0}`)
+        })
 
-        await downloader.extract(abortController.signal)
+        this.getConsola().info(`Extracting ${version} started.`)
+        await downloader.extract()
       }),
     ).then(
       () => {
@@ -253,30 +271,40 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
       },
       (err) => {
         vscode.window.showErrorMessage(this.translator.t('hdcManager.imageManager.downloading.error', err instanceof Error ? err.message : String(err)))
+        this.getConsola().error(this.translator.t('hdcManager.imageManager.downloading.error', err instanceof Error ? err.message : String(err)))
+        this.getConsola().error(err instanceof Error ? err.stack : String(err))
         this.connection.onDidRefresh()
         this.currentDownloadTask = undefined
       },
     )
   }
 
-  async getLocalDevices(): Promise<DeviceManagerProtocol.ServerFunction.GetLocalDevices.Response> {
+  async getLocalDevices(): Promise<DeviceManagerProtocol.ServerFunction.GetLocalDevices.Response[]> {
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const devices = await Promise.all(images.filter(image => image.imageType === 'local').map(image => image.getDevices()))
-      .then(devices => devices.flat())
-      .then(devices => devices.map(device => device.buildList()))
+    const devices = await imageManager.getDeployedDevices()
 
-    return { devices }
+    return await Promise.all(
+      devices.map(
+        async device => ({
+          device: device.toJSON(),
+          snapshot: await device.getSnapshot().then(
+            snapshot => snapshot,
+            () => null,
+          ),
+        }),
+      ),
+    )
   }
 
-  async deleteLocalImage(serializedLocalImage: LocalImage.Stringifiable): Promise<void> {
+  async deleteLocalImage(imagePath: Image.RelativePath): Promise<void> {
     const imageManager = await this.hdcManager.createImageManager()
-    const images = await imageManager.getImages()
-    const image = images.find(image => image.getPath() === serializedLocalImage.path)
+    const images = await imageManager.getLocalImages()
+    const image = images.find(image => image.getRelativePath() === imagePath)
     if (!image) return
     if (image.imageType !== 'local') return
 
-    const version = `${image.getTargetOS()} ${image.getTargetVersion()}(API${image.getApiVersion()}) (${image.getDeviceType()})`
+    const sdk = image.getSdkPkgFile()
+    const version = `${sdk.data?.path?.split(',')?.[1]?.split('-')[0]} ${sdk.data?.version}(API${image.getApiVersion()})`
     const yes = this.translator.t('yes')
     const result = await vscode.window.showInformationMessage(
       this.translator.t('hdcManager.imageManager.delete.title', version),
@@ -284,36 +312,30 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
       yes,
     )
     if (result === yes) {
-      await image.delete()
+      // await image.delete()
       vscode.window.showInformationMessage(this.translator.t('hdcManager.imageManager.delete.success', version))
     }
     this.connection.onDidRefresh()
   }
 
-  async startDevice(serializedDevice: FullDeployedImageOptions): Promise<void> {
+  async startDevice(serializedDevice: Device.Serializable): Promise<void> {
     try {
       await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
         title: '设备启动中...',
       }, async () => {
         const imageManager = await this.hdcManager.createImageManager()
-        const images = await imageManager.getImages()
-        const image = images.find(image => image.getFsPath() === path.resolve(imageManager.getOptions().imageBasePath, serializedDevice.imageDir))
-        if (!image || image.imageType !== 'local') {
-          vscode.window.showErrorMessage('镜像未找到')
-          return
-        }
-        const device = await this.findDeviceByUuid(serializedDevice.uuid, image)
+        const devices = await imageManager.getDeployedDevices()
+        const device = devices.find(device => device.getListsFileItem().getContent().uuid === serializedDevice.listsFileItem.content.uuid)
         if (!device) {
           vscode.window.showErrorMessage('设备未找到')
           return
         }
-        const command = await image.buildStartCommand(device)
-        this.getConsola().info('Starting device, command: ', command)
-        const child_process = await image.start(device)
+        this.getConsola().info('Starting device, command: ', device.getStartCommand())
+        const child_process = await device.start()
         this.extensionContext.subscriptions.push(
           new vscode.Disposable(() => {
-            if (child_process.exitCode === null) image.stop(device)
+            if (child_process.exitCode === null) device.stop()
           }),
         )
         this.getConsola().success('Device start command executed successfully.')

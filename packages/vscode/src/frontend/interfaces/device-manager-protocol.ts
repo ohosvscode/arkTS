@@ -1,4 +1,4 @@
-import type { Device, FullDeployedImageOptions, LocalImage, PascalCaseDeviceType, ProductConfigItem, ProductPreset, RemoteImage, Screen, SnakecaseDeviceType } from '@arkts/image-manager'
+import type { CustomizeFoldableScreen, CustomizeScreen, Device, EmulatorFile, Image, LocalImage, ProductConfigItem, RemoteImage, ScreenPreset } from '@arkts/image-manager'
 import type { ProtocolContext } from '../../context/protocol-context'
 import type { WebviewContext } from '../../context/webview-context'
 
@@ -24,6 +24,14 @@ export namespace DeviceManagerProtocol {
      */
     getLocalImagePath(): Promise<string>
     /**
+     * Get the config of the local image.
+     */
+    getConfigByLocalImage(imagePath: Image.RelativePath, deviceType: EmulatorFile.DeviceType): Promise<ServerFunction.GetConfigByLocalImage.Response>
+    /**
+     * Get the emulator config.
+     */
+    getEmulatorConfig(): Promise<ServerFunction.GetEmulatorConfig.Response[]>
+    /**
      * Check if the given path is a valid local image folder.
      */
     isValidLocalImagePath(path: string): Promise<DeviceManagerProtocol.ServerFunction.isValidLocalImagePath.Response>
@@ -46,56 +54,46 @@ export namespace DeviceManagerProtocol {
      */
     requestRemoteImageList(): Promise<DeviceManagerProtocol.ServerFunction.RequestRemoteImageList.Response>
     /**
-     * Get the product config of the local image.
-     *
-     * @param imagePath The path of the local image to get the product config.
-     * @returns The product config of the local image.
-     */
-    getLocalImageProductConfig(imagePath: string): Promise<DeviceManagerProtocol.ServerFunction.GetLocalImageProductConfig.Response>
-    /**
      * Get the local image by path.
      *
      * @param imagePath The path of the local image to get.
      * @returns The local image.
      */
-    getLocalImageByPath(imagePath: string): Promise<LocalImage.Stringifiable | null>
+    getLocalImageByPath(imagePath: Image.RelativePath): Promise<LocalImage.Serializable | null>
     /**
      * Deploy the local image.
      *
-     * @param options The options of the device to deploy.
-     * @param screen The screen of the device to deploy.
      * @param imagePath The path of the local image to deploy.
      */
-    deployLocalImage(options: Omit<Device.Options, 'screen'>, screen: Screen.Stringifiable | ProductPreset.Stringifiable, imagePath: string): Promise<boolean>
+    deployLocalImage(imagePath: string, options: ServerFunction.DeployLocalImage.SerializableCreateDeviceOptions): Promise<boolean>
     /**
      * Start the device.
      *
      * @param device The device to start.
      */
-    startDevice(device: FullDeployedImageOptions): Promise<void>
+    startDevice(device: Device.Serializable): Promise<void>
     /**
      * Delete the device.
      *
      * @param name The name of the device to delete.
-     * @param imagePath The path of the image to delete the device.
      */
-    deleteDevice(name: string, imagePath: string): Promise<void>
+    deleteDevice(name: string): Promise<void>
     /**
      * Get the list of local devices.
      */
-    getLocalDevices(): Promise<DeviceManagerProtocol.ServerFunction.GetLocalDevices.Response>
+    getLocalDevices(): Promise<DeviceManagerProtocol.ServerFunction.GetLocalDevices.Response[]>
     /**
      * Delete the local image.
      *
-     * @param serializedLocalImage The serialized local image to delete.
+     * @param imagePath The path of the local image to delete.
      */
-    deleteLocalImage(serializedLocalImage: LocalImage.Stringifiable): Promise<void>
+    deleteLocalImage(imagePath: Image.RelativePath): Promise<void>
     /**
      * Download the remote image.
      *
      * @param image The remote image to download.
      */
-    requestRemoteImageDownload(image: RemoteImage.Stringifiable): Promise<void>
+    requestRemoteImageDownload(image: RemoteImage.Serializable): Promise<void>
     /**
      * Get the version of the image manager.
      */
@@ -114,17 +112,44 @@ export namespace DeviceManagerProtocol {
     export namespace GetLocalDevices {
       export interface Response {
         /**
-         * The list of local devices.
+         * The local device.
          */
-        devices: FullDeployedImageOptions[]
+        device: Device.Serializable
+        /**
+         * The snapshot base64 of the local device.
+         */
+        snapshot: string | null
       }
     }
     export namespace GetLocalImageProductConfig {
       export type Response = {
         productConfig: ProductConfigItem[]
-        deviceType: PascalCaseDeviceType
-        snakecaseDeviceType: SnakecaseDeviceType
       } | null
+    }
+
+    export namespace GetEmulatorConfig {
+      export interface Response {
+        /**
+         * The content of the emulator config.
+         */
+        content: EmulatorFile.ItemContent
+        /**
+         * The remote image of the emulator config.
+         */
+        remoteImage: RemoteImage.Serializable
+        /**
+         * The local image of the emulator config.
+         */
+        localImage: LocalImage.Serializable | undefined
+      }
+    }
+
+    export namespace GetConfigByLocalImage {
+      export interface Response {
+        productConfig: ProductConfigItem.Serializable[]
+        localImage?: LocalImage.Serializable
+        emulatorConfig?: EmulatorFile.ItemContent
+      }
     }
 
     export namespace RequestRemoteImageList {
@@ -132,7 +157,18 @@ export namespace DeviceManagerProtocol {
         /**
          * The list of remote images.
          */
-        images: (LocalImage.Stringifiable | RemoteImage.Stringifiable)[]
+        images: RemoteImage.Serializable[]
+      }
+    }
+
+    export namespace DeployLocalImage {
+      export type SerializableCreateDeviceOptions = Omit<LocalImage.CreateDeviceOptions, 'screen'> & {
+        readonly screen: Omit<ScreenPreset.Options, 'productConfigItem' | 'emulatorDeviceItem'> & {
+          readonly productConfigItem: ProductConfigItem.Serializable
+          readonly emulatorDeviceItem: EmulatorFile.ItemContent
+          readonly customizeScreen?: CustomizeScreen.Options
+          readonly customizeFoldableScreen?: CustomizeFoldableScreen.Options
+        }
       }
     }
   }

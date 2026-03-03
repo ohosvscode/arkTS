@@ -100,7 +100,7 @@
   "qualifierEditor.title": "Resource Qualifier Directory Editor",
   "qualifierEditor.willCreateDirectories": "Will create subdirectories",
   "resourceExplorer": "Hvigor Resource Explorer",
-  "hdcManager.title": "HDC",
+  "hdcManager.title": "HDC (Beta)",
   "hdcManager.copyHdcPath": "Copy HDC Path",
   "hdcManager.copyHdcPath.error": "HDC path not found, please check the 'ets.sdkPath' in the IDE settings.",
   "hdcManager.deviceManager.title": "Device Manager",

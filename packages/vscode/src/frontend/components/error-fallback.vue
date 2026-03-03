@@ -18,9 +18,15 @@ const canGoBack = computed(() => route.path.split('/').filter(Boolean).length > 
       <a href="https://github.com/ohosvscode/arkTS/issues">
         https://github.com/ohosvscode/arkTS/issues
       </a>
-      <NText v-if="error && (error.name || error.message)">{{ error.name }}: {{ error.message }}</NText>
-      <NCode class="text-sm whitespace-pre-wrap">{{ error?.stack }}</NCode>
-      <NButton v-if="canGoBack" type="primary" mt-2 @click="$router.back()">{{ $t('goback') }}</NButton>
+      <NText v-if="error && (error.name || error.message)">
+        {{ error.name }}: {{ error.message }}
+      </NText>
+      <NCode class="text-sm whitespace-pre-wrap">
+        {{ error?.stack }}
+      </NCode>
+      <NButton v-if="canGoBack" type="primary" mt-2 @click="$router.back()">
+        {{ $t('goback') }}
+      </NButton>
     </div>
 
     <div v-else-if="isThrowErrorIfNoNetwork" class="flex flex-col items-center justify-center gap-2 bg-[var(--vscode-editor-background)] p-4 rounded">

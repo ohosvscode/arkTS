@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FullDeployedImageOptions } from '@arkts/image-manager'
 import { getIconByDeviceType } from '../../composables/device-type-icon'
 
 const { t } = useI18n()
@@ -24,8 +23,8 @@ const { data: version = 'unknown' } = useAsyncData(() => connection.getImageMana
 const { data: isCompatible = true } = useAsyncData(() => connection.isCompatible?.())
 const { data: devices, execute: getLocalDevices, loading: getLocalDevicesLoading } = useAsyncData(() => connection.getLocalDevices?.())
 
-function deleteDevice(device: FullDeployedImageOptions) {
-  connection.deleteDevice?.(device.name, device.imageDir).finally(() => getLocalDevices())
+function deleteDevice(name: string) {
+  connection.deleteDevice?.(name).finally(() => getLocalDevices())
 }
 
 onDidChangeDeployedEmulatorPath((path, isValid) => {
@@ -33,18 +32,28 @@ onDidChangeDeployedEmulatorPath((path, isValid) => {
   isValidDeployedEmulatorPath.value = isValid
   getLocalDevices()
 })
+
+const currentSnapshot = reactive({ show: false, src: '' })
+function showImagePreview(snapshot: string) {
+  currentSnapshot.src = snapshot
+  currentSnapshot.show = true
+}
 </script>
 
 <template>
   <div>
     <Heading :title="$t('hdcManager.deviceManager.title')">
       <NButton type="info" @click="$router.push('/device-manager/image-manager')">
-        <template #icon><div i-ph-disc-duotone /></template>
+        <template #icon>
+          <div i-ph-disc-duotone />
+        </template>
         {{ $t('hdcManager.imageManager.title') }}
       </NButton>
       <NButton type="primary" @click="getLocalDevices">
         {{ $t('refresh') }}
-        <template #icon><div i-ph-arrow-clockwise-duotone /></template>
+        <template #icon>
+          <div i-ph-arrow-clockwise-duotone />
+        </template>
       </NButton>
     </Heading>
     <NFormItem
@@ -65,35 +74,63 @@ onDidChangeDeployedEmulatorPath((path, isValid) => {
         {{ $t('hdcManager.deviceManager.compatibilityWarning.description', [version]) }}
       </NAlert>
     </div>
+    <NImagePreview v-model:show="currentSnapshot.show" :src="`data:image/png;base64,${currentSnapshot.src}`" />
     <NSpin :show="getLocalDevicesLoading">
       <NList hoverable>
-        <NListItem v-for="(device, index) in devices?.devices ?? []" :key="index">
-          <NThing :title="device.name">
+        <NListItem v-for="({ device, snapshot }, index) in devices ?? []" :key="index">
+          <NThing :title="device.listsFileItem.content.name">
             <template #avatar>
-              <div :class="`${getIconByDeviceType(device.type)} text-2xl`" />
+              <div :class="`${getIconByDeviceType(device.listsFileItem.content.type)} text-2xl`" />
             </template>
             <template #description>
               <div class="flex items-center gap-2 flex-wrap mt-3">
-                <NTag size="small" type="info">DeviceType: {{ device.type }}</NTag>
-                <NTag size="small" type="info">UUID: {{ device.uuid }}</NTag>
-                <NTag size="small" type="info">CPU: {{ device.cpuNumber }}核心</NTag>
-                <NTag size="small" type="info">RAM: {{ device.memoryRamSize }}MB</NTag>
-                <NTag size="small" type="info">像素密度: {{ device.density }}PPI</NTag>
-                <NTag size="small" type="info">分辨率: {{ device.resolutionHeight }}x{{ device.resolutionWidth }}</NTag>
-                <NTag size="small" type="info">屏幕大小: {{ device.diagonalSize }}英寸</NTag>
-                <NTag size="small" type="info">版本: {{ device.showVersion }}</NTag>
-                <NTag size="small" type="info">CPU/ABI: {{ device.abi }}</NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  DeviceType: {{ device.listsFileItem.content.type }}
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  UUID: {{ device.listsFileItem.content.uuid }}
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  CPU: {{ device.listsFileItem.content.cpuNumber }}核心
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  RAM: {{ device.listsFileItem.content.memoryRamSize }}MB
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  像素密度: {{ device.listsFileItem.content.density }}PPI
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  分辨率: {{ device.listsFileItem.content.resolutionHeight }}x{{ device.listsFileItem.content.resolutionWidth }}
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  屏幕大小: {{ device.listsFileItem.content.diagonalSize }}英寸
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  版本: {{ device.listsFileItem.content.showVersion }}
+                </NTag>
+                <NTag size="small" type="info" class="text-wrap">
+                  CPU/ABI: {{ device.listsFileItem.content.abi }}
+                </NTag>
               </div>
             </template>
             <template #header-extra>
               <div flex="~ gap-2">
+                <NButton v-if="snapshot" ghost type="primary" size="small" circle @click="showImagePreview(snapshot)">
+                  <template #icon>
+                    <div i-ph-camera-duotone />
+                  </template>
+                </NButton>
                 <NButton type="primary" size="small" @click="connection.startDevice(device)">
                   启动
-                  <template #icon><div i-ph-play-duotone /></template>
+                  <template #icon>
+                    <div i-ph-play-duotone />
+                  </template>
                 </NButton>
-                <NButton type="error" size="small" @click="deleteDevice(device)">
+                <NButton type="error" size="small" @click="deleteDevice(device.listsFileItem.content.name)">
                   删除
-                  <template #icon><div i-ph-trash-duotone /></template>
+                  <template #icon>
+                    <div i-ph-trash-duotone />
+                  </template>
                 </NButton>
               </div>
             </template>
@@ -101,7 +138,9 @@ onDidChangeDeployedEmulatorPath((path, isValid) => {
         </NListItem>
       </NList>
     </NSpin>
-    <div op-50 mt-2 text-2.5>@arkts/image-manager version: {{ version }}</div>
+    <div op-50 mt-2 text-2.5>
+      @arkts/image-manager version: {{ version }}
+    </div>
   </div>
 </template>
 
@@ -109,5 +148,12 @@ onDidChangeDeployedEmulatorPath((path, isValid) => {
 .opacity-feedback :deep(.n-form-item-feedback) {
   opacity: 0.7;
   font-size: 11.5px;
+}
+</style>
+
+<style>
+.n-image-preview-container .n-base-icon {
+  margin: 0 8px;
+  padding: 0;
 }
 </style>

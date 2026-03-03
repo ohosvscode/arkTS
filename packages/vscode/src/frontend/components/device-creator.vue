@@ -12,6 +12,8 @@ defineProps<{
         <slot />
       </NForm>
     </div>
-    <NCard size="small" w="full md:45%" :title="title">{{ description }}</NCard>
+    <NCard size="small" w="full md:45%" :title="title">
+      {{ description }}
+    </NCard>
   </div>
 </template>

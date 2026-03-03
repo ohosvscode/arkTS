@@ -1,5 +1,6 @@
 /* eslint-disable perfectionist/sort-imports */
 import 'reflect-metadata'
+import 'source-map-support/register'
 import type { LabsInfo } from '@volar/vscode'
 import type { ExtensionContext } from 'vscode'
 import { CommandPlugin, DebugPlugin, DisposablePlugin, L10nPlugin, TaskPlugin, VSCodeBootstrap, WatchConfigurationPlugin } from 'unioc/vscode'

@@ -1,40 +1,37 @@
 <script setup lang="ts">
-import type { Device, LocalImage, PascalCaseDeviceType, ProductConfigItem, ProductPreset, Screen, SnakecaseDeviceType } from '@arkts/image-manager'
+import type { EmulatorFile, ProductConfigItem } from '@arkts/image-manager'
+import type { DeviceManagerProtocol } from '../interfaces/device-manager-protocol'
+import type { SerializableCreateDeviceOptions } from '../pages/device-manager/create-device.vue'
 
 const props = defineProps<{
-  productConfig: ProductConfigItem[]
-  deviceType: PascalCaseDeviceType
-  localImage: LocalImage.Stringifiable
-  snakecaseDeviceType: SnakecaseDeviceType
+  config: DeviceManagerProtocol.ServerFunction.GetConfigByLocalImage.Response | null
+  deviceType: EmulatorFile.DeviceType
 }>()
 
 export interface MultiDeviceCreatorExpose {
-  getDeviceOptions(): Omit<Device.Options, 'screen'>
-  getScreen(): Screen.Stringifiable | ProductPreset.Stringifiable
-  getDeviceName(): string
-  getImagePath(): string
+  getCreateDeviceOptions(): SerializableCreateDeviceOptions
 }
 
-const screenConfig = ref(props.productConfig?.[0]?.name || '')
-const screenConfigs = computed(() => props.productConfig?.map(item => ({ label: item.name, value: item.name })) || [])
+const screenConfig = ref(props.config?.productConfig?.[0].content?.name || '')
+const screenConfigs = computed(() => props.config?.productConfig?.map(item => ({ label: item.content.name, value: item.content.name })) || [])
 const isCustomizedScreen = computed(() => screenConfig.value === 'Customize')
-const deviceName = ref(props.productConfig?.[0]?.name.split('、')[0] || '')
-const screenDiagonal = ref(Number(props.productConfig?.[0].screenDiagonal || 3.5))
-const screenWidth = ref(Number(props.productConfig?.[0].screenWidth || 1320))
-const screenHeight = ref(Number(props.productConfig?.[0].screenHeight || 2848))
-const screenDensity = ref(Number(props.productConfig?.[0].screenDensity || 240))
+const deviceName = ref(props.config?.productConfig?.[0].content?.name.split('、')[0] || '')
+const screenDiagonal = ref(Number(props.config?.productConfig?.[0].content?.screenDiagonal || 3.5))
+const screenWidth = ref(Number(props.config?.productConfig?.[0].content?.screenWidth || 1320))
+const screenHeight = ref(Number(props.config?.productConfig?.[0].content?.screenHeight || 2848))
+const screenDensity = ref(Number(props.config?.productConfig?.[0].content?.screenDensity || 240))
 const memory = ref(4)
 const memoryUnit = ref<'GB' | 'MB'>('GB')
 const storage = ref(6)
 const storageUnit = ref<'GB' | 'MB'>('GB')
 watch(screenConfig, () => {
-  const screenConfigItem = props.productConfig?.find(item => item.name === screenConfig.value)
+  const screenConfigItem = props.config?.productConfig?.find(item => item.content.name === screenConfig.value)
   if (!screenConfigItem) return
-  deviceName.value = screenConfigItem.name.split('、')[0]
-  screenDiagonal.value = Number(screenConfigItem.screenDiagonal)
-  screenWidth.value = Number(screenConfigItem.screenWidth)
-  screenHeight.value = Number(screenConfigItem.screenHeight)
-  screenDensity.value = Number(screenConfigItem.screenDensity)
+  deviceName.value = screenConfigItem.content.name.split('、')[0]
+  screenDiagonal.value = Number(screenConfigItem.content.screenDiagonal)
+  screenWidth.value = Number(screenConfigItem.content.screenWidth)
+  screenHeight.value = Number(screenConfigItem.content.screenHeight)
+  screenDensity.value = Number(screenConfigItem.content.screenDensity)
 })
 
 const { t } = useI18n()
@@ -88,27 +85,33 @@ const creatorDescription = computed(() => {
 })
 
 defineExpose<MultiDeviceCreatorExpose>({
-  getDeviceOptions: () => ({
+  getCreateDeviceOptions: () => ({
     name: deviceName.value,
     cpuNumber: 4,
-    diskSize: storageUnit.value === 'GB' ? storage.value * 1024 : storage.value,
-    memorySize: memoryUnit.value === 'GB' ? memory.value * 1024 : memory.value,
+    dataDiskSize: storageUnit.value === 'GB' ? storage.value * 1024 : storage.value,
+    memoryRamSize: memoryUnit.value === 'GB' ? memory.value * 1024 : memory.value,
+    screen: {
+      productConfigItem: props.config?.productConfig.find(item => item.content.name === screenConfig.value) as ProductConfigItem.Serializable,
+      emulatorDeviceItem: props.config?.emulatorConfig as EmulatorFile.ItemContent,
+      customizeScreen: isCustomizedScreen.value
+        ? {
+            configName: screenConfig.value,
+            diagonalSize: screenDiagonal.value,
+            resolutionWidth: screenWidth.value,
+            resolutionHeight: screenHeight.value,
+            density: screenDensity.value,
+          }
+        : undefined,
+      // TODO: 折叠屏自定义屏幕
+      customizeFoldableScreen: isCustomizedScreen.value && props.deviceType === 'foldable'
+        ? {
+            coverResolutionWidth: screenWidth.value,
+            coverResolutionHeight: screenHeight.value,
+            coverDiagonalSize: screenDiagonal.value,
+          }
+        : undefined,
+    },
   }),
-  getScreen: () => isCustomizedScreen.value
-    ? {
-        density: screenDensity.value,
-        diagonal: screenDiagonal.value,
-        width: screenWidth.value,
-        height: screenHeight.value,
-        apiVersion: Number(props.localImage?.apiVersion ?? ''),
-        deviceType: props.snakecaseDeviceType,
-      }
-    : {
-        product: props.productConfig.find(item => item.name === screenConfig.value)!,
-        deviceType: props.deviceType,
-      },
-  getDeviceName: () => deviceName.value,
-  getImagePath: () => props.localImage?.path || '',
 })
 </script>
 

@@ -101,7 +101,7 @@
   "qualifierEditor.title": "限定名资源文件夹编辑器",
   "qualifierEditor.willCreateDirectories": "将创建的子目录",
   "resourceExplorer": "Hvigor 资源管理器",
-  "hdcManager.title": "HDC",
+  "hdcManager.title": "HDC (Beta)",
   "hdcManager.copyHdcPath": "复制 HDC 路径",
   "hdcManager.copyHdcPath.error": "未找到 HDC 路径, 请检查 IDE 设置中的“ets.sdkPath”是否正确。",
   "hdcManager.deviceManager.title": "设备管理器",

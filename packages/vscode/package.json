@@ -529,7 +529,8 @@
     "vsce": "vsce"
   },
   "dependencies": {
-    "@napi-rs/wasm-runtime": "^1.0.7"
+    "@napi-rs/wasm-runtime": "^1.0.7",
+    "vscode-fs": "^0.1.0"
   },
   "devDependencies": {
     "@types/vscode": "^1.22.0"

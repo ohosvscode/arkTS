@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./packages/vscode/assets/icon.png" width="100" />
+<img src="./packages/vscode/assets/icon.png" width="100" alt="Icon" />
 
 # Naily's ArkTS Support
 
@@ -160,11 +160,11 @@ You can also join the QQ group for further discussions (Group ID: 746153004)
 
 <div style="display: flex; gap: 5px;">
 
-<img src="./screenshots/wechat-pay.JPG" width="200" />
+<img src="./screenshots/wechat-pay.JPG" width="200" alt="WeChat" />
 
-<img src="./screenshots/alipay.JPG" width="200" />
+<img src="./screenshots/alipay.JPG" width="200" alt="Alipay" />
 
-<img src="./screenshots/qq.JPG" width="200" />
+<img src="./screenshots/qq.JPG" width="200" alt="QQ" />
 
 </div>
 

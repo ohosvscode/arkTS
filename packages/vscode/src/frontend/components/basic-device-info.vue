@@ -42,10 +42,18 @@ const { deviceInfo, device, deviceInfoLoading } = defineProps<{
       <template #footer>
         <div flex="~ justify-between">
           <div flex="~ gap-1 items-baseline wrap">
-            <div v-if="deviceInfo?.brand" class="op-70 text-2.5">{{ deviceInfo?.brand ?? '' }}</div>
-            <div v-if="deviceInfo?.osDistName || deviceInfo?.incrementalVersion" class="op-70 text-2.5">{{ deviceInfo?.osDistName ?? '' }}{{ deviceInfo?.incrementalVersion ?? '' }}</div>
-            <div v-if="deviceInfo?.apiVersion" class="op-70 text-2.5">API{{ deviceInfo?.apiVersion }}</div>
-            <div v-if="deviceInfo?.fullName" class="op-70 text-2.5">{{ deviceInfo?.fullName ?? '' }}</div>
+            <div v-if="deviceInfo?.brand" class="op-70 text-2.5">
+              {{ deviceInfo?.brand ?? '' }}
+            </div>
+            <div v-if="deviceInfo?.osDistName || deviceInfo?.incrementalVersion" class="op-70 text-2.5">
+              {{ deviceInfo?.osDistName ?? '' }}{{ deviceInfo?.incrementalVersion ?? '' }}
+            </div>
+            <div v-if="deviceInfo?.apiVersion" class="op-70 text-2.5">
+              API{{ deviceInfo?.apiVersion }}
+            </div>
+            <div v-if="deviceInfo?.fullName" class="op-70 text-2.5">
+              {{ deviceInfo?.fullName ?? '' }}
+            </div>
           </div>
         </div>
       </template>

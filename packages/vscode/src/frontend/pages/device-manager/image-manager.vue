@@ -1,6 +1,7 @@
 <script setup lang="tsx">
-import type { DeviceType, LocalImage, RemoteImage } from '@arkts/image-manager'
+import type { Image, RemoteImage } from '@arkts/image-manager'
 import type { TableColumns } from 'naive-ui/es/data-table/src/interface'
+import type { DeviceManagerProtocol } from '../../interfaces/device-manager-protocol'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -24,20 +25,14 @@ const feedback = computed(() => {
   }
 })
 const canDownload = computed(() => isValidLocalImagePath.value === true)
-onDidChangeLocalImagePath((path, isValid) => {
-  console.warn(`path: ${path}, isValid: ${isValid}`)
-  localImagePath.value = path
-  isValidLocalImagePath.value = isValid
-})
-
-const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable> = [
+const columns: TableColumns<DeviceManagerProtocol.ServerFunction.GetEmulatorConfig.Response> = [
   {
     title: 'Device Name',
     key: 'title',
     render: row => (
       <div class="flex items-center gap-2">
-        <div class={`${getIconByDeviceType(row.deviceType as DeviceType)} text-2xl`} />
-        {`${row.targetOS} ${row.targetVersion}(${row.apiVersion})`}
+        <div class={`${getIconByDeviceType(row.content.deviceType)} text-2xl`} />
+        {`${row.content.name} API${row.content.api}`}
       </div>
     ),
     minWidth: 200,
@@ -45,24 +40,26 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
   {
     title: 'API Version',
     key: 'apiVersion',
-    sorter: (a, b) => Number(a.apiVersion) - Number(b.apiVersion),
+    sorter: (a, b) => a.content.api - b.content.api,
+    defaultSortOrder: 'descend',
     minWidth: 120,
-    render: row => `API${row.apiVersion}`,
+    render: row => `API${row.content.api}`,
   },
   {
     title: 'Device Type',
-    key: 'deviceType',
+    key: 'content.deviceType',
     filterOptions: [
-      { label: 'phone', value: 'phone' },
-      { label: 'tablet', value: 'tablet' },
-      { label: 'pc', value: 'pc' },
-      { label: 'wearable', value: 'wearable' },
-      { label: 'tv', value: 'tv' },
-      { label: 'foldable', value: 'foldable' },
-      { label: 'widefold', value: 'widefold' },
       { label: '2in1', value: '2in1' },
+      { label: 'tablet', value: 'tablet' },
+      { label: 'tv', value: 'tv' },
+      { label: 'wearable', value: 'wearable' },
+      { label: 'phone', value: 'phone' },
+      { label: 'foldable', value: 'foldable' },
+      { label: '2in1 Foldable', value: '2in1_foldable' },
+      { label: 'TripleFold', value: 'triplefold' },
+      { label: 'widefold', value: 'widefold' },
     ],
-    filter: (value, row) => row.deviceType === value,
+    filter: (value, row) => row.content.deviceType === value,
     minWidth: 130,
   },
   {
@@ -71,14 +68,9 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
       { label: '未下载', value: 'remote' },
       { label: '已下载', value: 'local' },
     ],
-    filter: (value, row) => row.imageType === value,
-    render: row => row.imageType === 'remote'
+    filter: (value, row) => row.remoteImage?.imageType === value,
+    render: row => row.localImage
       ? (
-          <NButton size="small" disabled={!canDownload.value} type="primary" onClick={() => downloadImage(row)}>
-            {{ default: () => t('download'), icon: () => <div class="i-ph-download-duotone" /> }}
-          </NButton>
-        )
-      : (
           <div class="flex items-center gap-3">
             <NButton
               size="small"
@@ -86,30 +78,42 @@ const columns: TableColumns<RemoteImage.Stringifiable | LocalImage.Stringifiable
               disabled={!canDownload.value}
               onClick={() => router.push({
                 path: '/device-manager/create-device',
-                query: { imagePath: row.path },
+                query: { imagePath: row.remoteImage.relativePath, deviceType: row.content.deviceType },
               })}
             >
               {{ default: () => t('create'), icon: () => <div class="i-ph-plus" /> }}
             </NButton>
-            <NButton size="small" type="error" disabled={!canDownload.value} onClick={() => deleteLocalImage(row)}>
+            <NButton size="small" type="error" disabled={!canDownload.value} onClick={() => deleteLocalImage(row.remoteImage.relativePath)}>
               {{ default: () => t('delete'), icon: () => <div class="i-ph-trash-duotone" /> }}
             </NButton>
           </div>
+        )
+      : (
+          <NButton size="small" disabled={!canDownload.value} type="primary" onClick={() => downloadImage(row.remoteImage)}>
+            {{ default: () => t('download'), icon: () => <div class="i-ph-download-duotone" /> }}
+          </NButton>
         ),
   },
 ]
 
 const { data: images, loading, execute: requestRemoteImageList } = useAsyncData(async () => {
-  return await connection.requestRemoteImageList?.().then(res => res.images)
+  return await connection.getEmulatorConfig?.()
 })
 onDidRefresh(() => requestRemoteImageList())
 
-function downloadImage(serializedImage: RemoteImage.Stringifiable) {
+onDidChangeLocalImagePath((path, isValid) => {
+  console.warn(`path: ${path}, isValid: ${isValid}`)
+  localImagePath.value = path
+  isValidLocalImagePath.value = isValid
+  requestRemoteImageList()
+})
+
+function downloadImage(serializedImage: RemoteImage.Serializable) {
   connection.requestRemoteImageDownload?.(serializedImage)
 }
 
-function deleteLocalImage(serializedLocalImage: LocalImage.Stringifiable) {
-  connection.deleteLocalImage?.(serializedLocalImage)
+function deleteLocalImage(imagePath: Image.RelativePath) {
+  connection.deleteLocalImage?.(imagePath)
 }
 </script>
 
@@ -118,7 +122,9 @@ function deleteLocalImage(serializedLocalImage: LocalImage.Stringifiable) {
     <Heading back :title="$t('hdcManager.imageManager.title')">
       <NButton type="primary" @click="requestRemoteImageList">
         {{ $t('refresh') }}
-        <template #icon><div class="i-ph-arrow-clockwise-duotone" /></template>
+        <template #icon>
+          <div class="i-ph-arrow-clockwise-duotone" />
+        </template>
       </NButton>
     </Heading>
     <NFormItem

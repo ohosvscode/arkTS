@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { Device, LocalImage, PascalCaseDeviceType, ProductConfigItem, ProductPreset } from '@arkts/image-manager'
+import type { EmulatorFile } from '@arkts/image-manager'
+import type { DeviceManagerProtocol } from '../interfaces/device-manager-protocol'
+import type { SerializableCreateDeviceOptions } from '../pages/device-manager/create-device.vue'
 
 const props = defineProps<{
-  productConfig: ProductConfigItem[]
-  deviceType: PascalCaseDeviceType
-  localImage: LocalImage.Stringifiable
+  config: DeviceManagerProtocol.ServerFunction.GetConfigByLocalImage.Response | null
 }>()
 
-const deviceName = ref(props.productConfig?.[0]?.name.split('、')[0] || '')
+const deviceName = ref(props.config?.productConfig?.[0].content?.name.split('、')[0] || props.config?.emulatorConfig?.name || '')
 const memory = ref(4)
 const memoryUnit = ref<'GB' | 'MB'>('GB')
 const storage = ref(6)
@@ -44,21 +44,23 @@ const creatorDescription = computed(() => {
 })
 
 export interface SingleDeviceCreatorExpose {
-  getScreen(): ProductPreset.Stringifiable
-  getDeviceOptions(): Omit<Device.Options, 'screen'>
+  getCreateDeviceOptions(): SerializableCreateDeviceOptions
 }
 
 defineExpose<SingleDeviceCreatorExpose>({
-  getScreen: () => ({
-    product: props.productConfig.find(item => item.name === deviceName.value)!,
-    deviceType: props.deviceType,
-  }),
-  getDeviceOptions: () => ({
-    name: deviceName.value,
-    cpuNumber: 4,
-    diskSize: storageUnit.value === 'GB' ? storage.value * 1024 : storage.value,
-    memorySize: memoryUnit.value === 'GB' ? memory.value * 1024 : memory.value,
-  }),
+  getCreateDeviceOptions: () => {
+    console.warn(props.config)
+    return {
+      name: deviceName.value,
+      cpuNumber: 4,
+      dataDiskSize: storageUnit.value === 'GB' ? storage.value * 1024 : storage.value,
+      memoryRamSize: memoryUnit.value === 'GB' ? memory.value * 1024 : memory.value,
+      screen: {
+        productConfigItem: props.config?.productConfig[0],
+        emulatorDeviceItem: props.config?.emulatorConfig as EmulatorFile.ItemContent,
+      },
+    } as any
+  },
 })
 </script>
 
@@ -73,7 +75,8 @@ defineExpose<SingleDeviceCreatorExpose>({
     </NFormItem>
     <NFormItem label="信息">
       <div flex="~ col">
-        <div>版本: {{ localImage.targetOS }} {{ localImage.targetVersion }} (API{{ localImage.apiVersion }})</div>
+        <div>版本: {{ config?.localImage?.sdkPkgFile.data?.guestVersion }}</div>
+        <div>API版本: {{ config?.localImage?.sdkPkgFile.data?.apiVersion }}</div>
       </div>
     </NFormItem>
     <NFormItem :label="$t('hdcManager.deviceManager.creator.storage.title')" required content-class="flex gap-2 items-center">

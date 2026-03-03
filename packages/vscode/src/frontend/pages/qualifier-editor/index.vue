@@ -118,18 +118,36 @@ async function submit() {
 
       <div w-full relative transition="all">
         <div transition="all duration-300" :style="{ width: lessThanSm ? '100%' : `${containerWidth / 2}px`, top: isFixed ? '' : '20px' }" :class="isFixed ? '' : 'fixed'">
-          <NH2 text="4!" font="500" mb="1! sm:2!">{{ $t('qualifierEditor.resourceUri') }}</NH2>
-          <div op-70>{{ resourceRelativeFsPath }}</div>
-          <NH2 text="4!" font="500" mb="1! sm:2!">{{ $t('qualifierEditor.willCreateDirectories') }}</NH2>
-          <div mb="5">
-            <NCheckbox v-model:checked="willCreateDirectories.element">Element</NCheckbox>
-            <NCheckbox v-model:checked="willCreateDirectories.media">Media</NCheckbox>
-            <NCheckbox v-model:checked="willCreateDirectories.profile">Profile</NCheckbox>
+          <NH2 text="4!" font="500" mb="1! sm:2!">
+            {{ $t('qualifierEditor.resourceUri') }}
+          </NH2>
+          <div op-70>
+            {{ resourceRelativeFsPath }}
           </div>
-          <NH2 text="4!" font="500" mb="1! sm:2!" mt-0>{{ $t('qualifierEditor.preview') }}</NH2>
+          <NH2 text="4!" font="500" mb="1! sm:2!">
+            {{ $t('qualifierEditor.willCreateDirectories') }}
+          </NH2>
+          <div mb="5">
+            <NCheckbox v-model:checked="willCreateDirectories.element">
+              Element
+            </NCheckbox>
+            <NCheckbox v-model:checked="willCreateDirectories.media">
+              Media
+            </NCheckbox>
+            <NCheckbox v-model:checked="willCreateDirectories.profile">
+              Profile
+            </NCheckbox>
+          </div>
+          <NH2 text="4!" font="500" mb="1! sm:2!" mt-0>
+            {{ $t('qualifierEditor.preview') }}
+          </NH2>
           <div w-full h-fit transition="all duration-300" mb="2 sm:4" flex="~ justify-center" class="bg-[var(--vscode-input-background)] rounded" p="y3">
-            <div v-if="value" transition="all duration-300" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">{{ value }}</div>
-            <NEmpty v-else flex="~ row justify-center gap1" class="empty">请至少选择一个筛选器</NEmpty>
+            <div v-if="value" transition="all duration-300" text="3.5" font="bold" class="bg-[var(--vscode-editor-background)] rounded" p="x-2 y-1">
+              {{ value }}
+            </div>
+            <NEmpty v-else flex="~ row justify-center gap1" class="empty">
+              请至少选择一个筛选器
+            </NEmpty>
           </div>
           <div op-70 text="2.5 sm:3.2">
             <a :href="$t('qualifierEditor.docs.resource-link')" target="_blank" flex="~ items-center gap-1">

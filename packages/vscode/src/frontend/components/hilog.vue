@@ -30,8 +30,12 @@ watch([hilogLevel, hilogPackageName, hilogProcessId], ([newHilogLevel], [oldHilo
 <template>
   <NSpin size="small" :show="complexLoading">
     <NCard class="w-full! mb-10px" size="small" content-class="p-1! px-2! flex items-center flex-wrap gap-2">
-      <div class="text-nowrap">Hilog</div>
-      <NButton size="tiny" type="primary" @click="emit('openHilog')">打开</NButton>
+      <div class="text-nowrap">
+        Hilog
+      </div>
+      <NButton size="tiny" type="primary" @click="emit('openHilog')">
+        打开
+      </NButton>
       <NSelect
         v-model:value="hilogLevel" size="tiny" menu-size="tiny" class="w-auto! min-w-90px" multiple
         :theme-overrides="{ peers: { InternalSelection: { border: '1px solid var(--vscode-focusBorder)' } } }"

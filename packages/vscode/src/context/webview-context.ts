@@ -41,6 +41,7 @@ export abstract class WebviewContext<RemoteFunctions extends WebviewContext.Clie
         onFunctionError: (error, functionName, functionArgs) => {
           this.logger.getConsola().error(`Error in WebviewContext ${htmlName} createBirpc onFunctionError, functionName: ${functionName}, functionArgs: ${functionArgs}`)
           this.logger.getConsola().error(error)
+          this.logger.getConsola().error(error.stack)
           console.error(error)
         },
       },

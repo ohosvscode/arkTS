@@ -1,150 +1,102 @@
 <script setup lang="ts">
-const { imagePath } = useRoute().query as { imagePath: string }
+import type { CustomizeFoldableScreen, CustomizeScreen, EmulatorFile, Image, LocalImage, ProductConfigItem, ScreenPreset } from '@arkts/image-manager'
+
+const { imagePath, deviceType } = useRoute().query as { imagePath: Image.RelativePath, deviceType: EmulatorFile.DeviceType }
 const { connection } = useDeviceManagerConnection()
 const router = useRouter()
 const multiDeviceCreatorRef = useTemplateRef('multiDeviceCreatorRef')
 const singleDeviceCreatorRef = useTemplateRef('singleDeviceCreatorRef')
 
-const { data: localImageProductConfig } = useAsyncData(() => connection.getLocalImageProductConfig?.(imagePath))
-const { data: localImage } = useAsyncData(() => connection.getLocalImageByPath?.(imagePath))
+const { data: config } = useAsyncData(() => connection.getConfigByLocalImage(imagePath, deviceType))
+
+export type SerializableCreateDeviceOptions = Omit<LocalImage.CreateDeviceOptions, 'screen'> & {
+  readonly screen: Omit<ScreenPreset.Options, 'productConfigItem' | 'emulatorDeviceItem'> & {
+    readonly productConfigItem: ProductConfigItem.Serializable
+    readonly emulatorDeviceItem: EmulatorFile.ItemContent
+    readonly customizeScreen?: CustomizeScreen.Options
+    readonly customizeFoldableScreen?: CustomizeFoldableScreen.Options
+  }
+}
 
 const { loading, execute: deployLocalImage } = useLoadingFn(async () => {
   if (multiDeviceCreatorRef.value) {
-    const deviceOptions = multiDeviceCreatorRef.value.getDeviceOptions()
-    const screen = multiDeviceCreatorRef.value.getScreen()
-    const deviceName = multiDeviceCreatorRef.value.getDeviceName()
-    const imagePath = multiDeviceCreatorRef.value.getImagePath()
-    if (!deviceOptions || !screen || !deviceName || !imagePath) return
-    const result = await connection.deployLocalImage?.(deviceOptions, screen, imagePath)
-    if (!result) return
-    router.replace('/device-manager')
+    const createDeviceOptions = multiDeviceCreatorRef.value.getCreateDeviceOptions()
+    deploy(createDeviceOptions)
   }
   else if (singleDeviceCreatorRef.value) {
-    // TODO
-    const deviceOptions = singleDeviceCreatorRef.value.getDeviceOptions()
-    const screen = singleDeviceCreatorRef.value.getScreen()
-    const result = await connection.deployLocalImage?.(deviceOptions, screen, imagePath)
-    if (!result) return
-    router.replace('/device-manager')
+    const createDeviceOptions = singleDeviceCreatorRef.value.getCreateDeviceOptions()
+    deploy(createDeviceOptions)
+    console.warn(createDeviceOptions)
   }
 })
+
+async function deploy(createDeviceOptions: SerializableCreateDeviceOptions) {
+  const productConfigItem = config.value?.productConfig.find((item) => {
+    return item.deviceType === createDeviceOptions.screen.productConfigItem.deviceType
+      && item.content.name === createDeviceOptions.screen.productConfigItem.content.name
+      && item.content.devModel === createDeviceOptions.screen.productConfigItem.content.devModel
+  })
+  const emulatorDeviceItem = (createDeviceOptions.screen.emulatorDeviceItem && config.value?.emulatorConfig)
+    ? (createDeviceOptions.screen.emulatorDeviceItem.api === config.value?.emulatorConfig?.api && createDeviceOptions.screen.emulatorDeviceItem.name === config.value?.emulatorConfig?.name)
+        ? config.value?.emulatorConfig
+        : undefined
+    : undefined
+  const result = await connection.deployLocalImage?.(imagePath, {
+    ...createDeviceOptions,
+    screen: (productConfigItem && emulatorDeviceItem
+      ? {
+          productConfigItem,
+          emulatorDeviceItem,
+          customizeScreen: createDeviceOptions.screen.customizeScreen,
+          customizeFoldableScreen: createDeviceOptions.screen.customizeFoldableScreen,
+        }
+      : undefined) as any,
+  })
+  if (!result) return
+  router.replace('/device-manager')
+}
 </script>
 
 <template>
   <div>
     <Heading back title="创建设备">
       <NButton type="primary" :loading :disabled="loading" @click="deployLocalImage">
-        <template #icon><div i-ph-plus-circle-duotone /></template>
+        <template #icon>
+          <div i-ph-plus-circle-duotone />
+        </template>
         {{ $t('create') }}
       </NButton>
     </Heading>
-    <template v-if="localImage?.snakecaseDeviceType === 'phone'">
-      <MultiDeviceCreator
-        v-if="Number(localImage?.apiVersion) >= 20"
-        ref="multiDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Phone'"
-        :snakecase-device-type="localImageProductConfig?.snakecaseDeviceType ?? 'phone'"
-      />
-      <SingleDeviceCreator
-        v-else
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Phone'"
-      />
+    <template v-if="deviceType === 'phone'">
+      <MultiDeviceCreator v-if="Number(config?.localImage?.apiVersion ?? 0) >= 20" ref="multiDeviceCreatorRef" :config="config" :device-type="deviceType" />
+      <SingleDeviceCreator v-else ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'foldable'">
-      <MultiDeviceCreator
-        v-if="Number(localImage?.apiVersion) >= 21"
-        ref="multiDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Phone'"
-        :snakecase-device-type="localImageProductConfig?.snakecaseDeviceType ?? 'foldable'"
-      />
-      <SingleDeviceCreator
-        v-else
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Foldable'"
-      />
+    <template v-else-if="deviceType === 'foldable'">
+      <MultiDeviceCreator v-if="Number(config?.localImage?.apiVersion ?? 0) >= 21" ref="multiDeviceCreatorRef" :config :device-type="deviceType" />
+      <SingleDeviceCreator v-else ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'widefold'">
-      <SingleDeviceCreator
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'WideFold'"
-      />
+    <template v-else-if="deviceType === 'widefold'">
+      <SingleDeviceCreator ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'triplefold'">
-      <SingleDeviceCreator
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'TripleFold'"
-      />
+    <template v-else-if="deviceType === 'triplefold'">
+      <SingleDeviceCreator ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'tablet'">
-      <MultiDeviceCreator
-        v-if="Number(localImage?.apiVersion) >= 21"
-        ref="multiDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Tablet'"
-        :snakecase-device-type="localImageProductConfig?.snakecaseDeviceType ?? 'tablet'"
-      />
-      <SingleDeviceCreator
-        v-else
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Tablet'"
-      />
+    <template v-else-if="deviceType === 'tablet'">
+      <MultiDeviceCreator v-if="Number(config?.localImage?.apiVersion ?? 0) >= 21" ref="multiDeviceCreatorRef" :config :device-type="deviceType" />
+      <SingleDeviceCreator v-else ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === '2in1'">
-      <MultiDeviceCreator
-        v-if="Number(localImage?.apiVersion) >= 21"
-        ref="multiDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? '2in1'"
-        :snakecase-device-type="localImageProductConfig?.snakecaseDeviceType ?? '2in1'"
-      />
-      <SingleDeviceCreator
-        v-else
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? '2in1'"
-      />
+    <template v-else-if="deviceType === '2in1'">
+      <MultiDeviceCreator v-if="Number(config?.localImage?.apiVersion ?? 0) >= 21" ref="multiDeviceCreatorRef" :config :device-type="deviceType" />
+      <SingleDeviceCreator v-else ref="singleDeviceCreatorRef" :config />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === '2in1_foldable'">
-      <SingleDeviceCreator
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? '2in1 Foldable'"
-      />
+    <template v-else-if="deviceType === '2in1_foldable'">
+      <SingleDeviceCreator ref="singleDeviceCreatorRef" :config :device-type="deviceType" />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'wearable'">
-      <SingleDeviceCreator
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'Wearable'"
-      />
+    <template v-else-if="deviceType === 'wearable'">
+      <SingleDeviceCreator ref="singleDeviceCreatorRef" :config :device-type="deviceType" />
     </template>
-    <template v-else-if="localImage?.snakecaseDeviceType === 'tv'">
-      <SingleDeviceCreator
-        ref="singleDeviceCreatorRef"
-        :product-config="localImageProductConfig?.productConfig ?? []"
-        :local-image="localImage"
-        :device-type="localImageProductConfig?.deviceType ?? 'TV'"
-      />
+    <template v-else-if="deviceType === 'tv'">
+      <SingleDeviceCreator ref="singleDeviceCreatorRef" :config />
     </template>
   </div>
 </template>

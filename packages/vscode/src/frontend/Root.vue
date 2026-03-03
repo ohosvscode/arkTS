@@ -86,6 +86,8 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     colorInfoPressed: 'var(--vscode-infoForeground)',
     colorInfoFocus: 'var(--vscode-infoForeground)',
     borderInfo: 'var(--vscode-editorInfo-foreground)',
+    textColorGhostPrimary: 'var(--vscode-button-background)',
+    textColorGhostPrimaryHover: 'var(--vscode-button-hoverBackground)',
   },
   Checkbox: {
     colorChecked: 'var(--vscode-checkbox-selectBackground)',
