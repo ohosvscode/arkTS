@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.3.1
+
+### Patch Changes
+
+- [#273](https://github.com/ohosvscode/arkTS/pull/273) [`e903d61`](https://github.com/ohosvscode/arkTS/commit/e903d6119b3f9a3778fbfbbc9c0aa07e6d4bd6b1) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix the error of compiling win32-x64 extensions into the extension under win32-arm64 architecture
+
 ## 1.3.0
 
 ### Minor Changes
