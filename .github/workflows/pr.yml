@@ -60,7 +60,7 @@ jobs:
             env:
               OS: linux
               ARCH: x64
-          - host: ubuntu-latest
+          - host: ubuntu-24.04-arm
             pack: pnpm -F vscode-naily-ets run pack --target linux-arm64
             env:
               OS: linux
@@ -71,7 +71,7 @@ jobs:
               OS: linux
               ARCH: x64
               LIBC: musl
-          - host: ubuntu-latest
+          - host: ubuntu-24.04-arm
             pack: pnpm -F vscode-naily-ets run pack --target alpine-arm64
             env:
               OS: linux
@@ -87,7 +87,7 @@ jobs:
             env:
               OS: win32
               ARCH: x64
-          - host: windows-latest
+          - host: windows-11-arm
             pack: pnpm -F vscode-naily-ets run pack --target win32-arm64
             env:
               OS: win32
