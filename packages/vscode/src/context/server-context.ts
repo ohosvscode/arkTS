@@ -48,27 +48,22 @@ export abstract class LanguageServerContext extends AbstractWatcher implements I
     const helpLabel = this.translator.t('sdk.error.helpLabel')
     const detail = this.errorToString(error)
 
-    // 循环显示对话框，直到用户选择操作
-    let result: string | undefined
-    do {
-      result = await vscode.window.showWarningMessage(
-        'ArkTS Language Server Warning',
-        { modal: true, detail },
-        choiceSdkPath,
-        downloadOrChoiceSdkPath,
-        helpLabel,
-      )
+    let result: string | undefined = await vscode.window.showWarningMessage(
+      'ArkTS Language Server Warning',
+      { modal: true, detail },
+      choiceSdkPath,
+      downloadOrChoiceSdkPath,
+      helpLabel,
+    )
 
-      if (result === helpLabel) {
-        // 打开帮助文档，但不关闭对话框
-        const helpUrl = vscode.Uri.parse('https://arkcode.dev/arkts/install/#方法一-选择自带在-deveco-studio-中的-sdk-推荐')
-        await vscode.env.openExternal(helpUrl)
-        // 继续循环，重新显示对话框
-        result = undefined
-      }
-    } while (result === undefined)
-
-    if (result === choiceSdkPath) {
+    if (result === helpLabel) {
+      // 打开帮助文档，但不关闭对话框
+      const helpUrl = vscode.Uri.parse('https://arkcode.dev/arkts/install/#方法一-选择自带在-deveco-studio-中的-sdk-推荐')
+      await vscode.env.openExternal(helpUrl)
+      // 继续循环，重新显示对话框
+      result = undefined
+    }
+    else if (result === choiceSdkPath) {
       const [sdkPath] = await vscode.window.showOpenDialog({
         canSelectFiles: false,
         canSelectFolders: true,
