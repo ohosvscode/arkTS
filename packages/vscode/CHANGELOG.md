@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.3.2
+
+### Patch Changes
+
+- [#277](https://github.com/ohosvscode/arkTS/pull/277) [`14871df`](https://github.com/ohosvscode/arkTS/commit/14871df69f24a4d1dc6ed6ee42e417123ecc3d2a) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: #276
+
 ## 1.3.1
 
 ### Patch Changes
