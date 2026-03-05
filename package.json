@@ -97,7 +97,6 @@
     "alien-signals": "catalog:prod",
     "baseline-browser-mapping": "catalog:dev",
     "birpc": "catalog:prod",
-    "chokidar": "catalog:prod",
     "consola": "catalog:prod",
     "cross-env": "catalog:scripts",
     "defu": "catalog:prod",

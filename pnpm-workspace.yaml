@@ -92,7 +92,6 @@ catalogs:
     alien-signals: ^3.0.3
     axios: ^1.12.2
     birpc: ^2.6.1
-    chokidar: ^4.0.3
     consola: ^3.4.2
     defu: ^6.1.4
     extract-zip: ^2.0.1
@@ -165,7 +164,6 @@ publicHoistPattern:
   - '@arkts/project-detector-*'
   - mitt
   - alien-signals
-  - chokidar
   - '@napi-rs/wasm-runtime'
 
 recursiveInstall: true
