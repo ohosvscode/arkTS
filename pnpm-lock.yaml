@@ -243,8 +243,8 @@ catalogs:
       specifier: ^2.6.1
       version: 2.9.0
     chokidar:
-      specifier: ^4.0.3
-      version: 4.0.3
+      specifier: ^5.0.0
+      version: 5.0.0
     consola:
       specifier: ^3.4.2
       version: 3.4.2
@@ -643,7 +643,7 @@ importers:
         version: 2.9.0
       chokidar:
         specifier: catalog:prod
-        version: 4.0.3
+        version: 5.0.0
       consola:
         specifier: catalog:prod
         version: 3.4.2
