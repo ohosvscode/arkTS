@@ -61,5 +61,5 @@ export async function resolveDiagnosticMessages(params: InitializeParams, logger
   }
   const loadedPackageDiagnosticMessagesByPackage = loadTsdkInPackage(fileUri, params.locale, logger)
   if (loadedPackageDiagnosticMessagesByPackage) return loadedPackageDiagnosticMessagesByPackage
-  logger.getConsola().warn(`Cannot load diagnosticMessages by initialization options: ${params?.initializationOptions?.typescript?.tsdk}, locale: ${params?.initializationOptions?.locale}`)
+  logger.getConsola().warn(`Cannot load diagnosticMessages by initialization options: ${params?.initializationOptions?.typescript?.tsdk}, locale: ${params?.locale}`)
 }

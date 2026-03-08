@@ -1,7 +1,6 @@
 import type { ConsolaOptions, ConsolaReporter, LogObject } from 'consola'
 import fs from 'node:fs'
 import path from 'node:path'
-import kleur from 'kleur'
 
 export class FileReporter implements ConsolaReporter {
   constructor(private readonly debug: boolean, private readonly prefix: string, private readonly filename: string) {}
@@ -30,32 +29,32 @@ export class FileReporter implements ConsolaReporter {
     if (!fs.existsSync(path.dirname(this.filename))) fs.mkdirSync(path.dirname(this.filename), { recursive: true })
     switch (logObj.type) {
       case 'log':
-        fs.appendFileSync(this.filename, kleur.gray(`[${logObj.type.toUpperCase()}] 📅:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] 📅:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'warn':
-        fs.appendFileSync(this.filename, kleur.yellow(`[${logObj.type.toUpperCase()}] ⚠️:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] ⚠️:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'info':
-        fs.appendFileSync(this.filename, kleur.blue(`[${logObj.type.toUpperCase()}] 🔥:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] 🔥:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'success':
       case 'ready':
       case 'start':
-        fs.appendFileSync(this.filename, kleur.green(`[${logObj.type.toUpperCase()}] ✅:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] ✅:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'fail':
       case 'fatal':
       case 'error':
-        fs.appendFileSync(this.filename, kleur.red(`[${logObj.type.toUpperCase()}] ❌:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] ❌:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'debug':
       case 'verbose':
       case 'trace':
         if (!this.debug) return
-        fs.appendFileSync(this.filename, kleur.gray(`[${logObj.type.toUpperCase()}] 🐛:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] 🐛:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
       case 'box':
-        fs.appendFileSync(this.filename, kleur.gray(`[${logObj.type.toUpperCase()}] 📦:${logObj.tag} ${this.getPrefix()} ${kleur.dim(logObj.date.toLocaleString())} ${this.toString(logObj)}\r\n`))
+        fs.appendFileSync(this.filename, `[${logObj.type.toUpperCase()}] 📦:${logObj.tag} ${this.getPrefix()} ${logObj.date.toLocaleString()} ${this.toString(logObj)}\r\n`)
         break
     }
   }
