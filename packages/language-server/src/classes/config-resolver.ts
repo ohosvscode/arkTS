@@ -21,11 +21,9 @@ export class ConfigResolver {
     private readonly fs: FileSystem,
     private readonly lspRoot: string,
     private readonly connection: Connection,
-  ) {
-    this.validateOrExit()
-  }
+  ) {}
 
-  private async validateOrExit(): Promise<void> {
+  async validateOrExit(): Promise<this> {
     if (!this.getSdkPath() || typeof this.getSdkPath() !== 'string') {
       const errorMessage = `Cannot find ets.sdkPath in initialization options, language server is shutdowning...`
       this.logger.getConsola().info(errorMessage)
@@ -38,6 +36,7 @@ export class ConfigResolver {
       this.connection.window.showErrorMessage(errorMessage)
       throw new Error(errorMessage)
     }
+    return this
   }
 
   getTsdkPath(): string | undefined {

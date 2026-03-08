@@ -30,7 +30,7 @@ connection.onInitialize(async (params) => {
   const diagnosticMessages = await resolveDiagnosticMessages(params, logger, fileUri)
   const projectDetectorManagerService = new ProjectDetectorManagerService(connection, params, logger)
   const fs = await createNodeFileSystem()
-  const configuration = new ConfigResolver(logger, projectDetectorManagerService, params, fs, Utils.joinPath(URI.parse(fileUri), '..').fsPath, connection)
+  const configuration = await new ConfigResolver(logger, projectDetectorManagerService, params, fs, Utils.joinPath(URI.parse(fileUri), '..').fsPath, connection).validateOrExit()
   const configurator = configuration.toArkTSServicesOptions()
   const typescriptServices = createTypeScriptServices(ets as unknown as typeof import('typescript'))
   patchSemantic(typescriptServices, configurator) // patch typescript semantic service
