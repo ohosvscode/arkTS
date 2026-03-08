@@ -21,7 +21,7 @@ export default defineConfig({
   external: ['@ohos-rs/oxk'],
   copy: [
     ...fg.sync(['../../ohos-typescript/lib/**/diagnosticMessages.generated.json'], { absolute: true }).map((from) => {
-      const splitFromPath = from.split(path.sep)
+      const splitFromPath = from.split(/[/\\]/)
       const endPath = `${splitFromPath[splitFromPath.length - 3]}${path.sep}${splitFromPath[splitFromPath.length - 2]}${path.sep}${splitFromPath[splitFromPath.length - 1]}`
       const to = path.resolve(OUT_DIR, endPath)
       globalLogger.info(`COPYING: ${from} -> ${to}`)
@@ -31,7 +31,7 @@ export default defineConfig({
       // exclude dom declaration files、typescript.d.ts、tsserverlibrary.d.ts and webworker declaration files
       .filter(filePath => !path.basename(filePath).includes('dom') && path.basename(filePath) !== 'typescript.d.ts' && !path.basename(filePath).includes('tsserverlibrary') && !path.basename(filePath).includes('webworker'))
       .map((from) => {
-        const splitFromPath = from.split(path.sep)
+        const splitFromPath = from.split(/[/\\]/)
         const endPath = `${splitFromPath[splitFromPath.length - 2]}${path.sep}${splitFromPath[splitFromPath.length - 1]}`
         const to = path.resolve(OUT_DIR, endPath)
         globalLogger.info(`COPYING: ${from} -> ${to}`)

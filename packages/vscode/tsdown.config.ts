@@ -92,7 +92,8 @@ export default defineConfig({
   copy: fg.sync(['../../ohos-typescript/lib/*.d.ts'], { absolute: true })
     .filter(filePath => !path.basename(filePath).includes('dom') && path.basename(filePath) !== 'typescript.d.ts' && !path.basename(filePath).includes('tsserverlibrary') && !path.basename(filePath).includes('webworker'))
     .map((from) => {
-      const splitFromPath = from.split(path.sep)
+      // fast-glob returns POSIX-style paths (/) on Windows, so split by both separators
+      const splitFromPath = from.split(/[/\\]/)
       const endPath = `${splitFromPath[splitFromPath.length - 2]}${path.sep}${splitFromPath[splitFromPath.length - 1]}`
       const to = path.resolve('dist', endPath)
       globalLogger.info(`COPYING: ${from} -> ${to}`)
