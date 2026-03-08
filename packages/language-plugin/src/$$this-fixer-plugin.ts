@@ -10,7 +10,7 @@ export function $$thisFixerPlugin(): ETSMacroPlugin {
       const text = virtualCode.ast.getText()
       const matches = text.matchAll($$thisRegex)
       for (const match of matches) {
-        const start = match.index
+        const start = match.index ?? 0
         const end = start + match[0].length
         replaceRange(virtualCode.codes, start, end, [
           'this',

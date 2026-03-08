@@ -1,2 +1,2 @@
 export * from './interfaces'
-export { createArkTServices } from './services'
+export { type CreateArkTServiceOptions, createArkTServices } from './services'

@@ -409,12 +409,21 @@ async function main() {
   const ohosTypescriptExists = fs.existsSync(config.ohosTypescriptPath)
     && fs.readdirSync(config.ohosTypescriptPath).length > 0
 
-  if (!serverExists || !ohosTypescriptExists) {
+  // 语言服务器要求 ets.sdkPath，未配置 OHOS_SDK_PATH 时跳过真实连接
+  const sdkPathExists = Boolean(config.sdkPath) && fs.existsSync(config.sdkPath) && fs.statSync(config.sdkPath).isDirectory()
+
+  if (!serverExists || !ohosTypescriptExists || !sdkPathExists) {
     if (!serverExists) {
       logger.warn(`语言服务器未找到: ${config.serverPath}`)
       logger.info('请先构建语言服务器:')
       logger.info('  cd /path/to/arkTS')
       logger.info('  pnpm -F "@arkts/language-server" build')
+      logger.info('')
+    }
+
+    if (!sdkPathExists) {
+      logger.warn('未配置 OpenHarmony SDK 路径 (OHOS_SDK_PATH)')
+      logger.info('语言服务器要求 ets.sdkPath，请设置环境变量 OHOS_SDK_PATH 以测试真实服务器连接')
       logger.info('')
     }
 

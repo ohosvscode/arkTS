@@ -5,7 +5,6 @@ import type * as ts from 'typescript'
 import type { URI } from 'vscode-uri'
 import path from 'node:path'
 import { $$thisFixerPlugin } from './$$this-fixer-plugin'
-import { ESObjectPlugin } from './es-object-plugin'
 import { createEmptyVirtualCode, createVirtualCode, ETSVirtualCode } from './ets-code'
 
 export interface ETSLanguagePluginOptions {
@@ -75,13 +74,13 @@ export function ETSLanguagePlugin(tsOrEts: typeof ets | typeof ts, { excludePath
             filePath,
             tsOrEts.createSourceFile(filePath, snapshot.getText(0, snapshot.getLength()), 99 as any) as unknown as ts.SourceFile,
             'typescript',
-            [$$thisFixerPlugin(), ESObjectPlugin()] as any,
+            [$$thisFixerPlugin()] as any,
           )
         }
         // json5、json files, directly using full feature virtual code
         if (filePath.endsWith('.json') || filePath.endsWith('.json5') || filePath.endsWith('.jsonc') || languageId === 'json' || languageId === 'jsonc') return getFullVirtualCode(snapshot, languageId)
         // tsdk files we must disable the full feature virtual code but still keep the full content
-        if (filePath.startsWith(tsdk)) return getDisabledVirtualCode(snapshot, languageId)
+        if (tsdk && filePath.startsWith(tsdk)) return getDisabledVirtualCode(snapshot, languageId)
       },
       typescript: {
         extraFileExtensions: [

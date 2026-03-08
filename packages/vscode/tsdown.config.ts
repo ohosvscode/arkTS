@@ -1,7 +1,8 @@
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
-import { defineConfig, globalLogger as logger } from 'tsdown'
+import fg from 'fast-glob'
+import { defineConfig, globalLogger, globalLogger as logger } from 'tsdown'
 
 const require = createRequire(import.meta.url)
 const isDev = process.env.NODE_ENV === 'development'
@@ -87,5 +88,24 @@ export default defineConfig({
         },
       },
     },
+  ],
+  copy: [
+    ...fg.sync(['../../ohos-typescript/lib/**/diagnosticMessages.generated.json'], { absolute: true }).map((from) => {
+      const splitFromPath = from.split(/[/\\]/)
+      const endPath = `${splitFromPath[splitFromPath.length - 3]}${path.sep}${splitFromPath[splitFromPath.length - 2]}${path.sep}${splitFromPath[splitFromPath.length - 1]}`
+      const to = path.resolve('dist', endPath)
+      globalLogger.info(`COPYING: ${from} -> ${to}`)
+      return { from, to }
+    }),
+    ...fg.sync(['../../ohos-typescript/lib/*.d.ts'], { absolute: true })
+      .filter(filePath => !path.basename(filePath).includes('dom') && path.basename(filePath) !== 'typescript.d.ts' && !path.basename(filePath).includes('tsserverlibrary') && !path.basename(filePath).includes('webworker'))
+      .map((from) => {
+      // fast-glob returns POSIX-style paths (/) on Windows, so split by both separators
+        const splitFromPath = from.split(/[/\\]/)
+        const endPath = `${splitFromPath[splitFromPath.length - 2]}${path.sep}${splitFromPath[splitFromPath.length - 1]}`
+        const to = path.resolve('dist', endPath)
+        globalLogger.info(`COPYING: ${from} -> ${to}`)
+        return { from, to }
+      }),
   ],
 })

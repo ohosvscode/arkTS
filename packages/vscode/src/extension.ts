@@ -42,8 +42,8 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
   private async autoSetLanguage(document: vscode.TextDocument, languageServer?: EtsLanguageServer | null): Promise<vscode.TextDocument | void> {
     if (document.fileName.endsWith('.json5')) return vscode.languages.setTextDocumentLanguage(document, 'jsonc')
     const clientOptions = await languageServer?.getClientOptions()
-    if (typeof clientOptions?.initializationOptions?.ohos?.sdkPath !== 'string' || !clientOptions?.initializationOptions?.ohos?.sdkPath) return
-    if (document.fileName.endsWith('.d.ts') && document.fileName.startsWith(clientOptions?.initializationOptions?.ohos?.sdkPath)) vscode.languages.setTextDocumentLanguage(document, 'ets')
+    if (typeof clientOptions?.initializationOptions?.ets?.sdkPath !== 'string' || !clientOptions?.initializationOptions?.ets?.sdkPath) return
+    if (document.fileName.endsWith('.d.ts') && document.fileName.startsWith(clientOptions?.initializationOptions?.ets?.sdkPath)) vscode.languages.setTextDocumentLanguage(document, 'ets')
   }
 
   private async createExtensionSideProjectDetectorManager(context: ExtensionContext): Promise<void> {

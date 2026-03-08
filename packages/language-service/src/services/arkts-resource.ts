@@ -1,11 +1,10 @@
-import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { LanguageServicePlugin } from '@volar/language-server'
-import type { ProjectDetectorManager } from '../interfaces/project-detector-manager'
+import type { CreateArkTServiceOptions } from '.'
 import { GlobalCallExpressionFinder } from '../classes/global-call-finder'
 import { ResourceProvider } from '../classes/resource-provider'
 import { ContextUtil } from '../utils/context-util'
 
-export function createArkTSResource(projectDetectorManager: ProjectDetectorManager, ets: typeof import('ohos-typescript'), config: LanguageServerConfigurator): LanguageServicePlugin {
+export function createArkTSResource(ctx: CreateArkTServiceOptions, ets: typeof import('ohos-typescript')): LanguageServicePlugin {
   return {
     name: 'arkts-resource',
     capabilities: {
@@ -25,7 +24,7 @@ export function createArkTSResource(projectDetectorManager: ProjectDetectorManag
     create(context) {
       const contextUtil = new ContextUtil(context)
       const globalCallFinder = new GlobalCallExpressionFinder(ets)
-      const resourceProvider = ResourceProvider.create(contextUtil, globalCallFinder, projectDetectorManager, config, ets)
+      const resourceProvider = ResourceProvider.create(contextUtil, globalCallFinder, ctx.getProjectDetectorManager(), ctx, ets)
 
       return {
         provideDiagnostics(document, token) {

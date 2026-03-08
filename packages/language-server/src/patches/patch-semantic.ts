@@ -117,9 +117,7 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
         // @ts-expect-error
         if (program.isSourceFileDefaultLibrary.patched === true) return program
         const originalIsSourceFileDefaultLibrary = program.isSourceFileDefaultLibrary.bind(program)
-        const patchedIsSourceFileDefaultLibrary = (sourceFile: ets.SourceFile): boolean => {
-          return sourceFile.fileName.startsWith(config.getSdkPath()) || originalIsSourceFileDefaultLibrary(sourceFile)
-        }
+        const patchedIsSourceFileDefaultLibrary = (sourceFile: ets.SourceFile): boolean => sourceFile.fileName.startsWith(config.getSdkPath()) || originalIsSourceFileDefaultLibrary(sourceFile)
         patchedIsSourceFileDefaultLibrary.patched = true
         program.isSourceFileDefaultLibrary = patchedIsSourceFileDefaultLibrary
         return program

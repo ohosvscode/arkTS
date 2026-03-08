@@ -2,7 +2,7 @@
 import type { ConsolaOptions, ConsolaReporter, LogObject } from 'consola'
 import kleur from 'kleur'
 
-export class LspReporter implements ConsolaReporter {
+export class ConsoleReporter implements ConsolaReporter {
   constructor(private readonly debug: boolean, private readonly prefix: string) {}
 
   private safeStringify<T>(value: T): string {
