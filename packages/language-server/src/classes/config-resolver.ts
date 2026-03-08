@@ -19,7 +19,7 @@ export class ConfigResolver {
     private readonly projectDetectorManagerService: ProjectDetectorManagerService,
     private readonly params: InitializeParams,
     private readonly fs: FileSystem,
-    private readonly lspRoot: string,
+    private readonly lspRoot: URI,
     private readonly connection: Connection,
   ) {}
 
@@ -115,7 +115,7 @@ export class ConfigResolver {
       const tsdkLibs = await this.fs.glob(new RelativePattern(Utils.joinPath(URI.file(tsdkPath), 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
       if (tsdkLibs.length > 0) return tsdkLibs
     }
-    return await this.fs.glob(new RelativePattern(Utils.joinPath(URI.parse(this.lspRoot), 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    return await this.fs.glob(new RelativePattern(Utils.joinPath(this.lspRoot, 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
   }
 
   async getLib(): Promise<string[]> {
