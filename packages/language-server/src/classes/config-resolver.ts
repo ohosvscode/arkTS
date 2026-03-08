@@ -101,7 +101,7 @@ export class ConfigResolver {
 
   toArkTSServicesOptions(): CreateArkTServiceOptions {
     return {
-      getLocale: () => this.params.locale!,
+      getLocale: () => this.params.locale ?? '',
       getProjectDetectorManager: () => this.projectDetectorManagerService.getProjectDetectorManager(),
       getSdkPath: () => this.getSdkPath(),
       getSysResource: force => this.getSysResource(force),
