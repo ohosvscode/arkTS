@@ -70,7 +70,7 @@
     "volar-service-emmet": "catalog:prod",
     "volar-service-html": "catalog:prod",
     "volar-service-typescript": "catalog:prod",
-    "vscode-fs": "^0.1.1",
+    "vscode-fs": "catalog:prod",
     "vscode-html-languageservice": "catalog:prod",
     "vscode-languageserver-protocol": "catalog:prod",
     "vscode-uri": "catalog:prod"

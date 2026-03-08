@@ -140,7 +140,7 @@
     "vite-ssg": "catalog:frontend",
     "vitest": "catalog:test",
     "vscode-ext-gen": "catalog:dev",
-    "vscode-fs": "^0.1.1",
+    "vscode-fs": "catalog:prod",
     "vscode-languageserver-textdocument": "catalog:prod",
     "vscode-nls": "catalog:prod",
     "which": "catalog:prod"

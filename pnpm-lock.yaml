@@ -305,6 +305,9 @@ catalogs:
     volar-service-typescript:
       specifier: volar-2.4
       version: 0.0.68
+    vscode-fs:
+      specifier: ^0.1.1
+      version: 0.1.1
     vscode-html-languageservice:
       specifier: ^5.5.1
       version: 5.6.0
@@ -358,8 +361,8 @@ catalogs:
       specifier: ^0.5.2
       version: 0.5.2
     pnpm:
-      specifier: ^10.17.0
-      version: 10.19.0
+      specifier: ^10.31.0
+      version: 10.31.0
     simple-git-hooks:
       specifier: ^2.13.1
       version: 2.13.1
@@ -706,7 +709,7 @@ importers:
         version: 1.0.1
       pnpm:
         specifier: catalog:scripts
-        version: 10.19.0
+        version: 10.31.0
       readdirp:
         specifier: catalog:prod
         version: 4.1.2
@@ -768,7 +771,7 @@ importers:
         specifier: catalog:dev
         version: 1.6.0
       vscode-fs:
-        specifier: ^0.1.1
+        specifier: catalog:prod
         version: 0.1.1(vscode-uri@3.1.0)
       vscode-languageserver-textdocument:
         specifier: catalog:prod
@@ -958,7 +961,7 @@ importers:
         specifier: catalog:prod
         version: 0.0.68(@volar/language-service@2.4.23)
       vscode-fs:
-        specifier: ^0.1.1
+        specifier: catalog:prod
         version: 0.1.1(vscode-uri@3.1.0)
       vscode-html-languageservice:
         specifier: catalog:prod
@@ -6784,8 +6787,8 @@ packages:
   pnpm-workspace-yaml@1.6.0:
     resolution: {integrity: sha512-uUy4dK3E11sp7nK+hnT7uAWfkBMe00KaUw8OG3NuNlYQoTk4sc9pcdIy1+XIP85v9Tvr02mK3JPaNNrP0QyRaw==}
 
-  pnpm@10.19.0:
-    resolution: {integrity: sha512-yfxyNukq31yK9C/VvxYS35nCzrYvJwRwMvRyCzP46s3eMRhl6RxBHyd09hjYLzIICOy1Fxi/qCwGDEunx2oyuA==}
+  pnpm@10.31.0:
+    resolution: {integrity: sha512-45JziL+qgHjOt5t0j/wegnToTXUWPme8IuBsDTrtQ90VMVHL8R1/gwH/SsuYxovcXK32mJUygB/6/js+SmPCaA==, tarball: https://registry.npmjs.org/pnpm/-/pnpm-10.31.0.tgz}
     engines: {node: '>=18.12'}
     hasBin: true
 
@@ -14644,7 +14647,7 @@ snapshots:
     dependencies:
       yaml: 2.8.2
 
-  pnpm@10.19.0: {}
+  pnpm@10.31.0: {}
 
   possible-typed-array-names@1.1.0: {}
 

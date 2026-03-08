@@ -117,6 +117,7 @@ catalogs:
     vscode-languageserver-types: ^3.17.5
     vscode-nls: ^5.2.0
     vscode-uri: ^3.1.0
+    vscode-fs: ^0.1.1
   scripts:
     '@antfu/nip': ^0.1.0
     '@changesets/changelog-github': ^0.5.1
@@ -128,7 +129,7 @@ catalogs:
     ovsx: ^0.10.5
     oxc-parser: ^0.90.0
     oxc-walker: ^0.5.2
-    pnpm: ^10.17.0
+    pnpm: ^10.31.0
     simple-git-hooks: ^2.13.1
     tsx: ^4.20.5
   test:
