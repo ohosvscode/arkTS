@@ -100,7 +100,7 @@ const plugin: ts.server.PluginModuleFactory = createLanguageServicePlugin((ts, i
   }
 
   // 如果没有传递这个配置，则不启用插件
-  if (!info.config?.lspOptions?.ohos) {
+  if (!info.config?.lspOptions?.ets) {
     return { languagePlugins: [] }
   }
 
