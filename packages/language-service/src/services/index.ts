@@ -5,10 +5,14 @@ import { createETS$$ThisService } from './arkts-$$this'
 import { createArkTSLinter } from './arkts-linter'
 import { createArkTSResource } from './arkts-resource'
 
-export async function createArkTServices(projectDetectorManager: ProjectDetectorManager, ets: typeof import('ohos-typescript'), config: LanguageServerConfigurator): Promise<LanguageServicePlugin[]> {
+export interface CreateArkTServiceOptions extends LanguageServerConfigurator {
+  getProjectDetectorManager(): ProjectDetectorManager
+}
+
+export async function createArkTServices(options: CreateArkTServiceOptions, ets: typeof import('ohos-typescript')): Promise<LanguageServicePlugin[]> {
   return [
-    createArkTSResource(projectDetectorManager, ets, config),
-    createETS$$ThisService(ets, config),
-    createArkTSLinter(ets, config),
+    createArkTSResource(options, ets),
+    createETS$$ThisService(options, ets),
+    createArkTSLinter(options, ets),
   ]
 }

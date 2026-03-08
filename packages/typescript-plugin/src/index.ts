@@ -57,9 +57,7 @@ function isConfigFileDiagMessage(msg: ts.server.protocol.Message): msg is Config
 /**
  * ### 这个插件做了什么？
  *
- * 将传输过来的ohos SDK路径与当前打开的文件位置进行比对，
- * 如果当前打开的文件位置在ohos SDK路径下，则覆写compilerOptions
- * 让TS服务器将其作为一个`lib`来处理。
+ * 屏蔽 `ets` 相关错误信息出现在 tsconfig.json 中。
  *
  * ---
  *
@@ -70,8 +68,8 @@ function isConfigFileDiagMessage(msg: ts.server.protocol.Message): msg is Config
 const plugin: ts.server.PluginModuleFactory = createLanguageServicePlugin((ts, info) => {
   const env = tryParseEnv()
   if (env?.lspOptions?.ohos?.sdkPath) info.config = env
-  const sdkPath = info.config?.lspOptions?.ohos?.sdkPath
-  const hmsSdkPath = info.config?.lspOptions?.ohos?.hmsSdkPath
+  const sdkPath = info.config?.lspOptions?.ets?.sdkPath
+  const hmsSdkPath = info.config?.lspOptions?.ets?.hmsSdkPath
 
   console.warn(`ETS typescript plugin loaded! sdkPath: ${sdkPath}, hmsSdkPath: ${hmsSdkPath}`)
   console.warn(`Current config: ${JSON.stringify(info.config)}`)

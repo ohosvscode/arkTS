@@ -2,7 +2,7 @@ import type { EtsServerClientOptions, SerializableTextDocument } from '@arkts/sh
 import type { LabsInfo } from '@volar/vscode'
 import type { LanguageClientOptions, ServerOptions } from '@volar/vscode/node'
 import * as serverProtocol from '@volar/language-server/protocol'
-import { activateAutoInsertion, createLabsInfo, getTsdk } from '@volar/vscode'
+import { activateAutoInsertion, createLabsInfo } from '@volar/vscode'
 import { LanguageClient, TransportKind } from '@volar/vscode/node'
 import defu from 'defu'
 import { Autowired } from 'unioc'
@@ -136,7 +136,6 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
       vscode.window.showErrorMessage(this.translator.t('sdk.error.validSdkPath'))
       throw new Error(this.translator.t('sdk.error.validSdkPath'))
     }
-    const tsdk = await getTsdk(this.context)
 
     return {
       documentSelector: [
@@ -146,12 +145,8 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
       ],
       outputChannel: this.getOutputChannel(),
       initializationOptions: {
-        typescript: { tsdk: tsdk!.tsdk },
-        ohos: await sdkAnalyzer.toOhosClientOptions(force, tsdk!.tsdk),
         debug: vscode.workspace.getConfiguration('ets').get<boolean>('lspDebugMode'),
-        ets: {
-          resourceReferenceDiagnostic: vscode.workspace.getConfiguration('ets').get<'error' | 'warning' | 'none'>('resourceReferenceDiagnostic', 'error'),
-        },
+        ets: { sdkPath },
       } satisfies EtsServerClientOptions,
       synchronize: {
         fileEvents: [

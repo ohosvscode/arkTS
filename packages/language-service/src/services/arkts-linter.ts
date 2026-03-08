@@ -1,9 +1,9 @@
-import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { Diagnostic, LanguageServicePlugin } from '@volar/language-server'
+import type { CreateArkTServiceOptions } from '.'
 import { DiagnosticSeverity, Range } from '@volar/language-server'
 import { ContextUtil } from '../utils/context-util'
 
-export function createArkTSLinter(ets: typeof import('ohos-typescript'), config: LanguageServerConfigurator): LanguageServicePlugin {
+export function createArkTSLinter(ctx: CreateArkTServiceOptions, ets: typeof import('ohos-typescript')): LanguageServicePlugin {
   return {
     name: 'arkts-linter',
     capabilities: {
@@ -32,7 +32,7 @@ export function createArkTSLinter(ets: typeof import('ohos-typescript'), config:
         dispose: () => contextUtil.dispose(),
         provideDiagnostics(document) {
           if (!document.getText().trim()) return []
-          const sdkPath = config.getSdkPath()
+          const sdkPath = ctx.getSdkPath()
           const documentUri = contextUtil.decodeTextDocumentUri(document)
           if (!documentUri || documentUri.fsPath.endsWith('.d.ets')) return []
           if (sdkPath && (!documentUri || documentUri.fsPath.startsWith(sdkPath))) return []
