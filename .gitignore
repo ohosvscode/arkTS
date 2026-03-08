@@ -4,6 +4,7 @@ packages/vscode/build
 node_modules
 *.tsbuildinfo
 *.vsix
+*.log
 .DS_Store
 local.properties
 oh_modules
