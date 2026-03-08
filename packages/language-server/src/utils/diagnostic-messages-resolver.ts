@@ -38,7 +38,7 @@ function loadTsdkInPackage(fileUri: string, locale: string | undefined, logger: 
     try {
       const path = _require.resolve(`./${locale}/diagnosticMessages.generated.json`, { paths: [libUri.fsPath] })
       const res = _require(path)
-      logger.getConsola().info(`Load diagnosticMessages by package.`)
+      logger.getConsola().info(`Loaded diagnostic messages from language server package.`)
       return res
     }
     catch (error) {
@@ -55,8 +55,10 @@ export async function resolveDiagnosticMessages(params: InitializeParams, logger
     logger.getConsola().warn(`Locale is ${params.locale}, skip load diagnostic messages.`)
     return
   }
-  const loadedDiagnosticMessages = safeLoadByRequire(params, logger)
-  if (loadedDiagnosticMessages) return loadedDiagnosticMessages
+  if (params.initializationOptions?.typescript?.tsdk && params.locale) {
+    const loadedDiagnosticMessages = safeLoadByRequire(params, logger)
+    if (loadedDiagnosticMessages) return loadedDiagnosticMessages
+  }
   const loadedPackageDiagnosticMessagesByPackage = loadTsdkInPackage(fileUri, params.locale, logger)
   if (loadedPackageDiagnosticMessagesByPackage) return loadedPackageDiagnosticMessagesByPackage
   logger.getConsola().warn(`Cannot load diagnosticMessages by initialization options: ${params?.initializationOptions?.typescript?.tsdk}, locale: ${params?.initializationOptions?.locale}`)

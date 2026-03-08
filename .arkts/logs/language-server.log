@@ -1,40 +1,8 @@
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 ETS Support language server version: 1.3.0
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 ohos-typescript version: 4.9.5
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 ETS Language Server is starting...
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 ETS Language Server is started!
-[WARN] ⚠️: <ETS Language Server> 2026/3/8 19:41:40 Locale is undefined, skip load diagnostic messages.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:41:40 ETS Language Server is initialized.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 ETS Support language server version: 1.3.0
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 ohos-typescript version: 4.9.5
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 ETS Language Server is starting...
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 ETS Language Server is started!
-[WARN] ⚠️: <ETS Language Server> 2026/3/8 19:42:31 Locale is undefined, skip load diagnostic messages.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:42:31 ETS Language Server is initialized.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 ETS Support language server version: 1.3.0
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 ohos-typescript version: 4.9.5
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 ETS Language Server is starting...
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 ETS Language Server is started!
-[WARN] ⚠️: <ETS Language Server> 2026/3/8 19:54:37 Locale is undefined, skip load diagnostic messages.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:37 ETS Language Server is initialized.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 ETS Support language server version: 1.3.0
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 ohos-typescript version: 4.9.5
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 ETS Language Server is starting...
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 ETS Language Server is started!
-[WARN] ⚠️: <ETS Language Server> 2026/3/8 19:54:51 Locale is undefined, skip load diagnostic messages.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
-[INFO] 🔥: <ETS Language Server> 2026/3/8 19:54:51 ETS Language Server is initialized.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 ETS Support language server version: 1.3.0
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 ohos-typescript version: 4.9.5
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 ETS Language Server is starting...
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 ETS Language Server is started!
-[WARN] ⚠️: <ETS Language Server> 2026/3/8 20:02:46 Locale is undefined, skip load diagnostic messages.
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
-[INFO] 🔥: <ETS Language Server> 2026/3/8 20:02:46 ETS Language Server is initialized.
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 ETS Support language server version: 1.3.0
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 ohos-typescript version: 4.9.5
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 Current file URI: file:///Users/naily/Documents/Developer/ohosvscode/arkTS/packages/language-server/out/index.js
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 ETS Language Server is starting...
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 ETS Language Server is started!
+[WARN] ⚠️: <ETS Language Server> 2026/3/9 00:11:13 Locale is undefined, skip load diagnostic messages.
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 Workspace folders: file:///Users/naily/Documents/Developer/ohosvscode/arkTS
+[INFO] 🔥: <ETS Language Server> 2026/3/9 00:11:13 The ets.sdkPath is not a directory, path: /Applications/DevEco-Studio.app/Contents/sdk/default/openharmon, language server is shutdowning...

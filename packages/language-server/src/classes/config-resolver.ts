@@ -30,15 +30,13 @@ export class ConfigResolver {
       const errorMessage = `Cannot find ets.sdkPath in initialization options, language server is shutdowning...`
       this.logger.getConsola().info(errorMessage)
       this.connection.window.showErrorMessage(errorMessage)
-      console.error(new Error(errorMessage))
-      return process.exit(0)
+      throw new Error(errorMessage)
     }
     if (!await this.fs.isDirectory(URI.file(this.getSdkPath()))) {
       const errorMessage = `The ets.sdkPath is not a directory, path: ${this.getSdkPath()}, language server is shutdowning...`
       this.logger.getConsola().info(errorMessage)
       this.connection.window.showErrorMessage(errorMessage)
-      console.error(new Error(errorMessage))
-      return process.exit(0)
+      throw new Error(errorMessage)
     }
   }
 
