@@ -121,7 +121,7 @@ export class ConfigResolver {
   async getLib(): Promise<string[]> {
     const componentFolderUri = Utils.joinPath(URI.file(this.getSdkPath()), 'ets', 'component')
     const dtsFiles = await this.fs.glob(new RelativePattern(componentFolderUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
-    const detsFiles = await this.fs.glob(new RelativePattern(componentFolderUri, '**/.d.ets')).then(uris => uris.map(uri => uri.fsPath))
+    const detsFiles = await this.fs.glob(new RelativePattern(componentFolderUri, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
 
     const declarationsUri = Utils.joinPath(URI.file(this.getEtsLoaderPath()), 'declarations')
     const globalFiles = await this.fs.glob(new RelativePattern(declarationsUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
