@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.3.6
+
+### Patch Changes
+
+- [#288](https://github.com/ohosvscode/arkTS/pull/288) [`29850de`](https://github.com/ohosvscode/arkTS/commit/29850de5bd6ed27c576ff12a74576635fbcb846d) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix when goto extension's .d.ts/.d.ets files using to internal arkts language server
+
 ## 1.3.3
 
 ### Patch Changes
