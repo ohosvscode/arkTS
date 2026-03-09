@@ -1,5 +1,14 @@
 # @arkts/language-service
 
+## 1.3.3
+
+### Patch Changes
+
+- [#280](https://github.com/ohosvscode/arkTS/pull/280) [`83af946`](https://github.com/ohosvscode/arkTS/commit/83af94609ec51eb32bf78a2be4332cf3591e8038) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: #271
+
+- Updated dependencies [[`83af946`](https://github.com/ohosvscode/arkTS/commit/83af94609ec51eb32bf78a2be4332cf3591e8038)]:
+  - @arkts/shared@1.3.3
+
 ## 1.2.12
 
 ### Patch Changes
