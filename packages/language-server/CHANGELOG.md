@@ -1,5 +1,11 @@
 # @arkts/language-server
 
+## 1.3.4
+
+### Patch Changes
+
+- [#284](https://github.com/ohosvscode/arkTS/pull/284) [`5afcb04`](https://github.com/ohosvscode/arkTS/commit/5afcb047fa50d6206e6777c7b84dc33c2f2273fa) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: update deps to fix error
+
 ## 1.3.3
 
 ### Patch Changes
