@@ -55,7 +55,8 @@
     "release": "pnpm publish"
   },
   "dependencies": {
-    "@arkts/project-detector": "catalog:prod"
+    "@arkts/project-detector": "catalog:prod",
+    "@ohos-rs/oxk": "catalog:prod"
   },
   "devDependencies": {
     "@arkts/language-plugin": "workspace:*",
