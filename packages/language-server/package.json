@@ -55,11 +55,11 @@
     "release": "pnpm publish"
   },
   "dependencies": {
-    "@arkts/language-service": "workspace:*",
     "@arkts/project-detector": "catalog:prod"
   },
   "devDependencies": {
     "@arkts/language-plugin": "workspace:*",
+    "@arkts/language-service": "workspace:*",
     "@arkts/shared": "workspace:*",
     "@types/vscode": "catalog:types",
     "@volar/language-core": "catalog:prod",
