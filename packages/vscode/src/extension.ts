@@ -34,13 +34,18 @@ class ArkTSExtension extends VSCodeBootstrap<Promise<LabsInfo | undefined>> {
     await this.createClass(ExtensionLogger, ExtensionLogger).resolve()
     const languageServer = this.getGlobalContainer().findOne(EtsLanguageServer) as IClassWrapper<typeof EtsLanguageServer> | undefined
     const runResult = await languageServer?.getClassExecutor().execute({ methodName: 'run', arguments: [] })
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => this.autoSetLanguage(document, languageServer?.getInstance())))
-    vscode.workspace.textDocuments.forEach(document => this.autoSetLanguage(document, languageServer?.getInstance()))
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => this.autoSetLanguage(document, context, languageServer?.getInstance())))
+    vscode.workspace.textDocuments.forEach(document => this.autoSetLanguage(document, context, languageServer?.getInstance()))
     if (runResult?.type === 'result') return await runResult.value
   }
 
-  private async autoSetLanguage(document: vscode.TextDocument, languageServer?: EtsLanguageServer | null): Promise<vscode.TextDocument | void> {
+  private async autoSetLanguage(document: vscode.TextDocument, context: ExtensionContext, languageServer?: EtsLanguageServer | null): Promise<vscode.TextDocument | void> {
     if (document.fileName.endsWith('.json5')) return vscode.languages.setTextDocumentLanguage(document, 'jsonc')
+    // For SDK files, set the language to ets
+    if (document.uri.toString().startsWith(vscode.Uri.joinPath(context.extensionUri, 'dist', 'lib').toString()) && (document.fileName.endsWith('.d.ts') || document.fileName.endsWith('.d.ets'))) {
+      vscode.languages.setTextDocumentLanguage(document, 'ets')
+      return
+    }
     const clientOptions = await languageServer?.getClientOptions()
     if (typeof clientOptions?.initializationOptions?.ets?.sdkPath !== 'string' || !clientOptions?.initializationOptions?.ets?.sdkPath) return
     if (document.fileName.endsWith('.d.ts') && document.fileName.startsWith(clientOptions?.initializationOptions?.ets?.sdkPath)) vscode.languages.setTextDocumentLanguage(document, 'ets')
