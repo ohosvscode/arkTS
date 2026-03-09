@@ -31,7 +31,7 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
   async getConnectedDevices(): Promise<HdcManagerConnectionProtocol.ServerFunction.GetConnectedDevices.Response> {
     const hdcPath = await this.getHdcPath()
     if (!hdcPath) return { devices: [] }
-    const output = child_process.execSync(`${hdcPath} list targets`, { encoding: 'utf-8' }).trim()
+    const output = child_process.execFileSync(hdcPath, ['list', 'targets'], { encoding: 'utf-8' }).trim()
     if (output === '[Empty]') return { devices: [] }
 
     const devices: HdcManagerConnectionProtocol.ServerFunction.GetConnectedDevices.Device[] = []
@@ -47,8 +47,9 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
   async getDeviceInfo(connectKey: string): Promise<HdcManagerConnectionProtocol.ServerFunction.GetDeviceInfo.Response> {
     const hdcPath = await this.getHdcPath()
     if (!hdcPath) return HdcManagerConnectionProtocol.ServerFunction.GetDeviceInfo.defaultResponse
-    const output = child_process.execSync(
-      `${hdcPath} -t ${connectKey} shell "top -n 1 -b" 2>/dev/null | awk 'BEGIN{cached_kb=0} /Mem:/{if($2~/^[0-9]+[MK]$/){t=$2;u=$4;f=$6}else{t=$3;u=$5;f=$7} mem_total=t+0;mem_used=u+0;mem_free=f+0; if(t~/M$/){mem_total*=1024;mem_used*=1024;mem_free*=1024}} /Swap:/{for(i=2;i<NF;i++)if($(i+1)=="cached"){c=$i;cached_kb=c+0;if(c~/M$/)cached_kb*=1024;break}} /%cpu/&&/%user/{split($1,a,"%");total_cpu=a[1]+0;user=0+substr($2,1,index($2,"%")-1);nice=0+substr($3,1,index($3,"%")-1);sys=0+substr($4,1,index($4,"%")-1);idle=0+substr($5,1,index($5,"%")-1);cpu_used_pct=(total_cpu>0)?(user+nice+sys)/total_cpu*100:0} END{real_used=mem_total-mem_free-cached_kb;if(real_used<0)real_used=0;mem_pct=(mem_total>0)?real_used/mem_total*100:0;idle_pct=(total_cpu>0)?idle/total_cpu*100:0; printf "%d %d %d %.2f %.2f %.2f", mem_total, mem_used, mem_free, mem_pct, cpu_used_pct, idle_pct}'`,
+    const output = child_process.execFileSync(
+      hdcPath,
+      ['-t', connectKey, 'shell', '"top -n 1 -b" 2>/dev/null | awk \'BEGIN{cached_kb=0} /Mem:/{if($2~/^[0-9]+[MK]$/){t=$2;u=$4;f=$6}else{t=$3;u=$5;f=$7} mem_total=t+0;mem_used=u+0;mem_free=f+0; if(t~/M$/){mem_total*=1024;mem_used*=1024;mem_free*=1024}} /Swap:/{for(i=2;i<NF;i++)if($(i+1)=="cached"){c=$i;cached_kb=c+0;if(c~/M$/)cached_kb*=1024;break}} /%cpu/&&/%user/{split($1,a,"%");total_cpu=a[1]+0;user=0+substr($2,1,index($2,"%")-1);nice=0+substr($3,1,index($3,"%")-1);sys=0+substr($4,1,index($4,"%")-1);idle=0+substr($5,1,index($5,"%")-1);cpu_used_pct=(total_cpu>0)?(user+nice+sys)/total_cpu*100:0} END{real_used=mem_total-mem_free-cached_kb;if(real_used<0)real_used=0;mem_pct=(mem_total>0)?real_used/mem_total*100:0;idle_pct=(total_cpu>0)?idle/total_cpu*100:0; printf "%d %d %d %.2f %.2f %.2f", mem_total, mem_used, mem_free, mem_pct, cpu_used_pct, idle_pct}'],
       { encoding: 'utf-8' },
     )
       .trim()

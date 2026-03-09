@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { createImageManager, ImageManager } from '@arkts/image-manager'
 import axios from 'axios'
 import { Autowired, Service } from 'unioc'
@@ -28,7 +29,7 @@ export class HdcManager implements Command {
   private async getHdcPathFromConfiguration(): Promise<string | null> {
     const sdkPath = await this.sdkManager.getAnalyzedSdkPath(this.sdkVersionGuesser)
     if (!sdkPath) return null
-    const hdcPath = vscode.Uri.joinPath(vscode.Uri.file(sdkPath), 'toolchains', 'hdc')
+    const hdcPath = vscode.Uri.joinPath(vscode.Uri.file(sdkPath), 'toolchains', process.platform === 'win32' ? 'hdc.exe' : 'hdc')
     const hdcExists = await vscode.workspace.fs.stat(hdcPath).then(
       stat => stat.type === vscode.FileType.File,
       () => false,
