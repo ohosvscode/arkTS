@@ -920,9 +920,6 @@ importers:
 
   packages/language-server:
     dependencies:
-      '@arkts/language-service':
-        specifier: workspace:*
-        version: link:../language-service
       '@arkts/project-detector':
         specifier: catalog:prod
         version: 1.1.3-alpha.29
@@ -930,6 +927,9 @@ importers:
       '@arkts/language-plugin':
         specifier: workspace:*
         version: link:../language-plugin
+      '@arkts/language-service':
+        specifier: workspace:*
+        version: link:../language-service
       '@arkts/shared':
         specifier: workspace:*
         version: link:../shared
