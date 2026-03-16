@@ -5,5 +5,7 @@ export interface EtsServerClientOptions {
   ets?: {
     /** The currently ohos sdk path. If not exists the lsp will not work. */
     sdkPath: string | undefined
+    /** The currently hms sdk path. If not exists the lsp will not work. */
+    hmsPath: string | undefined
   }
 }
