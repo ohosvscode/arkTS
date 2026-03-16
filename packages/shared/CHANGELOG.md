@@ -1,5 +1,11 @@
 # @arkts/shared
 
+## 1.3.8
+
+### Patch Changes
+
+- [#296](https://github.com/ohosvscode/arkTS/pull/296) [`12c9365`](https://github.com/ohosvscode/arkTS/commit/12c9365dc11003097c152dfd1e1a6360247ed248) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix hms detect in language server, get ets.hmsPath from vscode settings and add ets.hmsPath to initialize options
+
 ## 1.3.3
 
 ### Patch Changes

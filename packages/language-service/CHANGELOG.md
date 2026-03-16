@@ -1,5 +1,12 @@
 # @arkts/language-service
 
+## 1.3.8
+
+### Patch Changes
+
+- Updated dependencies [[`12c9365`](https://github.com/ohosvscode/arkTS/commit/12c9365dc11003097c152dfd1e1a6360247ed248)]:
+  - @arkts/shared@1.3.8
+
 ## 1.3.3
 
 ### Patch Changes
