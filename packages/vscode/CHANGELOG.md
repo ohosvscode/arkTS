@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.3.7
+
+### Patch Changes
+
+- [#294](https://github.com/ohosvscode/arkTS/pull/294) [`de5f192`](https://github.com/ohosvscode/arkTS/commit/de5f1928a9ac030e9dded25e0cc65dbd46afa3ae) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix CI, mistakenly packaging the macOS arm64 binary binding into the macOS x64 architecture vsix
+
 ## 1.3.6
 
 ### Patch Changes
