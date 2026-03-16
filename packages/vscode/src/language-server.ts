@@ -137,6 +137,8 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
       throw new Error(this.translator.t('sdk.error.validSdkPath'))
     }
 
+    const hmsPath = await this.sdkManager.getAnalyzedHmsSdkPath().then(uri => uri?.fsPath)
+
     return {
       documentSelector: [
         { language: 'ets' },
@@ -146,7 +148,7 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
       outputChannel: this.getOutputChannel(),
       initializationOptions: {
         debug: vscode.workspace.getConfiguration('ets').get<boolean>('lspDebugMode'),
-        ets: { sdkPath },
+        ets: { sdkPath, hmsPath },
       } satisfies EtsServerClientOptions,
       synchronize: {
         fileEvents: [

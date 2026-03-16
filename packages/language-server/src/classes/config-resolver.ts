@@ -52,9 +52,9 @@ export class ConfigResolver {
   }
 
   getHmsSdkPath(): string | undefined {
-    return this.params.initializationOptions?.ets?.hmsSdkPath
-      ? path.resolve(this.params.initializationOptions?.ets?.hmsSdkPath)
-      : this.params.initializationOptions?.ets?.hmsSdkPath
+    return this.params.initializationOptions?.ets?.hmsPath
+      ? path.resolve(this.params.initializationOptions?.ets?.hmsPath)
+      : this.params.initializationOptions?.ets?.hmsPath
   }
 
   getEtsLoaderPath(): string {
@@ -137,28 +137,36 @@ export class ConfigResolver {
   }
 
   private async hmsToTypeScriptCompilerOptionsPaths(): Promise<import('typescript').MapLike<string[]>> {
-    const hmsSdkPath = this.getHmsSdkPath()
-    if (!hmsSdkPath) return {}
-    const hmsApiFolder = Utils.joinPath(URI.file(hmsSdkPath), 'api')
-    const hmsKitsFolder = Utils.joinPath(URI.file(hmsSdkPath), 'kits')
-    if (!hmsApiFolder || !hmsKitsFolder) return {}
+    try {
+      const hmsSdkPath = this.getHmsSdkPath()
+      if (!hmsSdkPath) return {}
+      const hmsApiFolder = Utils.joinPath(URI.file(hmsSdkPath), 'ets', 'api')
+      const hmsKitsFolder = Utils.joinPath(URI.file(hmsSdkPath), 'ets', 'kits')
+      if (!hmsApiFolder || !hmsKitsFolder) return {}
 
-    const paths: import('typescript').MapLike<string[]> = {}
-    const apiFiles = await this.fs.readDirectory(hmsApiFolder)
-    const kitsFiles = await this.fs.readDirectory(hmsKitsFolder)
-    for (const [fileNameWithExtension, fileType] of apiFiles) {
-      if (fileType !== FileType.File) continue
-      const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-      paths[fileName] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
-      paths[`${fileName}/*`] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
+      const paths: import('typescript').MapLike<string[]> = {}
+      const apiFiles = await this.fs.readDirectory(hmsApiFolder)
+      const kitsFiles = await this.fs.readDirectory(hmsKitsFolder)
+      for (const [fileNameWithExtension, fileType] of apiFiles) {
+        if (fileType !== FileType.File) continue
+        const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
+        paths[fileName] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
+        paths[`${fileName}/*`] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
+      }
+      for (const [fileNameWithExtension, fileType] of kitsFiles) {
+        if (fileType !== FileType.File) continue
+        const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
+        paths[fileName] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
+        paths[`${fileName}/*`] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
+      }
+      return paths
     }
-    for (const [fileNameWithExtension, fileType] of kitsFiles) {
-      if (fileType !== FileType.File) continue
-      const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-      paths[fileName] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
-      paths[`${fileName}/*`] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
+    catch (error) {
+      this.logger.getConsola().error(`Failed to detect ets.hmsPath, please check the ets.hmsPath in the initialization options: ${error}`)
+      if (error instanceof Error) this.logger.getConsola().error(error.stack)
+      this.connection.window.showErrorMessage(`Failed to detect ets.hmsPath, please check the ets.hmsPath in the initialization options.`)
+      return {}
     }
-    return paths
   }
 
   async getPaths(): Promise<ets.MapLike<string[]>> {
