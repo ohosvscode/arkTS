@@ -1,10 +1,32 @@
-import type { Arrayable } from '@vueuse/core'
+import type { Arrayable } from '@vstils/core'
 import type { ProtocolContext } from '../../context/protocol-context'
 import type { WebviewContext } from '../../context/webview-context'
-import type { ParsedIfconfig } from '../utils/parse-ifconfig'
 
 export namespace HdcManagerConnectionProtocol {
-  export interface ClientFunction extends WebviewContext.ClientFunction {}
+  export interface ClientFunction extends WebviewContext.ClientFunction {
+    /**
+     * Refresh the layouts.
+     */
+    onRefreshLayouts(): Promise<void>
+    /**
+     * Collapse all layouts.
+     */
+    onCollapseAllLayouts(): Promise<void>
+    /**
+     * Expand all layouts.
+     */
+    onExpandAllLayouts(): Promise<void>
+    /**
+     * Set current application view type.
+     *
+     * @param viewType The view type to set.
+     */
+    setApplicationViewType(viewType: ClientFunction.ApplicationViewType): Promise<void>
+  }
+
+  export namespace ClientFunction {
+    export type ApplicationViewType = 'grid' | 'list'
+  }
 
   export interface ServerFunction extends ProtocolContext<ClientFunction, ServerFunction> {
     /**
@@ -18,14 +40,7 @@ export namespace HdcManagerConnectionProtocol {
     /**
      * Get the list of connected devices.
      */
-    getConnectedDevices(): Promise<ServerFunction.GetConnectedDevices.Response>
-    /**
-     * Get the information of the device.
-     *
-     * @param connectKey The connect key of the device.
-     * @returns The information of the device.
-     */
-    getDeviceInfo(connectKey: string): Promise<ServerFunction.GetDeviceInfo.Response>
+    getConnectedDevices(): Promise<string[]>
     /**
      * Set the log level of the hilog.
      *
@@ -33,6 +48,28 @@ export namespace HdcManagerConnectionProtocol {
      * @param connectKey The connect key of the device.
      */
     setLogLevel(logLevel: Arrayable<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>, connectKey: string): Promise<void>
+    /**
+     * Get the list of applications.
+     *
+     * @param connectKey The connect key of the device.
+     * @returns The list of applications.
+     */
+    getApplications(connectKey: string): Promise<ServerFunction.GetApplications.Response>
+    /**
+     * Get the information of the remote application.
+     *
+     * @param pkgName The package name of the application.
+     * @returns The information of the remote application.
+     */
+    getRemoteApplicationInfo(pkgName: string): Promise<ServerFunction.GetRemoteApplicationInfo.Response>
+    /**
+     * Start the ability.
+     *
+     * @param connectKey The connect key of the device.
+     * @param bundleName The bundle name of the application.
+     * @param abilityName The ability name of the application.
+     */
+    startAbility(connectKey: string, bundleName: string, abilityName: string): Promise<void>
     /**
      * Open the hilog.
      */
@@ -47,96 +84,188 @@ export namespace HdcManagerConnectionProtocol {
      * @param connectKey The connect key of the device.
      */
     disconnectDevice(connectKey: string): Promise<void>
+    /**
+     * Get the processes information of the device.
+     *
+     * @param connectKey The connect key of the device.
+     * @returns The processes information of the device.
+     */
+    getProcesses(connectKey: string): Promise<ServerFunction.GetProcesses.Response>
+    /**
+     * Capture the screen of the device.
+     *
+     * @param connectKey The connect key of the device.
+     * @returns The screenshot of the device.
+     */
+    captureScreenAndOpenPreviewer(connectKey: string): Promise<ServerFunction.CaptureScreenAndOpenPreviewer.Response>
+    /**
+     * Set the current tab.
+     *
+     * @param tab The tab to set.
+     */
+    setCurrentTab(tab: ServerFunction.SetCurrentTab.Tab): Promise<void>
   }
 
   export namespace ServerFunction {
-    export namespace GetConnectedDevices {
-      export interface Device {
-        /**
-         * The unique key to connect to the device.
-         *
-         * @example '127.0.0.1:5555'
-         */
-        connectKey: string
-      }
-
-      export interface Response {
-        /**
-         * The list of connected devices.
-         */
-        devices: Device[]
-      }
-    }
-
-    export namespace GetDeviceInfo {
-      export interface Response {
-        /** @example 50 */
-        cpuUsage: number
-        /** @example 50 */
-        memoryUsage: number
-        /** Storage usage percentage (0–100) of root partition. @example 65.5 */
-        storageUsage: number
-        /** @example '22' */
-        apiVersion: string
-        /** @example 'arm64-v8a' */
-        cpuAbilist: string
-        /** @example 'MIA-AL00' */
-        model: string
-        /** @example 'HUAWEI' */
-        brand: string
-        /** @example 'HarmonyOS' */
-        osDistName: string
-        /** @example 'Nova 14 Pro' */
-        productName: string
+    export namespace GetApplications {
+      export interface Application {
+        /** @example 'com.example.app' */
+        bundleName: string
         /** @example '1.0.0' */
-        incrementalVersion: string
-        /** @example 'OpenHarmony-6.0.2.130' */
-        fullName: string
-        /** @example 100 */
-        batteryCapacity: number
-        /** @example 3.7 */
-        batteryVoltage: number
-        /** @example 250 */
-        batteryTemperature: number
-        /** @example 1 */
-        batteryNowCurrent: number
-        /** @example 1000 */
-        batteryTotalEnergy: number
-        /** @example 1000 */
-        batteryRemainingEnergy: number
-        /** @example 1000 */
-        batteryRemainingChargeTime: number
-        /** @example 0 | 1 */
-        batteryStatus: 0 | 1
-        /** @example 'Li-ion' | 'Li-poly' */
-        batteryTechnology: string
-        /** Ifconfig. */
-        network: ParsedIfconfig[]
+        versionName?: string
+        /** The install timestamp of the app. */
+        installTime?: number
+        /** @example 'entry' */
+        mainEntry?: string
+        /** @example 'EntryAbility' */
+        mainAbility?: string
+        /** @example 'com.example.app' */
+        vendor?: string
+        /** @example '50000012' */
+        apiTargetVersion?: string
+        /** @example 'Release' */
+        releaseType?: string
+      }
+
+      export interface Response {
+        applications: Application[]
       }
 
       export const defaultResponse: Response = {
-        cpuUsage: 0,
-        memoryUsage: 0,
-        storageUsage: 0,
-        apiVersion: '',
-        cpuAbilist: '',
-        model: '',
-        brand: '',
-        osDistName: '',
-        productName: '',
-        incrementalVersion: '',
-        fullName: '',
-        batteryCapacity: 0,
-        batteryVoltage: 0,
-        batteryTemperature: 0,
-        batteryNowCurrent: 0,
-        batteryTotalEnergy: 0,
-        batteryRemainingEnergy: 0,
-        batteryRemainingChargeTime: 0,
-        batteryTechnology: '',
-        batteryStatus: 0,
-        network: [],
+        applications: [],
       }
+    }
+
+    export namespace GetRemoteApplicationInfo {
+      export interface Response {
+        /** @example 'Example App' */
+        name?: string
+        /** @example 'https://example.com/icon.png' */
+        icon?: string
+        /** @example 'Description of the app' */
+        description?: string
+        /** @example 'Developer Name' */
+        developerName?: string
+        /** @example 'System App' */
+        kindName?: string
+        /** @example 'System' */
+        kindTypeName?: string
+      }
+    }
+
+    export namespace GetProcesses {
+      export interface Task {
+        total: number
+        running: number
+        sleeping: number
+        stopped: number
+        zombie: number
+      }
+
+      export interface Process {
+        pid: number
+        user: string
+        priority: number
+        nice: number
+        virt: string
+        res: string
+        shr: string
+        status: string
+        cpu: number
+        mem: number
+        time: string
+        command: string
+      }
+
+      export interface Memory {
+        total: number
+        used: number
+        free: number
+        buffers: number
+      }
+
+      export interface Swap {
+        total: number
+        used: number
+        free: number
+        cached: number
+      }
+
+      export interface CPU {
+        total: number
+        user: number
+        system: number
+        idle: number
+        ioWait: number
+        irq: number
+        softIrq: number
+        host: number
+      }
+
+      export interface Response {
+        processes: Process[]
+        memory: Memory
+        swap: Swap
+        cpu: CPU
+        tasks: Task
+      }
+
+      export const defaultTask: Task = {
+        total: 0,
+        running: 0,
+        sleeping: 0,
+        stopped: 0,
+        zombie: 0,
+      }
+
+      export const defaultMemory: Memory = {
+        total: 0,
+        used: 0,
+        free: 0,
+        buffers: 0,
+      }
+
+      export const defaultSwap: Swap = {
+        total: 0,
+        used: 0,
+        free: 0,
+        cached: 0,
+      }
+
+      export const defaultCPU: CPU = {
+        total: 0,
+        user: 0,
+        system: 0,
+        idle: 0,
+        ioWait: 0,
+        irq: 0,
+        softIrq: 0,
+        host: 0,
+      }
+
+      export const defaultResponse: Response = {
+        processes: [],
+        memory: defaultMemory,
+        swap: defaultSwap,
+        cpu: defaultCPU,
+        tasks: defaultTask,
+      }
+    }
+
+    export namespace CaptureScreenAndOpenPreviewer {
+      export interface Response {
+        attributes: Record<string, any>
+        children: Response[]
+      }
+
+      export const defaultResponse: Response = {
+        attributes: {},
+        children: [],
+      }
+    }
+
+    export namespace SetCurrentTab {
+      export type Tab = 'overview' | 'application' | 'processes' | 'layouts'
     }
   }
 }

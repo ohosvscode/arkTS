@@ -1,6 +1,8 @@
+import type { Client } from 'hdckit'
 import process from 'node:process'
 import { createImageManager, ImageManager } from '@arkts/image-manager'
 import axios from 'axios'
+import Hdc from 'hdckit'
 import { Autowired, Service } from 'unioc'
 import { Command, ExtensionContext, Translator } from 'unioc/vscode'
 import unzipper from 'unzipper'
@@ -10,8 +12,6 @@ import { createVSCodeFileSystem } from 'vscode-fs/vscode'
 import which from 'which'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
-
-const GLOBAL_STATE_KEY_CURRENT_CONNECT = 'ets.hdc.currentConnectKey'
 
 export type CurrentConnectKey = |
   string // 已选择设备
@@ -25,6 +25,7 @@ export class HdcManager implements Command {
   @Autowired(Translator) private readonly translator: Translator
   @Autowired(ExtensionContext) private readonly extensionContext: vscode.ExtensionContext
   @Autowired private readonly sdkVersionGuesser: SdkVersionGuesser
+  private readonly GLOBAL_STATE_KEY_CURRENT_CONNECT = 'ets.hdc.currentConnectKey'
 
   private async getHdcPathFromConfiguration(): Promise<string | null> {
     const sdkPath = await this.sdkManager.getAnalyzedSdkPath(this.sdkVersionGuesser)
@@ -49,12 +50,12 @@ export class HdcManager implements Command {
   setCurrentConnectKey(connectKey: CurrentConnectKey): void {
     this.currentConnectKey = connectKey
     const stored: string | number | undefined = connectKey === 0 ? '0' : connectKey
-    void this.extensionContext.globalState.update(GLOBAL_STATE_KEY_CURRENT_CONNECT, stored)
+    this.extensionContext.globalState.update(this.GLOBAL_STATE_KEY_CURRENT_CONNECT, stored)
   }
 
   getCurrentConnectKey(): CurrentConnectKey {
     if (this.currentConnectKey !== 0) return this.currentConnectKey
-    const stored = this.extensionContext.globalState.get<CurrentConnectKey>(GLOBAL_STATE_KEY_CURRENT_CONNECT)
+    const stored = this.extensionContext.globalState.get<CurrentConnectKey>(this.GLOBAL_STATE_KEY_CURRENT_CONNECT)
     if (stored === undefined || stored === '0') return 0
     if (stored === -1) return -1
     this.currentConnectKey = stored
@@ -91,6 +92,19 @@ export class HdcManager implements Command {
         isAxiosError: axios.isAxiosError as any,
       },
     })
+  }
+
+  private _hdcClient: Client | undefined = undefined
+
+  async getHdcClient(): Promise<Client | undefined> {
+    const hdcPath = await this.getHdcPath()
+    if (!hdcPath) return
+    if (this._hdcClient) {
+      this._hdcClient.options.bin = hdcPath
+      return this._hdcClient
+    }
+    this._hdcClient = Hdc.createClient({ bin: hdcPath })
+    return this._hdcClient
   }
 
   onExecuteCommand(): void {

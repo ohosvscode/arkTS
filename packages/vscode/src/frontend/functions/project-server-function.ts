@@ -3,7 +3,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { effect, signal } from 'alien-signals'
 import axios, { AxiosError } from 'axios'
-import { BirpcReturn } from 'birpc'
 import { unzip, Unzipped } from 'fflate'
 import hbs from 'handlebars'
 import { nanoid } from 'nanoid'
@@ -11,7 +10,7 @@ import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { ProtocolContext } from '../../context/protocol-context'
-import { WebviewPanelContext } from '../../context/webview-panel-context'
+import { InitialCallbackEvent } from '../../context/webview-context'
 import { ProjectConnectionProtocol } from '../interfaces/project-connection-protocol'
 
 hbs.registerHelper('equal', (a: number | string, b: number | string) => Number(a) === Number(b) || String(a) === String(b))
@@ -89,12 +88,12 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
     return dialogId
   }
 
-  onRpcInitialized(rpc: BirpcReturn<ProjectConnectionProtocol.ClientFunction, ProjectConnectionProtocol.ServerFunction>, context: WebviewPanelContext<ProjectConnectionProtocol.ClientFunction, ProjectConnectionProtocol.ServerFunction>): void {
-    super.onRpcInitialized(rpc, context)
+  onRpcInitialized(ctx: InitialCallbackEvent<ProjectConnectionProtocol.ClientFunction, ProjectConnectionProtocol.ServerFunction>): void {
+    super.onRpcInitialized(ctx)
     effect(() => {
       const [dialogId, openDialog] = ProjectServerFunctionImpl.openDialog() ?? []
       if (!dialogId) return
-      openDialog?.then(uri => rpc.onOpenDialog(dialogId, uri?.map(u => u.fsPath)))
+      openDialog?.then(uri => ctx.connection.onOpenDialog(dialogId, uri?.map(u => u.fsPath)))
     })
   }
 

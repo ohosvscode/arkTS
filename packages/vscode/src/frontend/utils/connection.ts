@@ -29,16 +29,37 @@ export function createConnection<RemoteFunctions = Record<string, never>, LocalF
     },
   })
 
+  // eslint-disable-next-line ts/ban-ts-comment
+  // @ts-expect-error
+  globalThis.isCalledOnMounted = false
+
+  onMounted(() => {
+    // eslint-disable-next-line ts/ban-ts-comment
+    // @ts-expect-error
+    if (globalThis.isCalledOnMounted) connection?.onMounted?.()
+    // eslint-disable-next-line ts/ban-ts-comment
+    // @ts-expect-error
+    globalThis.isCalledOnMounted = true
+  })
+
   return {
     connection,
     onDidChangeActiveColorTheme,
   }
 }
 
-export function useConnection(router: Router = useRouter()): ReturnType<typeof useProjectConnection> | ReturnType<typeof useHdcConnection> | ReturnType<typeof useDeviceManagerConnection> | ReturnType<typeof useQualifierEditorConnection> | undefined {
+export type ConnectionCollection = |
+  ReturnType<typeof useProjectConnection>
+  | ReturnType<typeof useHdcConnection>
+  | ReturnType<typeof useDeviceManagerConnection>
+  | ReturnType<typeof useQualifierEditorConnection>
+  | ReturnType<typeof useSnapshotPreviewerConnection>
+
+export function useConnection(router: Router = useRouter()): ConnectionCollection | undefined {
   if (router.currentRoute.value.path.startsWith('/project')) return useProjectConnection()
   else if (router.currentRoute.value.path.startsWith('/hdc-manager')) return useHdcConnection()
   else if (router.currentRoute.value.path.startsWith('/device-manager')) return useDeviceManagerConnection()
   else if (router.currentRoute.value.path.startsWith('/qualifier-editor')) return useQualifierEditorConnection()
+  else if (router.currentRoute.value.path.startsWith('/snapshot-previewer')) return useSnapshotPreviewerConnection()
   else return undefined
 }

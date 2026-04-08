@@ -5,7 +5,7 @@ import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { FileSystemContext } from '../../context/file-system-context'
 import { ProtocolContext } from '../../context/protocol-context'
-import { WebviewContext } from '../../context/webview-context'
+import { InitialCallbackEvent } from '../../context/webview-context'
 import { ConfigKey } from '../../generated/meta'
 import { HdcManager } from '../../hdc-manager'
 import { DeviceManagerProtocol } from '../interfaces/device-manager-protocol'
@@ -19,25 +19,25 @@ export class DeviceManagerFunctionImpl extends ProtocolContext<DeviceManagerProt
 
   private connection: BirpcReturn<DeviceManagerProtocol.ClientFunction, DeviceManagerProtocol.ServerFunction>
 
-  onRpcInitialized(connection: BirpcReturn<DeviceManagerProtocol.ClientFunction, DeviceManagerProtocol.ServerFunction>, context: WebviewContext<DeviceManagerProtocol.ClientFunction, DeviceManagerProtocol.ServerFunction>): void {
-    super.onRpcInitialized(connection, context)
+  onRpcInitialized(ctx: InitialCallbackEvent<DeviceManagerProtocol.ClientFunction, DeviceManagerProtocol.ServerFunction>): void {
+    super.onRpcInitialized(ctx)
     this.extensionContext.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration(async (e) => {
         if (e.affectsConfiguration('ets.localImagePath' satisfies ConfigKey)) {
-          connection.onDidChangeLocalImagePath(
+          ctx.connection.onDidChangeLocalImagePath(
             await this.getLocalImagePath(),
             await this.isValidLocalImagePath(await this.getLocalImagePath()),
           )
         }
         else if (e.affectsConfiguration('ets.deployedEmulatorPath' satisfies ConfigKey)) {
-          connection.onDidChangeDeployedEmulatorPath(
+          ctx.connection.onDidChangeDeployedEmulatorPath(
             await this.getDeployedEmulatorPath(),
             await this.isValidDeployedEmulatorPath(await this.getDeployedEmulatorPath()),
           )
         }
       }),
     )
-    this.connection = connection
+    this.connection = ctx.connection
   }
 
   async getConfigByLocalImage(imagePath: Image.RelativePath, deviceType: EmulatorFile.DeviceType): Promise<DeviceManagerProtocol.ServerFunction.GetConfigByLocalImage.Response> {

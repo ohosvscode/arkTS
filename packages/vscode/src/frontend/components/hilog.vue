@@ -1,15 +1,6 @@
 <script setup lang="ts">
-const { deviceInfoLoading, currentDevice } = defineProps<{
-  deviceInfoLoading: boolean
-  currentDevice: string | undefined
-}>()
-
-const emit = defineEmits<{
-  (e: 'openHilog'): void
-}>()
-
+const currentDevice = inject<Ref<string | undefined>>('currentDevice')
 const loading = ref(false)
-const complexLoading = computed(() => deviceInfoLoading || loading.value)
 const hilogLevel = shallowRef<Array<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>>(['DEBUG'])
 const hilogPackageName = shallowRef<string | undefined>(undefined)
 const hilogProcessId = shallowRef<number | undefined>(undefined)
@@ -17,9 +8,9 @@ const { connection } = useHdcConnection()
 
 watch([hilogLevel, hilogPackageName, hilogProcessId], ([newHilogLevel], [oldHilogLevel]) => {
   try {
-    if (!currentDevice) return
+    if (!currentDevice?.value) return
     loading.value = true
-    if (newHilogLevel !== oldHilogLevel) connection.setLogLevel?.(hilogLevel.value, currentDevice)
+    if (newHilogLevel !== oldHilogLevel) connection.setLogLevel?.(hilogLevel.value, currentDevice.value)
   }
   finally {
     loading.value = false
@@ -28,12 +19,12 @@ watch([hilogLevel, hilogPackageName, hilogProcessId], ([newHilogLevel], [oldHilo
 </script>
 
 <template>
-  <NSpin size="small" :show="complexLoading">
+  <NSpin size="small" :show="loading">
     <NCard class="w-full! mb-10px" size="small" content-class="p-1! px-2! flex items-center flex-wrap gap-2">
       <div class="text-nowrap">
         Hilog
       </div>
-      <NButton size="tiny" type="primary" @click="emit('openHilog')">
+      <NButton size="tiny" type="primary" @click="connection?.openHilog?.()">
         打开
       </NButton>
       <NSelect

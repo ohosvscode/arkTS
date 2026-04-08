@@ -1,10 +1,15 @@
 import path from 'node:path'
 import ts from 'typescript'
-import { expect, it } from 'vitest'
+import { expect, it } from 'vite-plus/test'
 import { createFSBackedSystem, createVirtualTypeScriptEnvironment } from '../src'
 
 it('can use a FS backed system ', () => {
-  const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }
+  const compilerOpts: ts.CompilerOptions = {
+    target: ts.ScriptTarget.ES2022,
+    module: ts.ModuleKind.ES2022,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+    esModuleInterop: true,
+  }
   const fsMap = new Map<string, string>()
 
   const content = `/// <reference types="node" />\nimport * as path from 'path';\npath.`
@@ -60,11 +65,17 @@ it('can import files in the virtual fs', () => {
 }, 10000)
 
 it('searches node_modules/@types', () => {
-  const compilerOpts: ts.CompilerOptions = { target: ts.ScriptTarget.ES2016, esModuleInterop: true }
+  const compilerOpts: ts.CompilerOptions = {
+    target: ts.ScriptTarget.ES2016,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Bundler,
+    esModuleInterop: true,
+    types: ['vite-plus/test/globals'],
+  }
   const monorepoRoot = path.join(__dirname, '..', '..', '..')
 
   const fsMap = new Map<string, string>()
-  fsMap.set('index.ts', '/// <reference types="vitest/globals" />\nit(\'found @types/vitest\', () => undefined)')
+  fsMap.set('index.ts', '/// <reference types="vite-plus/test/globals" />\nit(\'found vite-plus/test/globals\', () => undefined)')
 
   const system = createFSBackedSystem(fsMap, monorepoRoot, ts)
   const env = createVirtualTypeScriptEnvironment(system, ['index.ts'], ts, compilerOpts)

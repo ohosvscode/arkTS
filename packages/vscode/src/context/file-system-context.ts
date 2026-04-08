@@ -1,7 +1,7 @@
+import { retry, timeout } from '@vstils/core'
 import { Service } from 'unioc'
 import * as vscode from 'vscode'
 import { FileSystemException } from '../errors/file-system-exception'
-import { retry, timeout } from '../utils'
 
 @Service
 export class FileSystemContext {

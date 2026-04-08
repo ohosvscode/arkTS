@@ -1,6 +1,10 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
+  staged: {
+    '*': 'eslint --fix',
+  },
+
   test: {
     projects: [
       'packages/*',
@@ -9,9 +13,11 @@ export default defineConfig({
         test: {
           include: ['e2e/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
           name: 'e2e',
+          globals: true,
         },
       },
     ],
+    globals: true,
     exclude: [
       '**/node_modules/**',
       '**/dist/**',

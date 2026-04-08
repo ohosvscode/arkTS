@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 import { ProjectConnectionProtocol } from '../src/frontend/interfaces/project-connection-protocol'
 import projectMock from './project-mock.json'
 

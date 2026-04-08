@@ -1,5 +1,5 @@
 import ts from 'typescript'
-import { describe, expect, it, vi as jest } from 'vitest'
+import { describe, expect, it, vi } from 'vite-plus/test'
 import {
   createDefaultMapFromCDN,
   createDefaultMapFromNodeModules,
@@ -101,9 +101,9 @@ it('emits new files to the fsMap', () => {
 })
 
 it('creates a map from the CDN without cache', async () => {
-  const fetcher = jest.fn()
+  const fetcher = vi.fn()
   fetcher.mockResolvedValue({ text: () => Promise.resolve('// Contents of file') })
-  const store = jest.fn() as any
+  const store = vi.fn() as any
 
   const compilerOpts = { target: ts.ScriptTarget.ES5 }
   const libs = knownLibFilesForCompilerOptions(compilerOpts, ts)
@@ -118,12 +118,12 @@ it('creates a map from the CDN without cache', async () => {
 })
 
 it('creates a map from the CDN and stores it in local storage cache', async () => {
-  const fetcher = jest.fn()
+  const fetcher = vi.fn()
   fetcher.mockResolvedValue({ text: () => Promise.resolve('// Contents of file') })
 
   const store: any = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
+    getItem: vi.fn(),
+    setItem: vi.fn(),
   }
 
   const compilerOpts = { target: ts.ScriptTarget.ES5 }
@@ -139,12 +139,12 @@ it('creates a map from the CDN and stores it in local storage cache', async () =
 })
 
 it('creates a map from the CDN and uses the existing local storage cache', async () => {
-  const fetcher = jest.fn()
+  const fetcher = vi.fn()
   fetcher.mockResolvedValue({ text: () => Promise.resolve('// Contents of file') })
 
   const store: any = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
+    getItem: vi.fn(),
+    setItem: vi.fn(),
   }
 
   // Once return a value from the store
@@ -243,5 +243,8 @@ it('moduleDetection options', async () => {
     host: host.compilerHost,
   })
   program.emit()
-  expect(fsMap.get('index.js')).toEqual(`define(["require", "exports"], function (require, exports) {\n    "use strict";\n    Object.defineProperty(exports, "__esModule", { value: true });\n    var foo = 'foo';\n});\n`)
+  const output = fsMap.get('index.js')
+  expect(output).toContain('define(["require", "exports"], function (require, exports) {')
+  expect(output).toContain('Object.defineProperty(exports, "__esModule", { value: true });')
+  expect(output).toMatch(/\n\s+(var|let)\s+foo = 'foo';\n/)
 }, 10000)

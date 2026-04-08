@@ -462,6 +462,7 @@ const defaultCompilerOptions = (ts: typeof import("typescript")): CompilerOption
     jsx: ts.JsxEmit.React,
     strict: true,
     esModuleInterop: true,
+    ignoreDeprecations: "6.0",
     module: ts.ModuleKind.ESNext,
     suppressOutputPathCheck: true,
     skipLibCheck: true,

@@ -4,6 +4,7 @@ import type { LanguageClientOptions, ServerOptions } from '@volar/vscode/node'
 import * as serverProtocol from '@volar/language-server/protocol'
 import { activateAutoInsertion, createLabsInfo } from '@volar/vscode'
 import { LanguageClient, TransportKind } from '@volar/vscode/node'
+import { sleep } from '@vstils/core'
 import defu from 'defu'
 import { Autowired } from 'unioc'
 import { Command, Disposable, ExtensionContext, Translator, WatchConfiguration } from 'unioc/vscode'
@@ -12,7 +13,6 @@ import { FileSystemContext } from './context/file-system-context'
 import { LanguageServerContext } from './context/server-context'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
 import { SdkManager } from './sdk/sdk-manager'
-import { sleep } from './utils'
 
 @Disposable
 @Command('ets.restartServer')
