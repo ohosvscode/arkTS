@@ -1,7 +1,7 @@
 import type { LanguageServiceContext } from '@volar/language-server'
 import type * as ets from 'ohos-typescript'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import { URI } from 'vscode-uri'
+import { Uri } from '@vstils/core'
 
 export interface TSProvider {
   'typescript/languageService'(): ets.LanguageService
@@ -30,7 +30,7 @@ export class ContextUtil {
    * @returns 源文件AST，如果获取失败则返回null
    */
   decodeSourceFile(document: TextDocument): ets.SourceFile | null {
-    const decoded = this.context.decodeEmbeddedDocumentUri(URI.parse(document.uri))
+    const decoded = this.context.decodeEmbeddedDocumentUri(Uri.parse(document.uri))
     if (!decoded) return null
     const [decodedUri] = decoded
     const languageService = this.context.inject<TSProvider>(`typescript/languageService`)

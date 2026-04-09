@@ -1,5 +1,5 @@
 import type { DisposableSignal, ElementDirectory as RustElementDirectory } from '@arkts/project-detector'
-import type { Disposable } from 'vscode'
+import type { Disposable } from '@vstils/core'
 import type { ResourceDirectory } from './resource-directory'
 import { ElementJsonFile as RustElementJsonFile } from '@arkts/project-detector'
 import { UriUtil } from '../utils/uri-util'

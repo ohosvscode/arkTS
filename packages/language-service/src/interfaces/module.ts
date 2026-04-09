@@ -1,5 +1,5 @@
 import type { DisposableSignal, Module as RustModule } from '@arkts/project-detector'
-import type { Disposable } from 'vscode'
+import type { Disposable } from '@vstils/core'
 import type { ElementJsonFileReference } from './element-json-file-reference'
 import type { Project } from './project'
 import { Product as RustProduct } from '@arkts/project-detector'

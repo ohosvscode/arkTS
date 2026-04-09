@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "pnpm -F vscode-naily-ets build",
+    "build:all": "pnpm -F \"{packages/*}\" build",
     "watch": "pnpm -F vscode-naily-ets watch",
     "pack": "pnpm -F vscode-naily-ets pack",
     "generate": "pnpm -F vscode-naily-ets update",
@@ -94,6 +95,7 @@
     "@vscode/l10n": "catalog:prod",
     "@vscode/vsce": "catalog:scripts",
     "@vstils/core": "catalog:prod",
+    "@vstils/fs": "catalog:prod",
     "alien-signals": "catalog:prod",
     "baseline-browser-mapping": "catalog:dev",
     "birpc": "catalog:prod",

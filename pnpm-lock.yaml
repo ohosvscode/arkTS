@@ -234,8 +234,11 @@ catalogs:
       specifier: ^0.0.18
       version: 0.0.18
     '@vstils/core':
-      specifier: ^0.0.2
-      version: 0.0.2
+      specifier: ^0.0.4
+      version: 0.0.4
+    '@vstils/fs':
+      specifier: ^0.0.3
+      version: 0.0.3
     alien-signals:
       specifier: ^3.0.3
       version: 3.0.3
@@ -314,9 +317,6 @@ catalogs:
     vscode-html-languageservice:
       specifier: ^5.5.1
       version: 5.6.0
-    vscode-languageserver-protocol:
-      specifier: ^3.17.5
-      version: 3.17.5
     vscode-languageserver-textdocument:
       specifier: ^1.0.12
       version: 1.0.12
@@ -366,9 +366,6 @@ catalogs:
     pnpm:
       specifier: ^10.31.0
       version: 10.31.0
-    simple-git-hooks:
-      specifier: ^2.13.1
-      version: 2.13.1
     tsx:
       specifier: ^4.20.5
       version: 4.20.6
@@ -634,7 +631,10 @@ importers:
         version: 3.7.1
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.2(@types/vscode@1.115.0)
+        version: 0.0.4(@types/vscode@1.115.0)
+      '@vstils/fs':
+        specifier: catalog:prod
+        version: 0.0.3(@types/vscode@1.115.0)
       alien-signals:
         specifier: catalog:prod
         version: 3.0.3
@@ -722,9 +722,6 @@ importers:
       rimraf:
         specifier: catalog:dev
         version: 6.0.1
-      simple-git-hooks:
-        specifier: catalog:scripts
-        version: 2.13.1
       source-map-support:
         specifier: catalog:prod
         version: 0.5.21
@@ -920,70 +917,49 @@ importers:
       '@volar/language-core':
         specifier: catalog:prod
         version: 2.4.23
+      '@vstils/core':
+        specifier: catalog:prod
+        version: 0.0.4(@types/vscode@1.115.0)
       ts-macro:
         specifier: catalog:dev
         version: 0.3.6
-      vscode-uri:
+      typescript:
         specifier: catalog:prod
-        version: 3.1.0
+        version: 6.0.2
 
   packages/language-server:
     dependencies:
-      '@arkts/project-detector':
-        specifier: catalog:prod
-        version: 1.1.3-alpha.29
-      '@ohos-rs/oxk':
-        specifier: catalog:prod
-        version: 0.2.2
-    devDependencies:
       '@arkts/language-plugin':
         specifier: workspace:*
         version: link:../language-plugin
       '@arkts/language-service':
         specifier: workspace:*
         version: link:../language-service
+      '@arkts/project-detector':
+        specifier: catalog:prod
+        version: 1.1.3-alpha.29
       '@arkts/shared':
         specifier: workspace:*
         version: link:../shared
-      '@types/vscode':
-        specifier: catalog:types
-        version: 1.109.0
-      '@volar/language-core':
+      '@ohos-rs/oxk':
         specifier: catalog:prod
-        version: 2.4.23
+        version: 0.2.2
       '@volar/language-server':
         specifier: catalog:prod
         version: 2.4.23
-      '@volar/typescript':
+      '@vstils/core':
         specifier: catalog:prod
-        version: 2.4.23
-      ohos-typescript:
-        specifier: workspace:*
-        version: link:../../ohos-typescript
-      volar-service-css:
+        version: 0.0.4(@types/vscode@1.115.0)
+      '@vstils/fs':
         specifier: catalog:prod
-        version: 0.0.68(@volar/language-service@2.4.23)
-      volar-service-emmet:
-        specifier: catalog:prod
-        version: 0.0.68(@volar/language-service@2.4.23)
-      volar-service-html:
-        specifier: catalog:prod
-        version: 0.0.68(@volar/language-service@2.4.23)
+        version: 0.0.3(@types/vscode@1.115.0)
       volar-service-typescript:
         specifier: catalog:prod
         version: 0.0.68(@volar/language-service@2.4.23)
-      vscode-fs:
-        specifier: catalog:prod
-        version: 0.1.4(vscode-uri@3.1.0)
-      vscode-html-languageservice:
-        specifier: catalog:prod
-        version: 5.6.0
-      vscode-languageserver-protocol:
-        specifier: catalog:prod
-        version: 3.17.5
-      vscode-uri:
-        specifier: catalog:prod
-        version: 3.1.0
+    devDependencies:
+      ohos-typescript:
+        specifier: workspace:*
+        version: link:../../ohos-typescript
 
   packages/language-service:
     dependencies:
@@ -1002,6 +978,9 @@ importers:
       '@volar/language-server':
         specifier: catalog:prod
         version: 2.4.23
+      '@vstils/core':
+        specifier: catalog:prod
+        version: 0.0.4(@types/vscode@1.109.0)
       fast-glob:
         specifier: catalog:dev
         version: 3.3.3
@@ -1023,9 +1002,6 @@ importers:
       vscode-languageserver-types:
         specifier: catalog:prod
         version: 3.17.5
-      vscode-uri:
-        specifier: catalog:prod
-        version: 3.1.0
     devDependencies:
       '@types/vscode':
         specifier: catalog:types
@@ -1059,17 +1035,24 @@ importers:
   packages/types: {}
 
   packages/typescript-plugin:
-    devDependencies:
+    dependencies:
       '@arkts/language-plugin':
         specifier: workspace:*
         version: link:../language-plugin
+      '@volar/typescript':
+        specifier: catalog:prod
+        version: 2.4.23
+      ts-macro:
+        specifier: catalog:dev
+        version: 0.3.6
+      typescript:
+        specifier: catalog:prod
+        version: 6.0.2
+    devDependencies:
       '@volar/language-core':
         specifier: catalog:prod
         version: 2.4.23
       '@volar/language-server':
-        specifier: catalog:prod
-        version: 2.4.23
-      '@volar/typescript':
         specifier: catalog:prod
         version: 2.4.23
       ohos-typescript:
@@ -1094,7 +1077,11 @@ importers:
         specifier: catalog:prod
         version: 3.1.0
 
-  packages/vfs: {}
+  packages/vfs:
+    dependencies:
+      typescript:
+        specifier: catalog:prod
+        version: 6.0.2
 
   packages/vscode:
     dependencies:
@@ -4064,11 +4051,11 @@ packages:
   '@vstils/common@0.0.1':
     resolution: {integrity: sha512-r426WbFNBrnn4Ppv8p+RFy0hfQkSozdq4vD/1Zt8sEv2enQRewjPervdt6ITz+f8zDehWRVzELKBBOzlkb2hvg==}
 
-  '@vstils/core@0.0.2':
-    resolution: {integrity: sha512-Bpj3iPdtQO+4XrzNPfOS8T+g+d6s2uQnLA13qC7i6289naCGaQJa4hbJoEnPKWUUBIsfE407QWZRB7j6aOX27A==}
+  '@vstils/core@0.0.4':
+    resolution: {integrity: sha512-GRNFfAl1ZODtxJEsCi4GqniDjEEzTQWpbrlJUW5/ja6K6n1egbf3dkGQVejLaYRrofGSU5xAsT9W/9TuoA1zWA==}
 
-  '@vstils/fs@0.0.1':
-    resolution: {integrity: sha512-VuvvB+emFxff4jZHBeSXjIxLYD79zWE+TkQxGnm/qJ8VHlBzgegHide7FBWYc8pgGJ9boYNeQB/iFobrA0UaSQ==}
+  '@vstils/fs@0.0.3':
+    resolution: {integrity: sha512-95jXyi5oRdTw9uscabkJT6TFUanhv/aZvCBWsTAZ5bNO35Hr/JBo8Y6yHfS0NI85HlteFo/tL099rozxtWVSDQ==}
     peerDependencies:
       '@types/vscode': '>=1.61.0'
 
@@ -7790,10 +7777,6 @@ packages:
   simple-get@4.0.1:
     resolution: {integrity: sha512-brv7p5WgH0jmQJr1ZDDfKDOSeWWg+OVypG99A/5vYGPqJ6pxiaHLy8nxtFjBA7oMa01ebA9gfh1uMCFqOuXxvA==}
 
-  simple-git-hooks@2.13.1:
-    resolution: {integrity: sha512-WszCLXwT4h2k1ufIXAgsbiTOazqqevFCIncOuUBZJ91DdvWcC5+OFkluWRQPrcuSYd8fjq+o2y1QfWqYMoAToQ==}
-    hasBin: true
-
   simple-invariant@2.0.1:
     resolution: {integrity: sha512-1sbhsxqI+I2tqlmjbz99GXNmZtr6tKIyEgGGnJw/MKGblalqk/XoOYYFJlBzTKZCxx8kLaD3FD5s9BEEjx5Pyg==}
     engines: {node: '>=10'}
@@ -10871,7 +10854,7 @@ snapshots:
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
       estraverse: 5.3.0
-      picomatch: 4.0.3
+      picomatch: 4.0.4
 
   '@textlint/ast-node-types@15.2.3': {}
 
@@ -11912,14 +11895,29 @@ snapshots:
       picomatch: 4.0.4
       vscode-uri: 3.1.0
 
-  '@vstils/core@0.0.2(@types/vscode@1.115.0)':
+  '@vstils/core@0.0.4(@types/vscode@1.109.0)':
     dependencies:
       '@vstils/common': 0.0.1
-      '@vstils/fs': 0.0.1(@types/vscode@1.115.0)
+      '@vstils/fs': 0.0.3(@types/vscode@1.109.0)
     transitivePeerDependencies:
       - '@types/vscode'
 
-  '@vstils/fs@0.0.1(@types/vscode@1.115.0)':
+  '@vstils/core@0.0.4(@types/vscode@1.115.0)':
+    dependencies:
+      '@vstils/common': 0.0.1
+      '@vstils/fs': 0.0.3(@types/vscode@1.115.0)
+    transitivePeerDependencies:
+      - '@types/vscode'
+
+  '@vstils/fs@0.0.3(@types/vscode@1.109.0)':
+    dependencies:
+      '@types/vscode': 1.109.0
+      '@vstils/common': 0.0.1
+      chokidar: 5.0.0
+      tinyglobby: 0.2.15
+      trash: 10.1.1
+
+  '@vstils/fs@0.0.3(@types/vscode@1.115.0)':
     dependencies:
       '@types/vscode': 1.115.0
       '@vstils/common': 0.0.1
@@ -16185,8 +16183,6 @@ snapshots:
       simple-concat: 1.0.1
     optional: true
 
-  simple-git-hooks@2.13.1: {}
-
   simple-invariant@2.0.1: {}
 
   sirv@3.0.2:
@@ -16566,7 +16562,7 @@ snapshots:
 
   ts-declaration-location@1.0.7(typescript@6.0.2):
     dependencies:
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       typescript: 6.0.2
 
   ts-macro@0.3.6:

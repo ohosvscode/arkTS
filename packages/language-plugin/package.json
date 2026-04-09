@@ -45,13 +45,14 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown --tsconfig ./tsconfig.build.json",
-    "prepublishOnly": "tsdown --tsconfig ./tsconfig.build.json",
+    "build": "vp pack --tsconfig ./tsconfig.build.json",
+    "prepublishOnly": "vp pack --tsconfig ./tsconfig.build.json",
     "release": "pnpm publish"
   },
   "dependencies": {
     "@volar/language-core": "catalog:prod",
+    "@vstils/core": "catalog:prod",
     "ts-macro": "catalog:dev",
-    "vscode-uri": "catalog:prod"
+    "typescript": "catalog:prod"
   }
 }

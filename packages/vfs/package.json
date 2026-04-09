@@ -36,6 +36,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown"
+    "build": "vp pack",
+    "prepublishOnly": "vp pack"
+  },
+  "dependencies": {
+    "typescript": "catalog:prod"
   }
 }

@@ -1,5 +1,5 @@
 import type { DisposableSignal } from '@arkts/project-detector'
-import type { Disposable } from 'vscode'
+import type { Disposable } from '@vstils/core'
 import type { ProjectDetectorManager } from './project-detector-manager'
 import { Project as RustProject, ProjectDetector as RustProjectDetector } from '@arkts/project-detector'
 import { UriUtil } from '../utils/uri-util'

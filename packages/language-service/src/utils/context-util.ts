@@ -1,7 +1,7 @@
 import type { LanguageServiceContext } from '@volar/language-server'
 import type * as ets from 'ohos-typescript'
 import type { TextDocument } from 'vscode-languageserver-textdocument'
-import { URI } from 'vscode-uri'
+import { Uri } from '@vstils/core'
 
 export interface TSProvider {
   'typescript/languageService'(): ets.LanguageService
@@ -82,8 +82,8 @@ export class ContextUtil {
     return languageServiceHost as ets.LanguageServiceHost
   }
 
-  decodeTextDocumentUri(document: TextDocument): URI | null {
-    const parsed = URI.parse(document.uri)
+  decodeTextDocumentUri(document: TextDocument): Uri | null {
+    const parsed = Uri.parse(document.uri)
     const decoded = this.context.decodeEmbeddedDocumentUri(parsed)
     if (!decoded) return parsed
     const [decodedUri] = decoded
@@ -97,7 +97,7 @@ export class ContextUtil {
    * @returns 源文件AST，如果获取失败则返回null
    */
   decodeSourceFile(document: TextDocument): ets.SourceFile | null {
-    const decoded = this.context.decodeEmbeddedDocumentUri(URI.parse(document.uri))
+    const decoded = this.context.decodeEmbeddedDocumentUri(Uri.parse(document.uri))
     if (!decoded) return null
     const [decodedUri] = decoded
     const languageService = this.getLanguageService()
@@ -119,7 +119,7 @@ export class ContextUtil {
    * @returns 如果获取失败则返回 `null`
    */
   getOriginalSourceFile(document: TextDocument, ets?: typeof import('ohos-typescript')): ets.SourceFile | null {
-    const decoded = this.context.decodeEmbeddedDocumentUri(URI.parse(document.uri))
+    const decoded = this.context.decodeEmbeddedDocumentUri(Uri.parse(document.uri))
     if (!decoded) return null
     const [decodedUri, embeddedCodeId] = decoded
     const virtualCode = this.context.language.scripts.get(decodedUri)?.generated?.embeddedCodes.get(embeddedCodeId)
@@ -128,10 +128,10 @@ export class ContextUtil {
     return virtualCode.ast as ets.SourceFile
   }
 
-  getWorkspaceFolderForDocument(uri: string, workspaceFolders: URI[] = this.context.env.workspaceFolders): string | undefined {
+  getWorkspaceFolderForDocument(uri: string, workspaceFolders: Uri[] = this.context.env.workspaceFolders): string | undefined {
     if (!workspaceFolders?.length) return undefined
 
-    const docUri = URI.parse(uri)
+    const docUri = Uri.parse(uri)
     const matches = workspaceFolders
       .map(folder => ({
         folder,

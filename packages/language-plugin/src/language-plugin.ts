@@ -1,8 +1,8 @@
 import type { LanguagePlugin, VirtualCode } from '@volar/language-core'
 import type { TypeScriptServiceScript } from '@volar/typescript'
+import type { Uri } from '@vstils/core'
 import type * as ets from 'ohos-typescript'
 import type * as ts from 'typescript'
-import type { URI } from 'vscode-uri'
 import path from 'node:path'
 import { $$thisFixerPlugin } from './$$this-fixer-plugin'
 import { createEmptyVirtualCode, createVirtualCode, ETSVirtualCode } from './ets-code'
@@ -31,12 +31,12 @@ export interface ETSLanguagePluginOptions {
  * @param tsOrEts If passed {@linkcode ets} means current mode is language-server-side, otherwise is typescript-plugin-side.
  * @param options - The options for the plugin. See: {@linkcode ETSLanguagePluginOptions}
  */
-export function ETSLanguagePlugin(tsOrEts: typeof ts, options?: ETSLanguagePluginOptions): LanguagePlugin<URI | string>
-export function ETSLanguagePlugin(tsOrEts: typeof ets, options?: ETSLanguagePluginOptions): LanguagePlugin<URI | string>
-export function ETSLanguagePlugin(tsOrEts: typeof ets | typeof ts, { excludePaths = [], tsdk = '' }: ETSLanguagePluginOptions = {}): LanguagePlugin<URI | string> {
+export function ETSLanguagePlugin(tsOrEts: typeof ts, options?: ETSLanguagePluginOptions): LanguagePlugin<Uri | string>
+export function ETSLanguagePlugin(tsOrEts: typeof ets, options?: ETSLanguagePluginOptions): LanguagePlugin<Uri | string>
+export function ETSLanguagePlugin(tsOrEts: typeof ets | typeof ts, { excludePaths = [], tsdk = '' }: ETSLanguagePluginOptions = {}): LanguagePlugin<Uri | string> {
   const isETSServerMode = isEts(tsOrEts)
 
-  function getLanguageId(uri: URI | string): string | undefined {
+  function getLanguageId(uri: Uri | string): string | undefined {
     const filePath = typeof uri === 'string' ? uri : uri.fsPath
     if (filePath.endsWith('.ets')) return 'ets'
     if (filePath.endsWith('.ts')) return 'typescript'

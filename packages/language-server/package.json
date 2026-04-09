@@ -50,30 +50,22 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown --tsconfig ./tsconfig.build.json",
-    "prepublishOnly": "tsdown --tsconfig ./tsconfig.build.json",
+    "build": "vp pack --tsconfig ./tsconfig.build.json",
+    "prepublishOnly": "vp pack --tsconfig ./tsconfig.build.json",
     "release": "pnpm publish"
   },
   "dependencies": {
-    "@arkts/project-detector": "catalog:prod",
-    "@ohos-rs/oxk": "catalog:prod"
-  },
-  "devDependencies": {
     "@arkts/language-plugin": "workspace:*",
     "@arkts/language-service": "workspace:*",
+    "@arkts/project-detector": "catalog:prod",
     "@arkts/shared": "workspace:*",
-    "@types/vscode": "catalog:types",
-    "@volar/language-core": "catalog:prod",
+    "@ohos-rs/oxk": "catalog:prod",
     "@volar/language-server": "catalog:prod",
-    "@volar/typescript": "catalog:prod",
-    "ohos-typescript": "workspace:*",
-    "volar-service-css": "catalog:prod",
-    "volar-service-emmet": "catalog:prod",
-    "volar-service-html": "catalog:prod",
-    "volar-service-typescript": "catalog:prod",
-    "vscode-fs": "catalog:prod",
-    "vscode-html-languageservice": "catalog:prod",
-    "vscode-languageserver-protocol": "catalog:prod",
-    "vscode-uri": "catalog:prod"
+    "@vstils/core": "catalog:prod",
+    "@vstils/fs": "catalog:prod",
+    "volar-service-typescript": "catalog:prod"
+  },
+  "devDependencies": {
+    "ohos-typescript": "workspace:*"
   }
 }

@@ -2,7 +2,7 @@ import type { LanguageServerLogger } from '@arkts/shared'
 import type { InitializeParams } from '@volar/language-server/node'
 import type { MapLike } from 'ohos-typescript'
 import { loadTsdkByPath } from '@volar/language-server/node'
-import { URI, Utils } from 'vscode-uri'
+import { Uri } from '@vstils/core'
 
 function safeLoadByRequire(params: InitializeParams, logger: LanguageServerLogger): MapLike<string> | undefined {
   try {
@@ -22,9 +22,9 @@ function safeLoadByRequire(params: InitializeParams, logger: LanguageServerLogge
 }
 
 function loadTsdkInPackage(fileUri: string, locale: string | undefined, logger: LanguageServerLogger): MapLike<string> | undefined {
-  const uri = URI.parse(fileUri)
-  const dirUri = Utils.joinPath(uri, '..')
-  const libUri = Utils.joinPath(dirUri, 'lib')
+  const uri = Uri.parse(fileUri)
+  const dirUri = Uri.joinPath(uri, '..')
+  const libUri = Uri.joinPath(dirUri, 'lib')
 
   function loadLocalizedDiagnosticMessages(): MapLike<string> | undefined {
     if (locale === 'en') {

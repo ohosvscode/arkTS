@@ -1,27 +1,31 @@
 import type { CreateArkTServiceOptions } from '@arkts/language-service'
 import type { LanguageServerLogger } from '@arkts/shared'
 import type { Connection, InitializeParams } from '@volar/language-server'
+import type { FileSystemRegistry } from '@vstils/fs'
 import type { CompilerOptions } from 'ohos-typescript'
-import type { FileSystem } from 'vscode-fs'
 import type { ProjectDetectorManagerService } from './project-manager'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
 import { SysResource } from '@arkts/shared'
+import { createRelativePattern, Uri } from '@vstils/core'
+import { FileType } from '@vstils/fs'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
-import { FileType, RelativePattern } from 'vscode-fs'
-import { URI, Utils } from 'vscode-uri'
 
 export class ConfigResolver {
   constructor(
     private readonly logger: LanguageServerLogger,
     private readonly projectDetectorManagerService: ProjectDetectorManagerService,
     private readonly params: InitializeParams,
-    private readonly fs: FileSystem,
-    private readonly lspRoot: URI,
+    private readonly fs: FileSystemRegistry['fs'],
+    private readonly lspRoot: Uri,
     private readonly connection: Connection,
   ) {}
+
+  private isDirectory(uri: Uri): Promise<boolean> {
+    return this.fs.stat(uri).then(stat => stat.type === FileType.Directory).catch(() => false)
+  }
 
   async validateOrExit(): Promise<this> {
     if (!this.getSdkPath() || typeof this.getSdkPath() !== 'string') {
@@ -30,7 +34,7 @@ export class ConfigResolver {
       this.connection.window.showErrorMessage(errorMessage)
       throw new Error(errorMessage)
     }
-    if (!await this.fs.isDirectory(URI.file(this.getSdkPath()))) {
+    if (!await this.isDirectory(Uri.file(this.getSdkPath()))) {
       const errorMessage = `The ets.sdkPath is not a directory, path: ${this.getSdkPath()}, language server is shutdowning...`
       this.logger.getConsola().info(errorMessage)
       this.connection.window.showErrorMessage(errorMessage)
@@ -67,7 +71,7 @@ export class ConfigResolver {
 
   async getEtsLoaderConfig(): Promise<import('type-fest').TsConfigJson> {
     const etsLoaderConfigPath = this.getEtsLoaderConfigPath()
-    const etsLoaderConfig = await this.fs.readFile(URI.file(etsLoaderConfigPath)).then(buffer => buffer.toString())
+    const etsLoaderConfig = await this.fs.readFile(Uri.file(etsLoaderConfigPath)).then(buffer => buffer.toString())
     const { config = {} } = ets.parseConfigFileTextToJson(etsLoaderConfigPath, etsLoaderConfig)
     return config
   }
@@ -77,7 +81,7 @@ export class ConfigResolver {
   }
 
   getBaseUrl(): string {
-    return Utils.joinPath(URI.file(this.getSdkPath()), 'ets').fsPath
+    return Uri.joinPath(Uri.file(this.getSdkPath()), 'ets').fsPath
   }
 
   private cachedSysResource: SysResource | null = null
@@ -112,19 +116,19 @@ export class ConfigResolver {
   async getTsdkLib(): Promise<string[]> {
     const tsdkPath = this.getTsdkPath()
     if (tsdkPath) {
-      const tsdkLibs = await this.fs.glob(new RelativePattern(Utils.joinPath(URI.file(tsdkPath), 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+      const tsdkLibs = await this.fs.glob(createRelativePattern(Uri.joinPath(Uri.file(tsdkPath), 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
       if (tsdkLibs.length > 0) return tsdkLibs
     }
-    return await this.fs.glob(new RelativePattern(Utils.joinPath(this.lspRoot, 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    return await this.fs.glob(createRelativePattern(Uri.joinPath(this.lspRoot, 'lib'), '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
   }
 
   async getLib(): Promise<string[]> {
-    const componentFolderUri = Utils.joinPath(URI.file(this.getSdkPath()), 'ets', 'component')
-    const dtsFiles = await this.fs.glob(new RelativePattern(componentFolderUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
-    const detsFiles = await this.fs.glob(new RelativePattern(componentFolderUri, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
+    const componentFolderUri = Uri.joinPath(Uri.file(this.getSdkPath()), 'ets', 'component')
+    const dtsFiles = await this.fs.glob(createRelativePattern(componentFolderUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    const detsFiles = await this.fs.glob(createRelativePattern(componentFolderUri, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
 
-    const declarationsUri = Utils.joinPath(URI.file(this.getEtsLoaderPath()), 'declarations')
-    const globalFiles = await this.fs.glob(new RelativePattern(declarationsUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    const declarationsUri = Uri.joinPath(Uri.file(this.getEtsLoaderPath()), 'declarations')
+    const globalFiles = await this.fs.glob(createRelativePattern(declarationsUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
 
     return [...dtsFiles, ...detsFiles, ...globalFiles, ...await this.getTsdkLib()].filter((item, index, self) => self.indexOf(item) === index && Boolean(item))
   }
@@ -140,8 +144,8 @@ export class ConfigResolver {
     try {
       const hmsSdkPath = this.getHmsSdkPath()
       if (!hmsSdkPath) return {}
-      const hmsApiFolder = Utils.joinPath(URI.file(hmsSdkPath), 'ets', 'api')
-      const hmsKitsFolder = Utils.joinPath(URI.file(hmsSdkPath), 'ets', 'kits')
+      const hmsApiFolder = Uri.joinPath(Uri.file(hmsSdkPath), 'ets', 'api')
+      const hmsKitsFolder = Uri.joinPath(Uri.file(hmsSdkPath), 'ets', 'kits')
       if (!hmsApiFolder || !hmsKitsFolder) return {}
 
       const paths: import('typescript').MapLike<string[]> = {}
@@ -150,14 +154,14 @@ export class ConfigResolver {
       for (const [fileNameWithExtension, fileType] of apiFiles) {
         if (fileType !== FileType.File) continue
         const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-        paths[fileName] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
-        paths[`${fileName}/*`] = [Utils.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
+        paths[fileName] = [Uri.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
+        paths[`${fileName}/*`] = [Uri.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
       }
       for (const [fileNameWithExtension, fileType] of kitsFiles) {
         if (fileType !== FileType.File) continue
         const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-        paths[fileName] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
-        paths[`${fileName}/*`] = [Utils.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
+        paths[fileName] = [Uri.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
+        paths[`${fileName}/*`] = [Uri.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
       }
       return paths
     }
