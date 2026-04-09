@@ -291,7 +291,7 @@ catalogs:
       specifier: ^1.0.2
       version: 1.0.2
     typescript:
-      specifier: latest
+      specifier: ^6.0.2
       version: 6.0.2
     unioc:
       specifier: ^0.0.23
