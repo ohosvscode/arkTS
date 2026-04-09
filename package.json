@@ -14,7 +14,7 @@
     "generate": "pnpm -F vscode-naily-ets update",
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
     "test": "vp test --watch --ui",
-    "lint": "eslint --fix && tsc --noEmit && vp test --coverage",
+    "lint": "eslint --fix && tsc --noEmit --ignoreDeprecations 6.0 && vp test --coverage",
     "prepare": "pnpm -F \"{packages/*}\" build"
   },
   "dependencies": {

@@ -18,7 +18,7 @@ export class QualifierEditorServerFunctionImpl extends ProtocolContext<Qualifier
   private resource: Resource | undefined
   private disposeEventEmitter: vscode.EventEmitter<void> | undefined = new vscode.EventEmitter<void>()
 
-  onRpcInitialized(ctx: InitialCallbackEvent<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction, WebviewPanelContext<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction>>): void {
+  onRpcInitialized(ctx: InitialCallbackEvent<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction, any, WebviewPanelContext<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction>>): void {
     super.onRpcInitialized(ctx)
     this.disposeEventEmitter?.event(() => ctx.webviewContext.dispose())
   }

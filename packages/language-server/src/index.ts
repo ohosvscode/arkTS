@@ -57,7 +57,7 @@ connection.onInitialize(async (params) => {
 
         return {
           languagePlugins: [
-            ETSLanguagePlugin(ets, {
+            ETSLanguagePlugin(ets as unknown as typeof import('typescript'), {
               excludePaths: [configuration.getSdkPath(), configuration.getHmsSdkPath()].filter(Boolean) as string[],
               tsdk: configuration.getTsdkPath(),
             }),
