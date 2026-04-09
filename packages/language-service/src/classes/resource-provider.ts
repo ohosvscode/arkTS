@@ -5,7 +5,6 @@ import type { Product, ProjectDetectorManager } from '../interfaces'
 import type { ContextUtil } from '../utils/context-util'
 import type { LocaleStorage } from '../utils/i18n'
 import type { GlobalCallExpressionFinder } from './global-call-finder'
-import path from 'node:path'
 import { CompletionItemKind, DiagnosticSeverity, FileType, MarkupKind, Position, Range } from '@volar/language-server'
 import { Uri } from '@vstils/core'
 import { permissions } from '../auth/permission'
@@ -151,6 +150,10 @@ export namespace ResourceProvider {
       return stringLiterals
     }
 
+    protected toTargetUri(pathOrUri: string): string {
+      return pathOrUri.includes('://') ? pathOrUri : Uri.file(pathOrUri).toString()
+    }
+
     async safeStat(filePath: string): Promise<FileStat | false> {
       try {
         return await this.contextUtil.getContext().env.fs?.stat(Uri.file(filePath)) ?? false
@@ -216,7 +219,7 @@ export namespace ResourceProvider {
         const targetRange = Reference.toRange(callExpression.arguments[0], true)
 
         definitions.push({
-          targetUri: sourceFile.fileName,
+          targetUri: this.toTargetUri(sourceFile.fileName),
           targetRange,
           targetSelectionRange: targetRange,
           originSelectionRange,
@@ -296,7 +299,7 @@ export namespace ResourceProvider {
 
       if (scope === 'sys') {
         return [{
-          targetUri: this.config.getSysResourcePath(),
+          targetUri: this.toTargetUri(this.config.getSysResourcePath()),
           targetRange: emptyRange,
           targetSelectionRange: emptyRange,
           originSelectionRange: Reference.toRange(currentCallExpression.arguments[0], document, true),
@@ -343,6 +346,7 @@ export namespace ResourceProvider {
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return this.findLocationLinkInJsonLikeFile(document, position, decodedUri)
         default:
           return this.findLocationLinkInArkts(document, position, decodedUri)
@@ -409,7 +413,9 @@ export namespace ResourceProvider {
 
       // completion for file system
       if (triggerCharacter === '/') {
-        const filePath = path.resolve(path.dirname(moduleJson5Path.fsPath), stringLiteralText)
+        const moduleJson5Uri = Uri.parse(moduleJson5Path.toString())
+        const fileUri = Uri.resolvePath(Uri.dirname(moduleJson5Uri), stringLiteralText)
+        const filePath = fileUri.fsPath
         const fileStat = await this.safeStat(filePath)
         if (fileStat) {
           if (fileStat.type === FileType.Directory) {
@@ -424,7 +430,7 @@ export namespace ResourceProvider {
           }
           else if (fileStat.type === FileType.File) {
             items.push({
-              label: path.basename(filePath),
+              label: Uri.basename(fileUri),
               kind: CompletionItemKind.File,
             })
           }
@@ -504,6 +510,7 @@ export namespace ResourceProvider {
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return {
             items: await this.getModuleJson5CompletionList(document, position, decodedUri, context.triggerCharacter ?? ''),
             isIncomplete: false,
@@ -666,6 +673,7 @@ export namespace ResourceProvider {
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return this.getJsonLikeDiagnostics(document, decodedUri)
         default:
           return this.getArktsDiagnostics(document, decodedUri)
@@ -682,6 +690,7 @@ export namespace ResourceProvider {
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
       if (!moduleJson5Path) return null
       const content = document.getText()
+      const moduleJson5Uri = Uri.parse(moduleJson5Path.toString())
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), content)
       const stringLiterals = this.findStringLiterals(sourceFile)
 
@@ -690,10 +699,10 @@ export namespace ResourceProvider {
       for (const stringLiteral of stringLiterals) {
         const currentStringLiteralText = stringLiteral.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '')
         if (!currentStringLiteralText || currentStringLiteralText === '.') continue
-        const filePath = path.resolve(path.dirname(moduleJson5Path.fsPath), currentStringLiteralText)
+        const filePath = Uri.resolvePath(Uri.dirname(moduleJson5Uri), currentStringLiteralText).fsPath
         if (await this.safeStat(filePath)) {
           documentLinks.push({
-            target: filePath,
+            target: this.toTargetUri(filePath),
             range: Reference.toRange(stringLiteral, sourceFile, true),
           })
         }
