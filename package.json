@@ -1,4 +1,5 @@
 {
+  "name": "@arkts/monorepo",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.17.0",
