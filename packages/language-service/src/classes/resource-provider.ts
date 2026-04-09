@@ -13,6 +13,7 @@ import { Reference } from '../interfaces/reference'
 import { SysResource } from '../interfaces/sys-resource'
 import { simpleTranslate } from '../utils/i18n'
 import { LEADING_TRAILING_QUOTE_REGEX } from '../utils/regex'
+import { UriUtil } from '../utils/uri-util'
 
 export interface ResourceProvider {
   getDefinitionProvider(): ResourceProvider.DefinitionProvider
@@ -183,7 +184,7 @@ export namespace ResourceProvider {
         const underlyingReference = reference.getUnderlyingElementJsonFileReference()
         const underlyingJsonFile = reference.getElementJsonFile().getUnderlyingElementJsonFile()
         const underlyingJsonFileUri = underlyingJsonFile.getUri()
-        if (underlyingJsonFileUri.toString() !== decodedUri.toString()) return false
+        if (!UriUtil.isEqual(underlyingJsonFileUri.toString(), decodedUri.toString())) return false
         const positionStart = document.positionAt(underlyingReference.getNameStart())
         const positionEnd = document.positionAt(underlyingReference.getNameEnd())
         return positionStart.line <= position.line && positionEnd.line >= position.line && positionStart.character <= position.character && positionEnd.character >= position.character
@@ -198,7 +199,7 @@ export namespace ResourceProvider {
       for (const reference of elementReferences) {
         if (reference.toEtsFormat() !== currentUnderlyingElementJsonFileReference.toEtsFormat()) continue
         // If the same element json file, skip
-        if (reference.getUri().toString() === decodedUri.toString()) continue
+        if (UriUtil.isEqual(reference.getUri().toString(), decodedUri.toString())) continue
         const targetRange = Reference.toRange(reference, true)
         definitions.push({
           targetUri: reference.getUri().toString(),
@@ -252,7 +253,7 @@ export namespace ResourceProvider {
       if (!product) return []
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
       if (!moduleJson5Path) return []
-      if (moduleJson5Path.toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(moduleJson5Path.toString(), decodedUri.toString())) return []
       const content = document.getText()
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), content)
       const stringLiterals = this.findStringLiterals(sourceFile)
@@ -359,7 +360,7 @@ export namespace ResourceProvider {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
-      if (moduleJson5Path.toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(moduleJson5Path.toString(), decodedUri.toString())) return []
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), document.getText())
       const items: CompletionItem[] = []
 
@@ -628,7 +629,7 @@ export namespace ResourceProvider {
     getJsonLikeDiagnostics(document: TextDocument, decodedUri: Uri): Diagnostic[] {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
-      if (product.getUnderlyingProduct().getModuleJson5Path().toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(product.getUnderlyingProduct().getModuleJson5Path().toString(), decodedUri.toString())) return []
       const sourceFile = this.ets.parseJsonText(decodedUri.toString(), document.getText())
       const stringLiterals = this.findStringLiterals(sourceFile)
 

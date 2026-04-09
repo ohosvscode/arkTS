@@ -31,4 +31,10 @@ export namespace UriUtil {
       || isPathContains(uriPath, normalizeFsPath(toUri(compareFolderUri.toString()).fsPath))
       || isPathContains(uriPath, normalizeFsPath(toUri(compareFolderUri.path).fsPath))
   }
+
+  export function isEqual(left: string | Uri, right: string | Uri): boolean {
+    const leftPath = normalizeFsPath(toUri(typeof left === 'string' ? left : left.toString()).fsPath)
+    const rightPath = normalizeFsPath(toUri(typeof right === 'string' ? right : right.toString()).fsPath)
+    return leftPath === rightPath
+  }
 }
