@@ -234,11 +234,11 @@ catalogs:
       specifier: ^0.0.18
       version: 0.0.18
     '@vstils/core':
-      specifier: ^0.0.4
-      version: 0.0.4
+      specifier: ^0.0.6
+      version: 0.0.6
     '@vstils/fs':
-      specifier: ^0.0.3
-      version: 0.0.3
+      specifier: ^0.0.5
+      version: 0.0.5
     alien-signals:
       specifier: ^3.0.3
       version: 3.0.3
@@ -631,10 +631,10 @@ importers:
         version: 3.7.1
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.4(@types/vscode@1.115.0)
+        version: 0.0.6(@types/vscode@1.115.0)
       '@vstils/fs':
         specifier: catalog:prod
-        version: 0.0.3(@types/vscode@1.115.0)
+        version: 0.0.5(@types/vscode@1.115.0)
       alien-signals:
         specifier: catalog:prod
         version: 3.0.3
@@ -919,7 +919,7 @@ importers:
         version: 2.4.23
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.4(@types/vscode@1.115.0)
+        version: 0.0.6(@types/vscode@1.115.0)
       ts-macro:
         specifier: catalog:dev
         version: 0.3.6
@@ -949,10 +949,10 @@ importers:
         version: 2.4.23
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.4(@types/vscode@1.115.0)
+        version: 0.0.6(@types/vscode@1.115.0)
       '@vstils/fs':
         specifier: catalog:prod
-        version: 0.0.3(@types/vscode@1.115.0)
+        version: 0.0.5(@types/vscode@1.115.0)
       volar-service-typescript:
         specifier: catalog:prod
         version: 0.0.68(@volar/language-service@2.4.23)
@@ -980,7 +980,7 @@ importers:
         version: 2.4.23
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.4(@types/vscode@1.109.0)
+        version: 0.0.6(@types/vscode@1.109.0)
       fast-glob:
         specifier: catalog:dev
         version: 3.3.3
@@ -4057,11 +4057,11 @@ packages:
   '@vstils/common@0.0.1':
     resolution: {integrity: sha512-r426WbFNBrnn4Ppv8p+RFy0hfQkSozdq4vD/1Zt8sEv2enQRewjPervdt6ITz+f8zDehWRVzELKBBOzlkb2hvg==}
 
-  '@vstils/core@0.0.4':
-    resolution: {integrity: sha512-GRNFfAl1ZODtxJEsCi4GqniDjEEzTQWpbrlJUW5/ja6K6n1egbf3dkGQVejLaYRrofGSU5xAsT9W/9TuoA1zWA==}
+  '@vstils/core@0.0.6':
+    resolution: {integrity: sha512-IFUriJxLHqmEbu/efdRMF9L0rR4vDFRXB1f5OzvG0ZWbkK9t0X76Sw5d//4k+Jv36l+1FugvZKeRuJUKPJ/x5Q==}
 
-  '@vstils/fs@0.0.3':
-    resolution: {integrity: sha512-95jXyi5oRdTw9uscabkJT6TFUanhv/aZvCBWsTAZ5bNO35Hr/JBo8Y6yHfS0NI85HlteFo/tL099rozxtWVSDQ==}
+  '@vstils/fs@0.0.5':
+    resolution: {integrity: sha512-crPiR3DLGkmyNKk0a0NUxdtAAZIJbVtLE8DNlDz1ic/vWXbeplYzwHqqtVRHi2IQXMbls+adIK/K3tgahnsGeg==}
     peerDependencies:
       '@types/vscode': '>=1.61.0'
 
@@ -11908,21 +11908,21 @@ snapshots:
       picomatch: 4.0.4
       vscode-uri: 3.1.0
 
-  '@vstils/core@0.0.4(@types/vscode@1.109.0)':
+  '@vstils/core@0.0.6(@types/vscode@1.109.0)':
     dependencies:
       '@vstils/common': 0.0.1
-      '@vstils/fs': 0.0.3(@types/vscode@1.109.0)
+      '@vstils/fs': 0.0.5(@types/vscode@1.109.0)
     transitivePeerDependencies:
       - '@types/vscode'
 
-  '@vstils/core@0.0.4(@types/vscode@1.115.0)':
+  '@vstils/core@0.0.6(@types/vscode@1.115.0)':
     dependencies:
       '@vstils/common': 0.0.1
-      '@vstils/fs': 0.0.3(@types/vscode@1.115.0)
+      '@vstils/fs': 0.0.5(@types/vscode@1.115.0)
     transitivePeerDependencies:
       - '@types/vscode'
 
-  '@vstils/fs@0.0.3(@types/vscode@1.109.0)':
+  '@vstils/fs@0.0.5(@types/vscode@1.109.0)':
     dependencies:
       '@types/vscode': 1.109.0
       '@vstils/common': 0.0.1
@@ -11930,7 +11930,7 @@ snapshots:
       tinyglobby: 0.2.15
       trash: 10.1.1
 
-  '@vstils/fs@0.0.3(@types/vscode@1.115.0)':
+  '@vstils/fs@0.0.5(@types/vscode@1.115.0)':
     dependencies:
       '@types/vscode': 1.115.0
       '@vstils/common': 0.0.1
@@ -13657,6 +13657,10 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  fdir@6.5.0(picomatch@4.0.4):
+    optionalDependencies:
+      picomatch: 4.0.4
 
   fetch-blob@3.2.0:
     dependencies:
@@ -17052,8 +17056,8 @@ snapshots:
   vite@7.1.12(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(tsx@4.20.6)(yaml@2.8.2):
     dependencies:
       esbuild: 0.25.11
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
       postcss: 8.5.6
       rollup: 4.52.5
       tinyglobby: 0.2.15

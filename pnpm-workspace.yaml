@@ -89,8 +89,8 @@ catalogs:
     '@volar/typescript': ~2.4.23
     '@volar/vscode': ~2.4.23
     '@vscode/l10n': ^0.0.18
-    '@vstils/core': ^0.0.4
-    '@vstils/fs': ^0.0.3
+    '@vstils/core': ^0.0.6
+    '@vstils/fs': ^0.0.5
     alien-signals: ^3.0.3
     axios: ^1.12.2
     birpc: ^2.6.1

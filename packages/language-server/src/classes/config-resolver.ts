@@ -1,7 +1,7 @@
 import type { CreateArkTServiceOptions } from '@arkts/language-service'
 import type { LanguageServerLogger } from '@arkts/shared'
 import type { Connection, InitializeParams } from '@volar/language-server'
-import type { FileSystemRegistry } from '@vstils/fs'
+import type { FileSystem } from '@vstils/fs'
 import type { CompilerOptions } from 'ohos-typescript'
 import type { ProjectDetectorManagerService } from './project-manager'
 import { createRequire } from 'node:module'
@@ -18,7 +18,7 @@ export class ConfigResolver {
     private readonly logger: LanguageServerLogger,
     private readonly projectDetectorManagerService: ProjectDetectorManagerService,
     private readonly params: InitializeParams,
-    private readonly fs: FileSystemRegistry['fs'],
+    private readonly fs: FileSystem,
     private readonly lspRoot: Uri,
     private readonly connection: Connection,
   ) {}
@@ -27,19 +27,42 @@ export class ConfigResolver {
     return this.fs.stat(uri).then(stat => stat.type === FileType.Directory).catch(() => false)
   }
 
+  private isFile(uri: Uri): Promise<boolean> {
+    return this.fs.stat(uri).then(stat => stat.type === FileType.File).catch(() => false)
+  }
+
+  private showErrorAndExit(errorMessage: string): this {
+    this.logger.getConsola().info(errorMessage)
+    this.connection.window.showErrorMessage(errorMessage)
+    throw new Error(errorMessage)
+    return this
+  }
+
   async validateOrExit(): Promise<this> {
-    if (!this.getSdkPath() || typeof this.getSdkPath() !== 'string') {
-      const errorMessage = `Cannot find ets.sdkPath in initialization options, language server is shutdowning...`
-      this.logger.getConsola().info(errorMessage)
-      this.connection.window.showErrorMessage(errorMessage)
-      throw new Error(errorMessage)
+    const sdkPath = this.getSdkPath()
+    const hmsPath = this.getHmsSdkPath()
+    const etsLoaderPath = this.getEtsLoaderPath()
+    const etsLoaderConfigPath = this.getEtsLoaderConfigPath()
+
+    if (!sdkPath || typeof sdkPath !== 'string') {
+      return this.showErrorAndExit(`Cannot find ets.sdkPath in initialization options, language server is shutdowning...`)
     }
-    if (!await this.isDirectory(Uri.file(this.getSdkPath()))) {
-      const errorMessage = `The ets.sdkPath is not a directory, path: ${this.getSdkPath()}, language server is shutdowning...`
-      this.logger.getConsola().info(errorMessage)
-      this.connection.window.showErrorMessage(errorMessage)
-      throw new Error(errorMessage)
+    if (!await this.isDirectory(Uri.file(sdkPath))) {
+      return this.showErrorAndExit(`The ets.sdkPath is not a directory, path: ${sdkPath}, language server is shutdowning...`)
     }
+    if (!await this.isDirectory(Uri.file(etsLoaderPath))) {
+      return this.showErrorAndExit(`Cannot find ets-loader folder, path: ${etsLoaderPath}, language server is shutdowning...`)
+    }
+    if (!await this.isFile(Uri.file(etsLoaderConfigPath))) {
+      return this.showErrorAndExit(`Cannot find ets-loader tsconfig.json file, path: ${etsLoaderConfigPath}, language server is shutdowning...`)
+    }
+    if (hmsPath && !await this.isDirectory(Uri.file(hmsPath))) {
+      return this.showErrorAndExit(`The ets.hmsPath is not a directory, path: ${hmsPath}, language server is shutdowning...`)
+    }
+    this.logger.getConsola().info(`ets.sdkPath: ${sdkPath}`)
+    this.logger.getConsola().info(`ets.hmsPath: ${hmsPath}`)
+    this.logger.getConsola().info(`ets-loader path: ${etsLoaderPath}`)
+    this.logger.getConsola().info(`ets-loader tsconfig.json path: ${etsLoaderConfigPath}`)
     return this
   }
 
@@ -71,8 +94,8 @@ export class ConfigResolver {
 
   async getEtsLoaderConfig(): Promise<import('type-fest').TsConfigJson> {
     const etsLoaderConfigPath = this.getEtsLoaderConfigPath()
-    const etsLoaderConfig = await this.fs.readFile(Uri.file(etsLoaderConfigPath)).then(buffer => buffer.toString())
-    const { config = {} } = ets.parseConfigFileTextToJson(etsLoaderConfigPath, etsLoaderConfig)
+    const etsLoaderConfig = await this.fs.readFile(Uri.file(etsLoaderConfigPath))
+    const { config = {} } = ets.parseConfigFileTextToJson(etsLoaderConfigPath, etsLoaderConfig.toString())
     return config
   }
 

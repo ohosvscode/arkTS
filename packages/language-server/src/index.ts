@@ -53,6 +53,7 @@ connection.onInitialize(async (params) => {
       diagnosticMessages,
       async (ctx) => {
         const mergedSettings = await configuration.toCompilationSettings()
+        logger.getConsola().info(`Merged settings: ${JSON.stringify(mergedSettings, null, 2)}`)
         ctx.projectHost.getCompilationSettings = () => mergedSettings as import('typescript').CompilerOptions
 
         return {
