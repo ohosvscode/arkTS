@@ -1,9 +1,34 @@
-import type { Uri } from '@vstils/core'
+import { Uri } from '@vstils/core'
 
 export namespace UriUtil {
+  function looksLikeUri(value: string): boolean {
+    return /^[a-z][a-z\d+.-]*:\/\//i.test(value)
+  }
+
+  function toUri(value: string): Uri {
+    return looksLikeUri(value) ? Uri.parse(value) : Uri.file(value)
+  }
+
+  function normalizeFsPath(fsPath: string): string {
+    let normalized = fsPath.replaceAll('\\', '/')
+    if (normalized.length > 1 && normalized.endsWith('/')) {
+      normalized = normalized.slice(0, -1)
+    }
+    if (/^[a-z]:\//i.test(normalized)) {
+      normalized = normalized.toLowerCase()
+    }
+    return normalized
+  }
+
+  function isPathContains(childPath: string, parentPath: string): boolean {
+    if (childPath === parentPath) return true
+    return childPath.startsWith(`${parentPath}/`)
+  }
+
   export function isContains<CompareFolderUri extends Partial<Uri> & Pick<Uri, 'fsPath' | 'toString' | 'path'>>(uriStr: string, compareFolderUri: CompareFolderUri): boolean {
-    return uriStr.startsWith(compareFolderUri.fsPath)
-      || uriStr.startsWith(compareFolderUri.toString())
-      || uriStr.startsWith(compareFolderUri.path)
+    const uriPath = normalizeFsPath(toUri(uriStr).fsPath)
+    return isPathContains(uriPath, normalizeFsPath(toUri(compareFolderUri.fsPath).fsPath))
+      || isPathContains(uriPath, normalizeFsPath(toUri(compareFolderUri.toString()).fsPath))
+      || isPathContains(uriPath, normalizeFsPath(toUri(compareFolderUri.path).fsPath))
   }
 }
