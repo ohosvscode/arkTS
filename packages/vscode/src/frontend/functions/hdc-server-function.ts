@@ -4,6 +4,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import axios from 'axios'
+import { BirpcReturn } from 'birpc'
 import hbs from 'handlebars'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
@@ -11,7 +12,7 @@ import * as vscode from 'vscode'
 import { ProtocolContext } from '../../context/protocol-context'
 import { InitialCallbackEvent } from '../../context/webview-context'
 import { WebviewContainer } from '../../context/webview-html-loader'
-import { HdcManager } from '../../hdc-manager'
+import { CurrentConnectKey, HdcManager } from '../../hdc-manager'
 import { HilogController } from '../../hilog'
 import { SnapshotPreviewer } from '../../views/snapshot-previewer'
 import { ConnectDeviceCommand } from '../commands/connect-device-command'
@@ -31,14 +32,17 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
   @Autowired private readonly snapshotPreviewer: SnapshotPreviewer
 
   private webviewContainer: WebviewContainer
+  private hdcConnection: BirpcReturn<HdcManagerConnectionProtocol.ClientFunction, HdcManagerConnectionProtocol.ServerFunction>
 
   onRpcInitialized(ctx: InitialCallbackEvent<HdcManagerConnectionProtocol.ClientFunction, HdcManagerConnectionProtocol.ServerFunction>): void {
     super.onRpcInitialized(ctx)
     this.webviewContainer = ctx.webviewContainer
+    this.hdcConnection = ctx.connection
+
     this.extensionContext.subscriptions.push(
-      vscode.commands.registerCommand('ets.refreshLayoutsCheckerTool', async () => ctx.connection.onRefreshLayouts()),
-      vscode.commands.registerCommand('ets.collapseAllLayoutsCheckerToolTree', async () => ctx.connection.onCollapseAllLayouts()),
-      vscode.commands.registerCommand('ets.expandAllLayoutsCheckerToolTree', async () => ctx.connection.onExpandAllLayouts()),
+      vscode.commands.registerCommand('ets.refreshLayoutsCheckerTool', async () => ctx.connection.refreshLayouts()),
+      vscode.commands.registerCommand('ets.collapseAllLayoutsCheckerToolTree', async () => ctx.connection.collapseAllLayouts()),
+      vscode.commands.registerCommand('ets.expandAllLayoutsCheckerToolTree', async () => ctx.connection.expandAllLayouts()),
       vscode.commands.registerCommand('ets.switchApplicationViewType', async () => {
         const grid = this.translator.t('hdcManager.application.viewType.grid.title')
         const list = this.translator.t('hdcManager.application.viewType.list.title')
@@ -53,6 +57,11 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
           await ctx.connection.setApplicationViewType('list')
         }
       }),
+      vscode.commands.registerCommand('ets.disconnectDevice', async () => {
+        const connectKey = this.hdcManager.getCurrentConnectKey()
+        if (typeof connectKey !== 'string') return
+        await this.disconnectDevice(connectKey)
+      }),
     )
   }
 
@@ -60,7 +69,7 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
     return this.hdcManager.getHdcPath()
   }
 
-  async setCurrentConnectKey(connectKey: string | -1): Promise<void> {
+  async setCurrentConnectKey(connectKey: CurrentConnectKey): Promise<void> {
     this.hdcManager.setCurrentConnectKey(connectKey)
   }
 
@@ -135,6 +144,7 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
 
   async openConnectDeviceDialog(): Promise<void> {
     await this.connectDeviceCommand.onExecuteCommand()
+    await this.hdcConnection.refreshCurrentLoop()
   }
 
   async disconnectDevice(connectKey: string): Promise<void> {
@@ -144,8 +154,9 @@ export class HdcServerFunctionImpl extends ProtocolContext<HdcManagerConnectionP
       const hdcPath = await this.getHdcPath()
       if (!hdcPath) return
       const disconnectedMessage = child_process.execSync(`${hdcPath} tconn ${connectKey} -remove`, { encoding: 'utf-8' }).trim()
-      console.warn(`${connectKey} disconnected: ${disconnectedMessage}`)
+      this.getConsola().info(`${connectKey} disconnected, message: ${disconnectedMessage.trim() || 'no message.'}.`)
     }
+    await this.hdcConnection.refreshCurrentLoop()
   }
 
   async getProcesses(connectKey: string): Promise<HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Response> {

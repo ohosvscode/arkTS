@@ -7,6 +7,7 @@ const { onLoop, isExecuting } = useHdcLoop()
 
 const currentDevice = ref<string | undefined>(undefined)
 provide('currentDevice', currentDevice)
+watch(currentDevice, () => connection.setCurrentConnectKey?.(currentDevice.value ?? 0), { immediate: true })
 
 const currentTab = ref<HdcManagerConnectionProtocol.ServerFunction.SetCurrentTab.Tab>('overview')
 provide('currentTab', currentTab)
@@ -66,7 +67,10 @@ const deviceOptions = computed<SelectMixedOption[]>(
           <NSelect v-model:value="currentDevice" class="ml-1" size="tiny" menu-size="tiny" :options="deviceOptions" />
         </template>
         <template #suffix>
-          <NSpin v-if="isExecuting" :size="12" />
+          <div class="flex items-center gap-2">
+            <NSpin v-if="isExecuting" :size="12" />
+            <HdcLoop />
+          </div>
         </template>
         <NTab name="overview" tab="概览" display-directive="show:lazy" />
         <NTab name="application" tab="应用" display-directive="show:lazy" />

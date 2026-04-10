@@ -51,6 +51,7 @@ export class HdcManager implements Command {
     this.currentConnectKey = connectKey
     const stored: string | number | undefined = connectKey === 0 ? '0' : connectKey
     this.extensionContext.globalState.update(this.GLOBAL_STATE_KEY_CURRENT_CONNECT, stored)
+    vscode.commands.executeCommand('setContext', 'ets.hasCurrentConnectKey', typeof connectKey === 'string')
   }
 
   getCurrentConnectKey(): CurrentConnectKey {

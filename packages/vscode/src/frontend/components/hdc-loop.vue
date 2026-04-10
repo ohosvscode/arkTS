@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-const { currentProgressSeconds, progressPercentage, loopInterval, pause, resume, isActive } = useHdcLoop()
+const { currentProgressSeconds, progressPercentage, loopInterval, pause, resume, isActive, execute } = useHdcLoop()
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const { currentProgressSeconds, progressPercentage, loopInterval, pause, resume,
     </NTooltip>
     <NPopover :show-arrow="false">
       <template #trigger>
-        <NProgress :percentage="progressPercentage" type="circle" class="w-4! text-2! select-none cursor-pointer">
+        <NProgress :percentage="progressPercentage" type="circle" class="w-4! text-2! select-none cursor-pointer" @click="execute">
           {{ currentProgressSeconds.toFixed() }}
         </NProgress>
       </template>

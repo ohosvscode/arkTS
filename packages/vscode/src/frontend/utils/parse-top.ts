@@ -1,37 +1,47 @@
-import type { HdcManagerConnectionProtocol } from '../interfaces/hdc-connection-protocol'
 import { Service } from 'unioc'
+import { HdcManagerConnectionProtocol } from '../interfaces/hdc-connection-protocol'
 
 @Service
 export class TopCommandParser {
   parseMemInfo(line: string = ''): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Memory {
-    const [total, used, free, buffers] = line.trim()
-      .split('Mem:')?.[1]
-      ?.trim()
-      ?.split(',')
-      ?.map(item => item?.trim()?.split(' ')?.[0]?.replace(/M$/, '') ?? '')
-      ?.map(Number) ?? []
+    try {
+      const [total, used, free, buffers] = line.trim()
+        .split('Mem:')?.[1]
+        ?.trim()
+        ?.split(',')
+        ?.map(item => item?.trim()?.split(' ')?.[0]?.replace(/M$/, '') ?? '')
+        ?.map(Number) ?? []
 
-    return {
-      total,
-      used,
-      free,
-      buffers,
+      return {
+        total,
+        used,
+        free,
+        buffers,
+      }
+    }
+    catch {
+      return HdcManagerConnectionProtocol.ServerFunction.GetProcesses.defaultMemory
     }
   }
 
   parseSwapInfo(line: string = ''): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Swap {
-    const [total, used, free, cached] = line.trim()
-      .split('Swap:')?.[1]
-      ?.trim()
-      ?.split(',')
-      .map(item => item.trim().split(' ')?.[0].replace(/M$/, ''))
-      .map(Number)
+    try {
+      const [total, used, free, cached] = line.trim()
+        .split('Swap:')?.[1]
+        ?.trim()
+        ?.split(',')
+        .map(item => item.trim().split(' ')?.[0].replace(/M$/, ''))
+        .map(Number)
 
-    return {
-      total,
-      used,
-      free,
-      cached,
+      return {
+        total,
+        used,
+        free,
+        cached,
+      }
+    }
+    catch {
+      return HdcManagerConnectionProtocol.ServerFunction.GetProcesses.defaultSwap
     }
   }
 
@@ -55,66 +65,86 @@ export class TopCommandParser {
   }
 
   parseCpuLine(line: string = ''): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.CPU {
-    const [cpuTotal, cpuUser,, cpuSys, cpuIdle, cpuIoWait, cpuIrq, cpuSoftIrq, cpuHost] = this.normalizeSpaces(line)
-      .map(item => item.split('%'))
+    try {
+      const [cpuTotal, cpuUser,, cpuSys, cpuIdle, cpuIoWait, cpuIrq, cpuSoftIrq, cpuHost] = this.normalizeSpaces(line)
+        .map(item => item.split('%'))
 
-    return {
-      total: Number(cpuTotal?.[0]),
-      user: Number(cpuUser?.[0]),
-      system: Number(cpuSys?.[0]),
-      idle: Number(cpuIdle?.[0]),
-      ioWait: Number(cpuIoWait?.[0]),
-      irq: Number(cpuIrq?.[0]),
-      softIrq: Number(cpuSoftIrq?.[0]),
-      host: Number(cpuHost?.[0]),
+      return {
+        total: Number(cpuTotal?.[0]),
+        user: Number(cpuUser?.[0]),
+        system: Number(cpuSys?.[0]),
+        idle: Number(cpuIdle?.[0]),
+        ioWait: Number(cpuIoWait?.[0]),
+        irq: Number(cpuIrq?.[0]),
+        softIrq: Number(cpuSoftIrq?.[0]),
+        host: Number(cpuHost?.[0]),
+      }
+    }
+    catch {
+      return HdcManagerConnectionProtocol.ServerFunction.GetProcesses.defaultCPU
     }
   }
 
   parseProcesses(lines: string[] = []): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Process[] {
-    return lines.map((line) => {
-      const [pid, user, priority, nice, virt, res, shr, status, cpu, mem, time, ...command] = this.normalizeSpaces(line, 10)
+    try {
+      return lines.map((line) => {
+        const [pid, user, priority, nice, virt, res, shr, status, cpu, mem, time, ...command] = this.normalizeSpaces(line, 10)
 
-      return {
-        pid: Number(pid),
-        user: user ?? '',
-        priority: Number(priority),
-        nice: Number(nice),
-        virt,
-        res,
-        shr,
-        status: status ?? '',
-        cpu: Number(cpu),
-        mem: Number(mem),
-        time: time ?? '',
-        command: command?.join(' ') ?? '',
-      }
-    })
+        return {
+          pid: Number(pid),
+          user: user ?? '',
+          priority: Number(priority),
+          nice: Number(nice),
+          virt,
+          res,
+          shr,
+          status: status ?? '',
+          cpu: Number(cpu),
+          mem: Number(mem),
+          time: time ?? '',
+          command: command?.join(' ') ?? '',
+        }
+      })
+    }
+    catch {
+      return []
+    }
   }
 
   parseTasks(line: string = ''): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Task {
-    const parsedData = line.replace(/Tasks:/, '').trim().split(',').map(item => item.trim().split(' ') as [string, string])
+    try {
+      const parsedData = line.replace(/Tasks:/, '').trim().split(',').map(item => item.trim().split(' ') as [string, string])
 
-    return {
-      total: Number(parsedData[0]?.[0]),
-      running: Number(parsedData[1]?.[0]),
-      sleeping: Number(parsedData[2]?.[0]),
-      stopped: Number(parsedData[3]?.[0]),
-      zombie: Number(parsedData[4]?.[0]),
+      return {
+        total: Number(parsedData[0]?.[0]),
+        running: Number(parsedData[1]?.[0]),
+        sleeping: Number(parsedData[2]?.[0]),
+        stopped: Number(parsedData[3]?.[0]),
+        zombie: Number(parsedData[4]?.[0]),
+      }
+    }
+    catch {
+      return HdcManagerConnectionProtocol.ServerFunction.GetProcesses.defaultTask
     }
   }
 
   parseTopCommand(output: string = ''): HdcManagerConnectionProtocol.ServerFunction.GetProcesses.Response {
-    const processes = output
-      .split('\n')
-      .map(line => line.trim())
-      .filter(Boolean)
+    try {
+      const processes = output
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
 
-    return {
-      tasks: this.parseTasks(processes[0] ?? ''),
-      memory: this.parseMemInfo(processes[1] ?? ''),
-      swap: this.parseSwapInfo(processes[2] ?? ''),
-      cpu: this.parseCpuLine(processes[3] ?? ''),
-      processes: this.parseProcesses(processes.slice(5) ?? []),
+      return {
+        tasks: this.parseTasks(processes[0] ?? ''),
+        memory: this.parseMemInfo(processes[1] ?? ''),
+        swap: this.parseSwapInfo(processes[2] ?? ''),
+        cpu: this.parseCpuLine(processes[3] ?? ''),
+        processes: this.parseProcesses(processes.slice(5) ?? []),
+      }
+    }
+    catch {
+      return HdcManagerConnectionProtocol.ServerFunction.GetProcesses.defaultResponse
     }
   }
 }

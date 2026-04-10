@@ -13,6 +13,7 @@
   "command.collapseAllLayoutsCheckerToolTree": "Collapse All Layouts Tree",
   "command.expandAllLayoutsCheckerToolTree": "Expand All Layouts Tree",
   "command.switchApplicationViewType": "Switch Application View Type",
+  "command.disconnectDevice": "Disconnect current device",
   "submenus.applicationViewTypeMenu": "Switch application view type",
   "configuration.ets.baseSdkPath.description": "The default OpenHarmony SDK base path. All versions of SDKs will be installed under this path. (This path corresponds to the OpenHarmony SDK location in DevEco Studio settings)",
   "configuration.ets.hmsPath.description": "The path to the HMS SDK path. Because HMS SDK is independent of OpenHarmony SDK, it needs to be set separately. Generally, you can find the SDK in the DevEco Studio installation directory. (This path corresponds to the `sdk/default/harmony` path in the DevEco Studio installation directory)",

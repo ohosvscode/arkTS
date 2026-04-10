@@ -1,5 +1,5 @@
 import type { CompatibleDisposable, EventListener } from '@vstils/core'
-import type { Pausable } from '@vueuse/core'
+import type { Fn, Pausable } from '@vueuse/core'
 import type { DeepReadonly, Ref } from 'vue'
 import { Disposable } from '@vstils/core'
 
@@ -22,7 +22,7 @@ function resetProgressCycle(): void {
   currentProgressSeconds.value = 0
 }
 
-async function executeLoopCycle(): Promise<void> {
+async function execute(): Promise<void> {
   if (executing.value) return
   executing.value = true
   progressPercentage.value = 100
@@ -43,7 +43,7 @@ function onTick(): void {
   const capped = Math.min(elapsed, intervalMs)
   progressPercentage.value = (capped / intervalMs) * 100
   currentProgressSeconds.value = capped / 1000
-  if (elapsed >= intervalMs) void executeLoopCycle()
+  if (elapsed >= intervalMs) void execute()
 }
 
 const { pause, resume, isActive } = useIntervalFn(onTick, PROGRESS_TICK_MS, { immediate: true })
@@ -59,9 +59,21 @@ export interface HdcLoop extends Pausable {
   readonly progressPercentage: DeepReadonly<Ref<number>>
   readonly currentProgressSeconds: DeepReadonly<Ref<number>>
   readonly loopInterval: Ref<number>
+  readonly execute: Fn
+}
+
+let initialized = false
+
+function initializeRefreshCurrentLoopListener(): void {
+  if (initialized) return
+  const { onRefreshCurrentLoop } = useHdcConnection()
+  onRefreshCurrentLoop(() => execute())
+  initialized = true
 }
 
 export function useHdcLoop(): HdcLoop {
+  initializeRefreshCurrentLoopListener()
+
   return {
     pause,
     resume,
@@ -75,5 +87,6 @@ export function useHdcLoop(): HdcLoop {
     progressPercentage: readonly(progressPercentage),
     currentProgressSeconds: readonly(currentProgressSeconds),
     loopInterval,
+    execute,
   }
 }
