@@ -39,7 +39,7 @@
           "activeOnStart": true,
           "beginsPattern": "Build start",
           // Match the build in xxxms
-          "endsPattern": "Build finished."
+          "endsPattern": "✔ Build"
         }
       },
       "group": "build"

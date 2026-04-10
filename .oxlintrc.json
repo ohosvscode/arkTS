@@ -1,8 +1,0 @@
-{
-  "ignorePatterns": [
-    "ohos-typescript/**/*",
-    "sample/**/*",
-    "packages/declarations/ets/**/*",
-    "packages/vfs/src/**/*"
-  ]
-}

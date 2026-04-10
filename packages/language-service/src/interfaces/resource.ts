@@ -1,5 +1,5 @@
 import type { DisposableSignal, Resource as RustResource } from '@arkts/project-detector'
-import type { Disposable } from 'vscode'
+import type { Disposable } from '@vstils/core'
 import type { Product } from './product'
 import { RawfileDirectory as RustRawfileDirectory, ResfileDirectory as RustResfileDirectory, ResourceDirectory as RustResourceDirectory } from '@arkts/project-detector'
 import { UriUtil } from '../utils/uri-util'

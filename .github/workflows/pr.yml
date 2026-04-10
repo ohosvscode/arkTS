@@ -130,3 +130,27 @@ jobs:
         with:
           name: ${{ matrix.settings.env.CPU == 'wasm32' && 'vscode-naily-ets-web-none' || format('vscode-naily-ets-{0}-{1}-{2}', matrix.settings.env.OS, matrix.settings.env.ARCH, matrix.settings.env.OS == 'win32' && 'msvc' || (matrix.settings.env.LIBC || 'glibc')) }}
           path: packages/vscode/vscode-naily-ets-*.vsix
+  publish:
+    name: Publish packages to pkg.pr.new
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v5
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.17.0
+          run_install: true
+
+      - name: Publish packages
+        run: pnpm dlx pkg-pr-new publish --compact --pnpm './packages/*'

@@ -12,10 +12,11 @@ import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createArkTServices } from '@arkts/language-service'
 import { format } from '@ohos-rs/oxk'
 import { createConnection, createServer, createTypeScriptProject } from '@volar/language-server/node'
+import { Uri } from '@vstils/core'
+import { createFileSystemRegistry } from '@vstils/fs'
+import { createNodeFileSystemProvider } from '@vstils/fs/node'
 import * as ets from 'ohos-typescript'
 import { create as createTypeScriptServices } from 'volar-service-typescript'
-import { createNodeFileSystem } from 'vscode-fs'
-import { URI, Utils } from 'vscode-uri'
 import { ConfigResolver } from './classes/config-resolver'
 import { ProjectDetectorManagerService } from './classes/project-manager'
 import { patchSemantic } from './patches/patch-semantic'
@@ -29,8 +30,9 @@ connection.onRequest('ets/formatDocument', async e => format(e.textDocument.uri,
 connection.onInitialize(async (params) => {
   const diagnosticMessages = await resolveDiagnosticMessages(params, logger, fileUri)
   const projectDetectorManagerService = new ProjectDetectorManagerService(connection, params, logger)
-  const fs = await createNodeFileSystem()
-  const configuration = await new ConfigResolver(logger, projectDetectorManagerService, params, fs, Utils.joinPath(URI.parse(fileUri), '..'), connection).validateOrExit()
+  const fsRegistry = await createFileSystemRegistry()
+  fsRegistry.registerFileSystemProvider('file', await createNodeFileSystemProvider())
+  const configuration = await new ConfigResolver(logger, projectDetectorManagerService, params, fsRegistry.fs, Uri.joinPath(Uri.parse(fileUri), '..'), connection).validateOrExit()
   const configurator = configuration.toArkTSServicesOptions()
   const typescriptServices = createTypeScriptServices(ets as unknown as typeof import('typescript'))
   patchSemantic(typescriptServices, configurator) // patch typescript semantic service
@@ -51,11 +53,12 @@ connection.onInitialize(async (params) => {
       diagnosticMessages,
       async (ctx) => {
         const mergedSettings = await configuration.toCompilationSettings()
+        logger.getConsola().info(`Merged settings: ${JSON.stringify(mergedSettings, null, 2)}`)
         ctx.projectHost.getCompilationSettings = () => mergedSettings as import('typescript').CompilerOptions
 
         return {
           languagePlugins: [
-            ETSLanguagePlugin(ets, {
+            ETSLanguagePlugin(ets as unknown as typeof import('typescript'), {
               excludePaths: [configuration.getSdkPath(), configuration.getHmsSdkPath()].filter(Boolean) as string[],
               tsdk: configuration.getTsdkPath(),
             }),
@@ -68,7 +71,7 @@ connection.onInitialize(async (params) => {
               else if (fileName.endsWith('.jsx')) return ets.ScriptKind.JSX
               else if (fileName.endsWith('.ts')) return ets.ScriptKind.TS
               else if (fileName.endsWith('.tsx')) return ets.ScriptKind.TSX
-              else if (fileName.endsWith('.json') || fileName.endsWith('.json5')) return ets.ScriptKind.JSON
+              else if (fileName.endsWith('.json') || fileName.endsWith('.json5') || fileName.endsWith('.jsonc')) return ets.ScriptKind.JSON
               else return ets.ScriptKind.Unknown
             }) as (fileName: string) => import('typescript').ScriptKind
           },

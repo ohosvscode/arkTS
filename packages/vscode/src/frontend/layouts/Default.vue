@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sleep } from '../../utils'
+import { sleep } from '@vstils/core'
 
 const route = useRoute()
 const { isOnline } = useNetwork()

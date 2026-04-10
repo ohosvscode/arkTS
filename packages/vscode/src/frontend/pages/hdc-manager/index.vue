@@ -1,89 +1,80 @@
 <script lang="ts" setup>
+import type { SelectMixedOption } from 'naive-ui/es/select/src/interface'
 import type { HdcManagerConnectionProtocol } from '../../interfaces/hdc-connection-protocol'
 
 const { connection } = useHdcConnection()
-const devices = ref<HdcManagerConnectionProtocol.ServerFunction.GetConnectedDevices.Device[]>([])
-const currentDevice = ref<string | undefined>(undefined)
-const deviceInfo = ref<HdcManagerConnectionProtocol.ServerFunction.GetDeviceInfo.Response | undefined>(undefined)
-const deviceInfoLoading = ref(false)
-/** 设备列表清空前的 connectKey，用于恢复时优先选回同一设备，避免误触发 hilog 重启 */
-let lastConnectKeyBeforeDisconnect: string | undefined
+const { onLoop, isExecuting } = useHdcLoop()
 
-async function refreshDeviceInfo(spin: boolean = false) {
+const currentDevice = ref<string | undefined>(undefined)
+provide('currentDevice', currentDevice)
+
+const currentTab = ref<HdcManagerConnectionProtocol.ServerFunction.SetCurrentTab.Tab>('overview')
+provide('currentTab', currentTab)
+watch(currentTab, () => connection.setCurrentTab?.(currentTab.value), { immediate: true })
+
+const devices = ref<string[]>([])
+onLoop(async () => {
   try {
-    if (spin) deviceInfoLoading.value = true
-    if (!currentDevice.value) return
-    deviceInfo.value = await connection.getDeviceInfo?.(currentDevice.value)
+    devices.value = await connection.getConnectedDevices?.() ?? []
   }
   finally {
-    if (spin) deviceInfoLoading.value = false
+    if (devices.value.length > 0 && !currentDevice.value) currentDevice.value = devices.value[0]
+    if (devices.value.length === 0) currentDevice.value = undefined
   }
-}
-const createDeviceInfo = useCallOnce(() => useIntervalFn(refreshDeviceInfo, 5000, { immediate: true }))
+}, true)
 
-useIntervalFn(async () => {
-  devices.value = (await connection.getConnectedDevices?.() ?? { devices: [] }).devices ?? []
-  if (devices.value.length > 0 && !currentDevice.value) {
-    const preferred = lastConnectKeyBeforeDisconnect
-      ? devices.value.find(d => d.connectKey === lastConnectKeyBeforeDisconnect)
-      : undefined
-    currentDevice.value = (preferred ?? devices.value[0]).connectKey
-    createDeviceInfo()
-  }
-  else if (devices.value.length === 0 && currentDevice.value) {
-    lastConnectKeyBeforeDisconnect = currentDevice.value
-    currentDevice.value = undefined
-    deviceInfo.value = undefined
-  }
-}, 1000, { immediate: true, immediateCallback: true })
-
-watch(currentDevice, () => connection.setCurrentConnectKey(currentDevice.value || -1))
+const deviceOptions = computed<SelectMixedOption[]>(
+  () => devices.value.map(device => ({
+    label: device,
+    value: device,
+  } satisfies SelectMixedOption)),
+)
 </script>
 
 <template>
   <NEmpty v-if="devices.length === 0" :description="$t('hdcManager.noDevices')" select-none h-screen flex="~ items-center justify-center">
     <template #icon>
-      <div i-ph-plugs-connected-duotone />
+      <div v-if="isExecuting" i-ph-plugs-connected-duotone />
+      <div v-else i-ph-plugs-duotone />
     </template>
     <template #extra>
       <NButton type="primary" size="small" @click="connection.openConnectDeviceDialog?.()">
-        连接设备
+        {{ $t('command.connectDevice') }}
         <template #icon>
           <div i-ph-plug-duotone />
         </template>
       </NButton>
     </template>
   </NEmpty>
-  <NTabs
-    v-else
-    v-model:value="currentDevice"
-    type="card"
-    placement="bottom"
-    size="small"
-    addable
-    closable
-    :theme-overrides="{ tabPaddingSmallCard: '6px 16px' }"
-    @add="connection.openConnectDeviceDialog?.()"
-    @close="connectKey => connection.disconnectDevice?.(connectKey)"
-  >
-    <NTabPane v-for="(device, index) in devices" :key="index" :name="device.connectKey">
-      <Hilog :current-device="currentDevice" :device-info-loading="deviceInfoLoading" @open-hilog="connection.openHilog?.()" />
-      <NSplit direction="horizontal" :default-size="0.70" :max="0.70" :min="0.60" pane1-class="pr-0.5" pane2-class="pl-0.5">
-        <template #1>
-          <div flex="~ col gap-2">
-            <BasicDeviceInfo w-full :device-info="deviceInfo" :device="device" :device-info-loading="deviceInfoLoading" />
-            <BatteryCard w-full :device-info="deviceInfo" :device-info-loading="deviceInfoLoading" />
-          </div>
+  <div v-else class="mb-5">
+    <LazyDiv :condition="currentTab === 'overview'">
+      <Hilog class="mt-2" />
+      <Overview />
+    </LazyDiv>
+    <LazyDiv :condition="currentTab === 'application'">
+      <Application />
+    </LazyDiv>
+    <LazyDiv :condition="currentTab === 'processes'">
+      <Processes />
+    </LazyDiv>
+    <LazyDiv :condition="currentTab === 'layouts'">
+      <Layouts />
+    </LazyDiv>
+    <div class="main-tab-container">
+      <NTabs v-model:value="currentTab" animated size="small" placement="bottom" :theme-overrides="{ tabGapSmallBar: '15px' }">
+        <template #prefix>
+          <NSelect v-model:value="currentDevice" class="ml-1" size="tiny" menu-size="tiny" :options="deviceOptions" />
         </template>
-        <template #2>
-          <NetworkCard w-full :device-info="deviceInfo" :device-info-loading="deviceInfoLoading" />
+        <template #suffix>
+          <NSpin v-if="isExecuting" :size="12" />
         </template>
-        <template #resize-trigger>
-          <div h-full />
-        </template>
-      </NSplit>
-    </NTabPane>
-  </NTabs>
+        <NTab name="overview" tab="概览" display-directive="show:lazy" />
+        <NTab name="application" tab="应用" display-directive="show:lazy" />
+        <NTab name="processes" tab="进程" display-directive="show:lazy" />
+        <NTab name="layouts" tab="布局" display-directive="show:lazy" />
+      </NTabs>
+    </div>
+  </div>
 </template>
 
 <style>
@@ -94,7 +85,7 @@ body {
 </style>
 
 <style scoped>
-.n-tabs :deep(.n-tabs-nav) {
+.main-tab-container {
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -102,7 +93,12 @@ body {
   padding: 0 10px 0px 10px;
   padding-top: 0;
   z-index: 99;
-  background: var(--vscode-editor-background);
+  background-color: color-mix(in srgb, var(--vscode-editor-background) 95%, transparent);
+  backdrop-filter: blur(20px);
+}
+
+.n-tabs :deep(.n-tabs-bar) {
+  top: inherit;
 }
 </style>
 

@@ -1,6 +1,7 @@
 import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { Hover, LanguageServicePlugin, TextDocument } from '@volar/language-server'
 import { Range } from '@volar/language-server'
+import { Uri } from '@vstils/core'
 import * as ets from 'ohos-typescript'
 import { convertClassificationsToSemanticTokens } from 'volar-service-typescript/lib/semanticFeatures/semanticTokens'
 import { ContextUtil } from '../utils/finder'
@@ -117,7 +118,7 @@ export function patchSemantic(typescriptServices: LanguageServicePlugin[], confi
         // @ts-expect-error
         if (program.isSourceFileDefaultLibrary.patched === true) return program
         const originalIsSourceFileDefaultLibrary = program.isSourceFileDefaultLibrary.bind(program)
-        const patchedIsSourceFileDefaultLibrary = (sourceFile: ets.SourceFile): boolean => sourceFile.fileName.startsWith(config.getSdkPath()) || originalIsSourceFileDefaultLibrary(sourceFile)
+        const patchedIsSourceFileDefaultLibrary = (sourceFile: ets.SourceFile): boolean => Uri.file(sourceFile.fileName).fsPath.startsWith(config.getSdkPath()) || originalIsSourceFileDefaultLibrary(sourceFile)
         patchedIsSourceFileDefaultLibrary.patched = true
         program.isSourceFileDefaultLibrary = patchedIsSourceFileDefaultLibrary
         return program

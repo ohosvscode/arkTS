@@ -1,4 +1,5 @@
 {
+  "name": "@arkts/monorepo",
   "type": "module",
   "private": true,
   "packageManager": "pnpm@10.17.0",
@@ -8,13 +9,13 @@
   },
   "scripts": {
     "build": "pnpm -F vscode-naily-ets build",
+    "build:all": "pnpm -F \"{packages/*}\" build",
     "watch": "pnpm -F vscode-naily-ets watch",
     "pack": "pnpm -F vscode-naily-ets pack",
     "generate": "pnpm -F vscode-naily-ets update",
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
-    "test": "vitest --coverage --ui",
-    "test:compatible": "vitest run e2e/compatible.test.ts",
-    "lint": "eslint --fix && oxlint && tsc --noEmit && vitest --coverage",
+    "test": "vp test --watch --ui",
+    "lint": "eslint --fix && tsc --noEmit --ignoreDeprecations 6.0 && vp test",
     "prepare": "pnpm -F \"{packages/*}\" build"
   },
   "dependencies": {
@@ -94,6 +95,8 @@
     "@vscode/debugprotocol": "catalog:types",
     "@vscode/l10n": "catalog:prod",
     "@vscode/vsce": "catalog:scripts",
+    "@vstils/core": "catalog:prod",
+    "@vstils/fs": "catalog:prod",
     "alien-signals": "catalog:prod",
     "baseline-browser-mapping": "catalog:dev",
     "birpc": "catalog:prod",
@@ -105,6 +108,7 @@
     "fast-glob": "catalog:dev",
     "fflate": "catalog:prod",
     "handlebars": "catalog:prod",
+    "hdckit": "^0.12.1",
     "html5parser": "catalog:scripts",
     "json5": "catalog:prod",
     "kleur": "catalog:prod",
@@ -122,7 +126,6 @@
     "pnpm": "catalog:scripts",
     "readdirp": "catalog:prod",
     "rimraf": "catalog:dev",
-    "simple-git-hooks": "catalog:scripts",
     "source-map-support": "catalog:prod",
     "tar": "catalog:prod",
     "tinyexec": "catalog:prod",
@@ -137,20 +140,18 @@
     "unplugin-vue-router": "catalog:frontend",
     "unzipper": "catalog:prod",
     "vite-plugin-vue-layouts": "catalog:frontend",
+    "vite-plus": "^0.1.16",
     "vite-ssg": "catalog:frontend",
-    "vitest": "catalog:test",
     "vscode-ext-gen": "catalog:dev",
     "vscode-fs": "catalog:prod",
     "vscode-languageserver-textdocument": "catalog:prod",
     "vscode-nls": "catalog:prod",
+    "vscode-uri": "catalog:prod",
     "which": "catalog:prod"
   },
   "pnpm": {
     "overrides": {
       "eslint-plugin-antfu": "3.1.1"
     }
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint"
   }
 }

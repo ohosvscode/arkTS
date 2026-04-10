@@ -79,6 +79,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/snapshot-previewer/': RouteRecordInfo<
+      '/snapshot-previewer/',
+      '/snapshot-previewer',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -137,6 +144,12 @@ declare module 'vue-router/auto-routes' {
     'src/frontend/pages/qualifier-editor/index.vue': {
       routes:
         | '/qualifier-editor/'
+      views:
+        | never
+    }
+    'src/frontend/pages/snapshot-previewer/index.vue': {
+      routes:
+        | '/snapshot-previewer/'
       views:
         | never
     }

@@ -21,4 +21,7 @@ export default naily({
       emitDecoratorMetadata: true,
     },
   },
+  rules: {
+    'vue/singleline-html-element-content-newline': 'off',
+  },
 })

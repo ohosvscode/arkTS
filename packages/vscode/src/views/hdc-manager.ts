@@ -15,14 +15,20 @@ export class HdcManagerView extends WebviewContext<HdcManagerConnectionProtocol.
   @Autowired protected readonly logger: ExtensionLogger
   @Autowired protected readonly fsx: FileSystemContext
 
-  resolveWebviewView(webviewView: vscode.WebviewView): void {
+  async resolveWebviewView(webviewView: vscode.WebviewView): Promise<void> {
     webviewView.webview.options = {
       enableScripts: true,
       enableCommandUris: true,
       enableForms: true,
     }
     this.logger.getConsola().info('HdcManagerView resolved.')
-    super.attachWebview(webviewView, this.extensionContext.extensionUri, 'hdc-manager.html', this.serverFunction, '/hdc-manager')
+    await super.attachWebview({
+      webviewContainer: webviewView,
+      extensionUri: this.extensionContext.extensionUri,
+      htmlName: 'hdc-manager.html',
+      serverFunction: this.serverFunction,
+      initialURL: '/hdc-manager',
+    })
   }
 
   async onActivate(context: vscode.ExtensionContext): Promise<void> {

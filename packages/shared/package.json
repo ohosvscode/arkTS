@@ -48,8 +48,8 @@
     "out"
   ],
   "scripts": {
-    "build": "tsdown --tsconfig ./tsconfig.build.json",
-    "prepublishOnly": "tsdown --tsconfig ./tsconfig.build.json",
+    "build": "vp pack --tsconfig ./tsconfig.build.json",
+    "prepublishOnly": "vp pack --tsconfig ./tsconfig.build.json",
     "release": "pnpm publish"
   },
   "dependencies": {

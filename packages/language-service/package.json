@@ -56,8 +56,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown --tsconfig ./tsconfig.build.json",
-    "prepublishOnly": "tsdown --tsconfig ./tsconfig.build.json",
+    "build": "vp pack --tsconfig ./tsconfig.build.json",
+    "prepublishOnly": "vp pack --tsconfig ./tsconfig.build.json",
     "release": "pnpm publish"
   },
   "dependencies": {
@@ -66,14 +66,14 @@
     "@arkts/types": "workspace:*",
     "@volar/language-core": "catalog:prod",
     "@volar/language-server": "catalog:prod",
+    "@vstils/core": "catalog:prod",
     "fast-glob": "catalog:dev",
     "json5": "catalog:prod",
     "mitt": "catalog:prod",
     "ohos-typescript": "workspace:*",
     "ts-macro": "catalog:dev",
     "vscode-languageserver-textdocument": "catalog:prod",
-    "vscode-languageserver-types": "catalog:prod",
-    "vscode-uri": "catalog:prod"
+    "vscode-languageserver-types": "catalog:prod"
   },
   "devDependencies": {
     "@types/vscode": "catalog:types"

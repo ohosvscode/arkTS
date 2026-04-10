@@ -86,6 +86,7 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     colorInfoPressed: 'var(--vscode-infoForeground)',
     colorInfoFocus: 'var(--vscode-infoForeground)',
     borderInfo: 'var(--vscode-editorInfo-foreground)',
+    textColor: 'var(--vscode-foreground)',
     textColorGhostPrimary: 'var(--vscode-button-background)',
     textColorGhostPrimaryHover: 'var(--vscode-button-hoverBackground)',
   },
@@ -168,6 +169,19 @@ const rawThemeOverrides: GlobalThemeOverrides = {
     borderRadius: '2px',
     borderColor: 'none',
   },
+  Tooltip: {
+    textColor: 'var(--vscode-foreground)',
+  },
+  Tree: {
+    nodeColorHover: 'var(--vscode-list-hoverBackground)',
+    nodeColorActive: 'var(--vscode-list-inactiveSelectionBackground)',
+    nodeColorPressed: 'var(--vscode-list-inactiveSelectionBackground)',
+    lineColor: 'var(--vscode-tree-inactiveIndentGuidesStroke)',
+  },
+  Split: {
+    resizableTriggerColor: 'var(--vscode-tree-inactiveIndentGuidesStroke)',
+    resizableTriggerColorHover: 'var(--vscode-sash-hoverBorder)',
+  },
 }
 
 /** 必须在首次渲染前解析，否则 DataTable 等组件内部会因 seemly 解析 var() 报错 */
@@ -201,3 +215,13 @@ watch(isThrowErrorIfNoNetwork, () => key.value++)
     </template>
   </Suspense>
 </template>
+
+<style>
+.n-split .n-split__resize-trigger {
+  width: 1px !important;
+}
+
+.n-split .n-split__resize-trigger:hover {
+  width: 3px !important;
+}
+</style>

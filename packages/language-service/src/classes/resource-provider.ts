@@ -5,15 +5,15 @@ import type { Product, ProjectDetectorManager } from '../interfaces'
 import type { ContextUtil } from '../utils/context-util'
 import type { LocaleStorage } from '../utils/i18n'
 import type { GlobalCallExpressionFinder } from './global-call-finder'
-import path from 'node:path'
 import { CompletionItemKind, DiagnosticSeverity, FileType, MarkupKind, Position, Range } from '@volar/language-server'
-import { URI } from 'vscode-uri'
+import { Uri } from '@vstils/core'
 import { permissions } from '../auth/permission'
 import { MediaReference } from '../interfaces/media-reference'
 import { Reference } from '../interfaces/reference'
 import { SysResource } from '../interfaces/sys-resource'
 import { simpleTranslate } from '../utils/i18n'
 import { LEADING_TRAILING_QUOTE_REGEX } from '../utils/regex'
+import { UriUtil } from '../utils/uri-util'
 
 export interface ResourceProvider {
   getDefinitionProvider(): ResourceProvider.DefinitionProvider
@@ -64,12 +64,54 @@ export namespace ResourceProvider {
     } satisfies LocaleStorage,
   } as const
 
-  export function create(context: ContextUtil, globalCallExpressionFinder: GlobalCallExpressionFinder, projectDetectorManager: ProjectDetectorManager, config: LanguageServerConfigurator, ets: typeof import('ohos-typescript')): ResourceProvider {
-    const definitionProvider = new DefinitionProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const completionProvider = new CompletionProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const diagnosticProvider = new DiagnosticProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const documentLinkProvider = new DocumentLinkProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const hoverProvider = new HoverProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
+  export function create(
+    context: ContextUtil,
+    globalCallExpressionFinder: GlobalCallExpressionFinder,
+    projectDetectorManager: ProjectDetectorManager,
+    config: LanguageServerConfigurator,
+    ets: typeof import('ohos-typescript'),
+    languageServices: Set<ets.LanguageService>,
+  ): ResourceProvider {
+    const definitionProvider = new DefinitionProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const completionProvider = new CompletionProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const diagnosticProvider = new DiagnosticProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const documentLinkProvider = new DocumentLinkProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const hoverProvider = new HoverProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
 
     return {
       getDefinitionProvider: () => definitionProvider,
@@ -87,9 +129,10 @@ export namespace ResourceProvider {
       protected readonly projectDetectorManager: ProjectDetectorManager,
       protected readonly config: LanguageServerConfigurator,
       protected readonly ets: typeof import('ohos-typescript'),
+      protected readonly languageServices: Set<ets.LanguageService>,
     ) {}
 
-    findProductByUri(uri: string | URI): Product | undefined {
+    findProductByUri(uri: string | Uri): Product | undefined {
       return this.projectDetectorManager.findByUri(uri.toString())
         ?.findByUri(uri.toString())
         ?.findByUri(uri.toString())
@@ -97,7 +140,7 @@ export namespace ResourceProvider {
     }
 
     getReadonlySourceFiles(): readonly ets.SourceFile[] {
-      return this.contextUtil.getLanguageService()?.getProgram()?.getSourceFiles() ?? []
+      return Array.from(this.languageServices).flatMap(languageService => languageService.getProgram()?.getSourceFiles() ?? [])
     }
 
     findStringLiterals<SF extends ets.SourceFile>(sourceFile: SF, escapeText?: string): readonly ets.StringLiteral[] {
@@ -151,9 +194,13 @@ export namespace ResourceProvider {
       return stringLiterals
     }
 
+    protected toTargetUri(pathOrUri: string): string {
+      return pathOrUri.includes('://') ? pathOrUri : Uri.file(pathOrUri).toString()
+    }
+
     async safeStat(filePath: string): Promise<FileStat | false> {
       try {
-        return await this.contextUtil.getContext().env.fs?.stat(URI.file(filePath)) ?? false
+        return await this.contextUtil.getContext().env.fs?.stat(Uri.file(filePath)) ?? false
       }
       catch {
         return false
@@ -162,7 +209,25 @@ export namespace ResourceProvider {
 
     async safeReadDirectory(filePath: string): Promise<[string, FileType][] | false> {
       try {
-        return await this.contextUtil.getContext().env.fs?.readDirectory(URI.file(filePath)) ?? false
+        return await this.contextUtil.getContext().env.fs?.readDirectory(Uri.file(filePath)) ?? false
+      }
+      catch {
+        return false
+      }
+    }
+
+    protected async safeReadDirectoryByUri(uri: Uri): Promise<[string, FileType][] | false> {
+      try {
+        return await this.contextUtil.getContext().env.fs?.readDirectory(uri) ?? false
+      }
+      catch {
+        return false
+      }
+    }
+
+    protected async safeReadFileByUri(uri: Uri): Promise<string | false> {
+      try {
+        return await this.contextUtil.getContext().env.fs?.readFile(uri) ?? false
       }
       catch {
         return false
@@ -171,19 +236,19 @@ export namespace ResourceProvider {
   }
 
   class DefinitionProviderImpl extends ResourceProviderImpl implements DefinitionProvider {
-    async findLocationLinkInElementJsonFile(document: TextDocument, position: Position, decodedUri: URI): Promise<LocationLink[]> {
+    async findLocationLinkInElementJsonFile(document: TextDocument, position: Position, decodedUri: Uri): Promise<LocationLink[]> {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
       const elementReferences = product.findElementReference()
       if (!elementReferences.length) return []
       const currentElementReference = elementReferences.find((reference) => {
-        const underlyingReference = reference.getUnderlyingElementJsonFileReference()
         const underlyingJsonFile = reference.getElementJsonFile().getUnderlyingElementJsonFile()
         const underlyingJsonFileUri = underlyingJsonFile.getUri()
-        if (underlyingJsonFileUri.toString() !== decodedUri.toString()) return false
-        const positionStart = document.positionAt(underlyingReference.getNameStart())
-        const positionEnd = document.positionAt(underlyingReference.getNameEnd())
-        return positionStart.line <= position.line && positionEnd.line >= position.line && positionStart.character <= position.character && positionEnd.character >= position.character
+        if (!UriUtil.isEqual(underlyingJsonFileUri.toString(), decodedUri.toString())) return false
+        const underlyingReference = reference.getUnderlyingElementJsonFileReference()
+        const referencePositionStart = document.positionAt(underlyingReference.getNameStart())
+        const referencePositionEnd = document.positionAt(underlyingReference.getNameEnd())
+        return referencePositionStart.line <= position.line && referencePositionEnd.line >= position.line && referencePositionStart.character <= position.character && referencePositionEnd.character >= position.character
       })
       if (!currentElementReference) return []
 
@@ -195,7 +260,7 @@ export namespace ResourceProvider {
       for (const reference of elementReferences) {
         if (reference.toEtsFormat() !== currentUnderlyingElementJsonFileReference.toEtsFormat()) continue
         // If the same element json file, skip
-        if (reference.getUri().toString() === decodedUri.toString()) continue
+        if (UriUtil.isEqual(reference.getUri().toString(), decodedUri.toString())) continue
         const targetRange = Reference.toRange(reference, true)
         definitions.push({
           targetUri: reference.getUri().toString(),
@@ -206,7 +271,8 @@ export namespace ResourceProvider {
       }
 
       // jump to arkts file
-      const callExpressions = this.getReadonlySourceFiles().flatMap(sourceFile => this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r'))
+      const sourceFiles = this.getReadonlySourceFiles()
+      const callExpressions = sourceFiles.flatMap(sourceFile => this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r'))
 
       for (const callExpression of callExpressions) {
         const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(callExpression)
@@ -216,7 +282,7 @@ export namespace ResourceProvider {
         const targetRange = Reference.toRange(callExpression.arguments[0], true)
 
         definitions.push({
-          targetUri: sourceFile.fileName,
+          targetUri: this.toTargetUri(sourceFile.fileName),
           targetRange,
           targetSelectionRange: targetRange,
           originSelectionRange,
@@ -226,7 +292,7 @@ export namespace ResourceProvider {
       // jump to module.json5
       const moduleJson5Path = product?.getUnderlyingProduct().getModuleJson5Path()
       if (!moduleJson5Path) return definitions
-      const moduleJson5Content = await this.contextUtil.getContext().env.fs?.readFile(URI.parse(moduleJson5Path.toString())) ?? ''
+      const moduleJson5Content = await this.contextUtil.getContext().env.fs?.readFile(Uri.parse(moduleJson5Path.toString())) ?? ''
       if (!moduleJson5Content) return definitions
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), moduleJson5Content)
       const stringLiterals = this.findStringLiterals(sourceFile, currentUnderlyingElementJsonFileReference.toJsonFormat())
@@ -244,12 +310,12 @@ export namespace ResourceProvider {
       return definitions
     }
 
-    async findLocationLinkInModuleJson5(document: TextDocument, position: Position, decodedUri: URI): Promise<LocationLink[]> {
+    async findLocationLinkInModuleJson5(document: TextDocument, position: Position, decodedUri: Uri): Promise<LocationLink[]> {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
       if (!moduleJson5Path) return []
-      if (moduleJson5Path.toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(moduleJson5Path.toString(), decodedUri.toString())) return []
       const content = document.getText()
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), content)
       const stringLiterals = this.findStringLiterals(sourceFile)
@@ -282,7 +348,7 @@ export namespace ResourceProvider {
       return definitions
     }
 
-    findLocationLinkInArkts(document: TextDocument, position: Position, decodedUri: URI): LocationLink[] | null {
+    findLocationLinkInArkts(document: TextDocument, position: Position, decodedUri: Uri): LocationLink[] | null {
       const sourceFile = this.contextUtil.decodeSourceFile(document)
       if (!sourceFile) return null
       const resourceCallExpressions = this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r')
@@ -296,7 +362,7 @@ export namespace ResourceProvider {
 
       if (scope === 'sys') {
         return [{
-          targetUri: this.config.getSysResourcePath(),
+          targetUri: this.toTargetUri(this.config.getSysResourcePath()),
           targetRange: emptyRange,
           targetSelectionRange: emptyRange,
           originSelectionRange: Reference.toRange(currentCallExpression.arguments[0], document, true),
@@ -329,20 +395,21 @@ export namespace ResourceProvider {
       }
     }
 
-    async findLocationLinkInJsonLikeFile(document: TextDocument, position: Position, decodedUri: URI): Promise<LocationLink[]> {
+    async findLocationLinkInJsonLikeFile(document: TextDocument, position: Position, decodedUri: Uri): Promise<LocationLink[]> {
       return [
         ...await this.findLocationLinkInElementJsonFile(document, position, decodedUri),
         ...await this.findLocationLinkInModuleJson5(document, position, decodedUri),
       ]
     }
 
-    provideDefinition(document: TextDocument, position: Position): NullableProviderResult<LocationLink[]> {
+    async provideDefinition(document: TextDocument, position: Position): Promise<LocationLink[] | null> {
       const decodedUri = this.contextUtil.decodeTextDocumentUri(document)
       if (!decodedUri) return null
 
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return this.findLocationLinkInJsonLikeFile(document, position, decodedUri)
         default:
           return this.findLocationLinkInArkts(document, position, decodedUri)
@@ -351,11 +418,11 @@ export namespace ResourceProvider {
   }
 
   class CompletionProviderImpl extends ResourceProviderImpl implements CompletionProvider {
-    async getModuleJson5CompletionList(document: TextDocument, position: Position, decodedUri: URI, triggerCharacter: string): Promise<CompletionItem[]> {
+    async getModuleJson5CompletionList(document: TextDocument, position: Position, decodedUri: Uri, triggerCharacter: string): Promise<CompletionItem[]> {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
-      if (moduleJson5Path.toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(moduleJson5Path.toString(), decodedUri.toString())) return []
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), document.getText())
       const items: CompletionItem[] = []
 
@@ -409,7 +476,9 @@ export namespace ResourceProvider {
 
       // completion for file system
       if (triggerCharacter === '/') {
-        const filePath = path.resolve(path.dirname(moduleJson5Path.fsPath), stringLiteralText)
+        const moduleJson5Uri = Uri.parse(moduleJson5Path.toString())
+        const fileUri = Uri.resolvePath(Uri.dirname(moduleJson5Uri), stringLiteralText)
+        const filePath = fileUri.fsPath
         const fileStat = await this.safeStat(filePath)
         if (fileStat) {
           if (fileStat.type === FileType.Directory) {
@@ -424,7 +493,7 @@ export namespace ResourceProvider {
           }
           else if (fileStat.type === FileType.File) {
             items.push({
-              label: path.basename(filePath),
+              label: Uri.basename(fileUri),
               kind: CompletionItemKind.File,
             })
           }
@@ -449,7 +518,7 @@ export namespace ResourceProvider {
       return items
     }
 
-    getArktsCompletionList(document: TextDocument, position: Position, decodedUri: URI, triggerCharacter: string): CompletionItem[] {
+    getArktsCompletionList(document: TextDocument, position: Position, decodedUri: Uri, triggerCharacter: string): CompletionItem[] {
       if (triggerCharacter === ':' || triggerCharacter === '$') return []
       const sourceFile = this.contextUtil.decodeSourceFile(document)
       if (!sourceFile) return []
@@ -504,6 +573,7 @@ export namespace ResourceProvider {
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return {
             items: await this.getModuleJson5CompletionList(document, position, decodedUri, context.triggerCharacter ?? ''),
             isIncomplete: false,
@@ -518,7 +588,7 @@ export namespace ResourceProvider {
   }
 
   class DiagnosticProviderImpl extends ResourceProviderImpl implements DiagnosticProvider {
-    getArktsDiagnostics(document: TextDocument, decodedUri: URI): Diagnostic[] {
+    getArktsDiagnostics(document: TextDocument, decodedUri: Uri): Diagnostic[] {
       const sourceFile = this.contextUtil.decodeSourceFile(document)
       if (!sourceFile) return []
       const resourceCallExpressions = this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r')
@@ -618,10 +688,10 @@ export namespace ResourceProvider {
       return DiagnosticProviderImpl.isResourceType(resourceType)
     }
 
-    getJsonLikeDiagnostics(document: TextDocument, decodedUri: URI): Diagnostic[] {
+    getJsonLikeDiagnostics(document: TextDocument, decodedUri: Uri): Diagnostic[] {
       const product = this.findProductByUri(decodedUri)
       if (!product) return []
-      if (product.getUnderlyingProduct().getModuleJson5Path().toString() !== decodedUri.toString()) return []
+      if (!UriUtil.isEqual(product.getUnderlyingProduct().getModuleJson5Path().toString(), decodedUri.toString())) return []
       const sourceFile = this.ets.parseJsonText(decodedUri.toString(), document.getText())
       const stringLiterals = this.findStringLiterals(sourceFile)
 
@@ -666,6 +736,7 @@ export namespace ResourceProvider {
       switch (document.languageId) {
         case 'json':
         case 'jsonc':
+        case 'json5':
           return this.getJsonLikeDiagnostics(document, decodedUri)
         default:
           return this.getArktsDiagnostics(document, decodedUri)
@@ -682,6 +753,7 @@ export namespace ResourceProvider {
       const moduleJson5Path = product.getUnderlyingProduct().getModuleJson5Path()
       if (!moduleJson5Path) return null
       const content = document.getText()
+      const moduleJson5Uri = Uri.parse(moduleJson5Path.toString())
       const sourceFile = this.ets.parseJsonText(moduleJson5Path.toString(), content)
       const stringLiterals = this.findStringLiterals(sourceFile)
 
@@ -690,10 +762,10 @@ export namespace ResourceProvider {
       for (const stringLiteral of stringLiterals) {
         const currentStringLiteralText = stringLiteral.getText(sourceFile).replace(LEADING_TRAILING_QUOTE_REGEX, '')
         if (!currentStringLiteralText || currentStringLiteralText === '.') continue
-        const filePath = path.resolve(path.dirname(moduleJson5Path.fsPath), currentStringLiteralText)
+        const filePath = Uri.resolvePath(Uri.dirname(moduleJson5Uri), currentStringLiteralText).fsPath
         if (await this.safeStat(filePath)) {
           documentLinks.push({
-            target: filePath,
+            target: this.toTargetUri(filePath),
             range: Reference.toRange(stringLiteral, sourceFile, true),
           })
         }

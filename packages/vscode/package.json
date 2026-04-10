@@ -245,14 +245,39 @@
           "when": "view == ets.resourceExplorer"
         },
         {
-          "command": "ets.openDeviceManager",
-          "group": "navigation",
+          "command": "ets.connectDevice",
+          "group": "navigation@1",
           "when": "view == ets.hdcManager"
         },
         {
           "command": "ets.copyHdcPathToClipboard",
-          "group": "navigation",
+          "group": "navigation@2",
           "when": "view == ets.hdcManager"
+        },
+        {
+          "command": "ets.openDeviceManager",
+          "group": "navigation@3",
+          "when": "view == ets.hdcManager"
+        },
+        {
+          "command": "ets.refreshLayoutsCheckerTool",
+          "group": "navigation@4",
+          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
+        },
+        {
+          "command": "ets.collapseAllLayoutsCheckerToolTree",
+          "group": "navigation@5",
+          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
+        },
+        {
+          "command": "ets.expandAllLayoutsCheckerToolTree",
+          "group": "navigation@6",
+          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
+        },
+        {
+          "command": "ets.switchApplicationViewType",
+          "group": "navigation@7",
+          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'application'"
         }
       ],
       "view/item/context": [
@@ -417,6 +442,36 @@
         "title": "%command.copyHdcPathToClipboard%",
         "icon": "$(copy)",
         "category": "ETS"
+      },
+      {
+        "command": "ets.connectDevice",
+        "title": "%command.connectDevice%",
+        "icon": "$(plus)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.refreshLayoutsCheckerTool",
+        "title": "%command.refreshLayoutsCheckerTool%",
+        "icon": "$(refresh)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.collapseAllLayoutsCheckerToolTree",
+        "title": "%command.collapseAllLayoutsCheckerToolTree%",
+        "icon": "$(collapse-all)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.expandAllLayoutsCheckerToolTree",
+        "title": "%command.expandAllLayoutsCheckerToolTree%",
+        "icon": "$(expand-all)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.switchApplicationViewType",
+        "title": "%command.switchApplicationViewType%",
+        "icon": "$(eye)",
+        "category": "ETS"
       }
     ],
     "configuration": {
@@ -520,8 +575,8 @@
     ]
   },
   "scripts": {
-    "build": "tsdown",
-    "watch": "cross-env NODE_ENV=development tsdown",
+    "build": "tsx scripts/build.ts",
+    "watch": "tsx scripts/watch.ts",
     "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package",
     "postpack": "tsx scripts/clean-process.ts",
     "update": "vscode-ext-gen --output src/generated/meta.ts --locale zh-cn && vscode-ext-gen --output src/generated/meta.ts --locale zh-cn --readme ../../README.md && vscode-ext-gen --output src/generated/meta.ts --locale --readme ../../README-en.md",

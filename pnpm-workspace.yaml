@@ -23,14 +23,14 @@ catalogs:
     '@vitejs/plugin-vue-jsx': ^5.1.1
     '@vueuse/core': 13.9.0
     markdown-it: ^14.1.0
-    naive-ui: ^2.43.1
+    naive-ui: ^2.44.1
     nprogress: ^0.2.0
     pinia: ^3.0.3
     unocss: ^66.5.1
     unplugin-auto-import: ^20.2.0
     unplugin-vue-components: ^30.0.0
     unplugin-vue-router: ^0.16.1
-    vite: npm:rolldown-vite@latest
+    vite: ^8.0.0
     vite-plugin-vue-layouts: ^0.11.0
     vite-ssg: ^28.2.2
     vue: ^3.5.21
@@ -89,6 +89,8 @@ catalogs:
     '@volar/typescript': ~2.4.23
     '@volar/vscode': ~2.4.23
     '@vscode/l10n': ^0.0.18
+    '@vstils/core': ^0.0.6
+    '@vstils/fs': ^0.0.5
     alien-signals: ^3.0.3
     axios: ^1.12.2
     birpc: ^2.6.1
@@ -104,7 +106,7 @@ catalogs:
     nanoid: ^5.1.6
     readdirp: ^4.1.2
     tar: ^7.4.3
-    typescript: latest
+    typescript: ^6.0.2
     unioc: ^0.0.23
     unzipper: 0.12.3
     volar-service-css: volar-2.4
@@ -117,7 +119,7 @@ catalogs:
     vscode-languageserver-types: ^3.17.5
     vscode-nls: ^5.2.0
     vscode-uri: ^3.1.0
-    vscode-fs: ^0.1.1
+    vscode-fs: ^0.1.4
   scripts:
     '@antfu/nip': ^0.1.0
     '@changesets/changelog-github': ^0.5.1
@@ -130,12 +132,10 @@ catalogs:
     oxc-parser: ^0.90.0
     oxc-walker: ^0.5.2
     pnpm: ^10.31.0
-    simple-git-hooks: ^2.13.1
     tsx: ^4.20.5
   test:
-    '@vitest/coverage-v8': ^4.0.18
-    '@vitest/ui': ^4.0.18
-    vitest: ^4.0.18
+    '@vitest/coverage-v8': ^4.1.2
+    '@vitest/ui': ^4.1.2
   types:
     '@types/markdown-it': ^14.1.2
     '@types/node': latest

@@ -46,15 +46,19 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown --tsconfig ./tsconfig.build.json",
-    "prepublishOnly": "tsdown --tsconfig ./tsconfig.build.json",
+    "build": "vp pack --tsconfig ./tsconfig.build.json",
+    "prepublishOnly": "vp pack --tsconfig ./tsconfig.build.json",
     "release": "pnpm publish"
   },
-  "devDependencies": {
+  "dependencies": {
     "@arkts/language-plugin": "workspace:*",
+    "@volar/typescript": "catalog:prod",
+    "ts-macro": "catalog:dev",
+    "typescript": "catalog:prod"
+  },
+  "devDependencies": {
     "@volar/language-core": "catalog:prod",
     "@volar/language-server": "catalog:prod",
-    "@volar/typescript": "catalog:prod",
     "ohos-typescript": "workspace:*",
     "volar-service-css": "catalog:prod",
     "volar-service-emmet": "catalog:prod",

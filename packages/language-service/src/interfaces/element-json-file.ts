@@ -1,5 +1,5 @@
 import type { DisposableSignal, ElementJsonFile as RustElementJsonFile } from '@arkts/project-detector'
-import type { Disposable } from 'vscode'
+import type { Disposable } from '@vstils/core'
 import type { ElementDirectory } from './element-directory'
 import { ElementJsonFileReference as RustElementJsonFileReference } from '@arkts/project-detector'
 import { ElementJsonFileReference } from './element-json-file-reference'

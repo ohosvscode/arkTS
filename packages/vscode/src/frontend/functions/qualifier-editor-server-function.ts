@@ -1,9 +1,9 @@
 import type { Resource } from '@arkts/language-service'
-import { BirpcReturn } from 'birpc'
 import { Autowired, Service } from 'unioc'
 import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { ProtocolContext } from '../../context/protocol-context'
+import { InitialCallbackEvent } from '../../context/webview-context'
 import { WebviewPanelContext } from '../../context/webview-panel-context'
 import { QualifierEditorConnectionProtocol } from '../interfaces/qualifier-editor-connection-protocol'
 
@@ -18,9 +18,9 @@ export class QualifierEditorServerFunctionImpl extends ProtocolContext<Qualifier
   private resource: Resource | undefined
   private disposeEventEmitter: vscode.EventEmitter<void> | undefined = new vscode.EventEmitter<void>()
 
-  onRpcInitialized(_connection: BirpcReturn<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction>, context: WebviewPanelContext<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction>): void {
-    super.onRpcInitialized(_connection, context)
-    this.disposeEventEmitter?.event(() => context.dispose())
+  onRpcInitialized(ctx: InitialCallbackEvent<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction, any, WebviewPanelContext<QualifierEditorConnectionProtocol.ClientFunction, QualifierEditorConnectionProtocol.ServerFunction>>): void {
+    super.onRpcInitialized(ctx)
+    this.disposeEventEmitter?.event(() => ctx.webviewContext.dispose())
   }
 
   setResourceUri(resource: Resource): void {

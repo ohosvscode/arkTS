@@ -10,9 +10,11 @@ declare global {
   const DeviceManagerFunctionImpl: typeof import('./functions/device-manager-function').DeviceManagerFunctionImpl
   const EffectScope: typeof import('vue').EffectScope
   const HdcServerFunctionImpl: typeof import('./functions/hdc-server-function').HdcServerFunctionImpl
+  const LOOP_INTERVAL: typeof import('./composables/hdc-loop').LOOP_INTERVAL
   const ProjectServerFunctionImpl: typeof import('./functions/project-server-function').ProjectServerFunctionImpl
   const QualifierEditorServerFunctionImpl: typeof import('./functions/qualifier-editor-server-function').QualifierEditorServerFunctionImpl
   const ServerFunctionImpl: typeof import('./functions/hdc-server-function').ServerFunctionImpl
+  const SnapshotPreviewerFunctionImpl: typeof import('./functions/snapshot-previewer-function').SnapshotPreviewerFunctionImpl
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
   const callbacks: typeof import('./composables/on-open-dialog').callbacks
@@ -52,6 +54,7 @@ declare global {
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
   const isDefined: typeof import('@vueuse/core').isDefined
+  const isMounted: typeof import('./composables/life-cycle').isMounted
   const isProxy: typeof import('vue').isProxy
   const isReactive: typeof import('vue').isReactive
   const isReadonly: typeof import('vue').isReadonly
@@ -77,6 +80,7 @@ declare global {
   const onLongPress: typeof import('@vueuse/core').onLongPress
   const onMounted: typeof import('vue').onMounted
   const onOpenDialog: typeof import('./composables/on-open-dialog').onOpenDialog
+  const onProcessesViewTypeChangedEventEmitter: typeof import('./composables/hdc-tab-emitter').onProcessesViewTypeChangedEventEmitter
   const onRenderTracked: typeof import('vue').onRenderTracked
   const onRenderTriggered: typeof import('vue').onRenderTriggered
   const onScopeDispose: typeof import('vue').onScopeDispose
@@ -152,6 +156,7 @@ declare global {
   const useBrowserLocation: typeof import('@vueuse/core').useBrowserLocation
   const useCached: typeof import('@vueuse/core').useCached
   const useCallOnce: typeof import('./composables/call-once').useCallOnce
+  const useCanvasContainImageView: typeof import('./composables/use-canvas-contain-image-view').useCanvasContainImageView
   const useClipboard: typeof import('@vueuse/core').useClipboard
   const useClipboardItems: typeof import('@vueuse/core').useClipboardItems
   const useCloned: typeof import('@vueuse/core').useCloned
@@ -198,6 +203,9 @@ declare global {
   const useGamepad: typeof import('@vueuse/core').useGamepad
   const useGeolocation: typeof import('@vueuse/core').useGeolocation
   const useHdcConnection: typeof import('./connections/hdc-connection').useHdcConnection
+  const useHdcEmitter: typeof import('./composables/hdc-emitter').useHdcEmitter
+  const useHdcLoop: typeof import('./composables/hdc-loop').useHdcLoop
+  const useHdcTabEmitter: typeof import('./composables/hdc-tab-emitter').useHdcTabEmitter
   const useI18n: typeof import('vue-i18n').useI18n
   const useId: typeof import('vue').useId
   const useIdle: typeof import('@vueuse/core').useIdle
@@ -208,6 +216,7 @@ declare global {
   const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
   const useKeyModifier: typeof import('@vueuse/core').useKeyModifier
   const useLastChanged: typeof import('@vueuse/core').useLastChanged
+  const useLifeCycle: typeof import('./composables/life-cycle').useLifeCycle
   const useLoadingFn: typeof import('./composables/use-loading-fn').useLoadingFn
   const useLocalStorage: typeof import('@vueuse/core').useLocalStorage
   const useLocaleData: typeof import('./composables/locale-data').useLocaleData
@@ -261,6 +270,7 @@ declare global {
   const useSessionStorage: typeof import('@vueuse/core').useSessionStorage
   const useShare: typeof import('@vueuse/core').useShare
   const useSlots: typeof import('vue').useSlots
+  const useSnapshotPreviewerConnection: typeof import('./connections/snapshot-previewer-connection').useSnapshotPreviewerConnection
   const useSorted: typeof import('@vueuse/core').useSorted
   const useSpeechRecognition: typeof import('@vueuse/core').useSpeechRecognition
   const useSpeechSynthesis: typeof import('@vueuse/core').useSpeechSynthesis
@@ -326,11 +336,17 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { HdcLoop } from './composables/hdc-loop'
+  import('./composables/hdc-loop')
+  // @ts-ignore
   export type { Input, TextInput, SelectInput, CheckboxInput, TextButtonContent, IconButtonContent, ButtonContent, TextButtonGroupInput, BaseInput, ProjectInput, ProjectConfiguration, ProjectConfigurationContext } from './composables/project-configuration'
   import('./composables/project-configuration')
   // @ts-ignore
   export type { UseAsyncDataReturn } from './composables/use-async-data'
   import('./composables/use-async-data')
+  // @ts-ignore
+  export type { UseCanvasContainImageViewOptions, PreparedCanvas2dContext, UseCanvasContainImageViewReturn } from './composables/use-canvas-contain-image-view'
+  import('./composables/use-canvas-contain-image-view')
   // @ts-ignore
   export type { UseLoadingFnReturn, UseLoadingFnFunctionOptions, UseLoadingFnObjectOptions, UseLoadingFnOptions } from './composables/use-loading-fn'
   import('./composables/use-loading-fn')
@@ -347,9 +363,18 @@ declare global {
   export type { QualifierEditorServerFunctionImpl } from './functions/qualifier-editor-server-function'
   import('./functions/qualifier-editor-server-function')
   // @ts-ignore
+  export type { SnapshotPreviewerFunctionImpl } from './functions/snapshot-previewer-function'
+  import('./functions/snapshot-previewer-function')
+  // @ts-ignore
   export type { DeviceManagerConnection } from './connections/device-manager-connection'
   import('./connections/device-manager-connection')
   // @ts-ignore
+  export type { HdcConnection } from './connections/hdc-connection'
+  import('./connections/hdc-connection')
+  // @ts-ignore
   export type { ProjectConnection, CreateOpenDialogOptions } from './connections/project-connection'
   import('./connections/project-connection')
+  // @ts-ignore
+  export type { SnapshotPreviewerConnection } from './connections/snapshot-previewer-connection'
+  import('./connections/snapshot-previewer-connection')
 }
