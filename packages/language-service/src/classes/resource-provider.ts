@@ -64,12 +64,54 @@ export namespace ResourceProvider {
     } satisfies LocaleStorage,
   } as const
 
-  export function create(context: ContextUtil, globalCallExpressionFinder: GlobalCallExpressionFinder, projectDetectorManager: ProjectDetectorManager, config: LanguageServerConfigurator, ets: typeof import('ohos-typescript')): ResourceProvider {
-    const definitionProvider = new DefinitionProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const completionProvider = new CompletionProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const diagnosticProvider = new DiagnosticProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const documentLinkProvider = new DocumentLinkProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
-    const hoverProvider = new HoverProviderImpl(context, globalCallExpressionFinder, projectDetectorManager, config, ets)
+  export function create(
+    context: ContextUtil,
+    globalCallExpressionFinder: GlobalCallExpressionFinder,
+    projectDetectorManager: ProjectDetectorManager,
+    config: LanguageServerConfigurator,
+    ets: typeof import('ohos-typescript'),
+    languageServices: Set<ets.LanguageService>,
+  ): ResourceProvider {
+    const definitionProvider = new DefinitionProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const completionProvider = new CompletionProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const diagnosticProvider = new DiagnosticProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const documentLinkProvider = new DocumentLinkProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
+    const hoverProvider = new HoverProviderImpl(
+      context,
+      globalCallExpressionFinder,
+      projectDetectorManager,
+      config,
+      ets,
+      languageServices,
+    )
 
     return {
       getDefinitionProvider: () => definitionProvider,
@@ -87,6 +129,7 @@ export namespace ResourceProvider {
       protected readonly projectDetectorManager: ProjectDetectorManager,
       protected readonly config: LanguageServerConfigurator,
       protected readonly ets: typeof import('ohos-typescript'),
+      protected readonly languageServices: Set<ets.LanguageService>,
     ) {}
 
     findProductByUri(uri: string | Uri): Product | undefined {
@@ -97,7 +140,7 @@ export namespace ResourceProvider {
     }
 
     getReadonlySourceFiles(): readonly ets.SourceFile[] {
-      return this.contextUtil.getLanguageService()?.getProgram()?.getSourceFiles() ?? []
+      return Array.from(this.languageServices).flatMap(languageService => languageService.getProgram()?.getSourceFiles() ?? [])
     }
 
     findStringLiterals<SF extends ets.SourceFile>(sourceFile: SF, escapeText?: string): readonly ets.StringLiteral[] {
@@ -172,6 +215,24 @@ export namespace ResourceProvider {
         return false
       }
     }
+
+    protected async safeReadDirectoryByUri(uri: Uri): Promise<[string, FileType][] | false> {
+      try {
+        return await this.contextUtil.getContext().env.fs?.readDirectory(uri) ?? false
+      }
+      catch {
+        return false
+      }
+    }
+
+    protected async safeReadFileByUri(uri: Uri): Promise<string | false> {
+      try {
+        return await this.contextUtil.getContext().env.fs?.readFile(uri) ?? false
+      }
+      catch {
+        return false
+      }
+    }
   }
 
   class DefinitionProviderImpl extends ResourceProviderImpl implements DefinitionProvider {
@@ -181,13 +242,13 @@ export namespace ResourceProvider {
       const elementReferences = product.findElementReference()
       if (!elementReferences.length) return []
       const currentElementReference = elementReferences.find((reference) => {
-        const underlyingReference = reference.getUnderlyingElementJsonFileReference()
         const underlyingJsonFile = reference.getElementJsonFile().getUnderlyingElementJsonFile()
         const underlyingJsonFileUri = underlyingJsonFile.getUri()
         if (!UriUtil.isEqual(underlyingJsonFileUri.toString(), decodedUri.toString())) return false
-        const positionStart = document.positionAt(underlyingReference.getNameStart())
-        const positionEnd = document.positionAt(underlyingReference.getNameEnd())
-        return positionStart.line <= position.line && positionEnd.line >= position.line && positionStart.character <= position.character && positionEnd.character >= position.character
+        const underlyingReference = reference.getUnderlyingElementJsonFileReference()
+        const referencePositionStart = document.positionAt(underlyingReference.getNameStart())
+        const referencePositionEnd = document.positionAt(underlyingReference.getNameEnd())
+        return referencePositionStart.line <= position.line && referencePositionEnd.line >= position.line && referencePositionStart.character <= position.character && referencePositionEnd.character >= position.character
       })
       if (!currentElementReference) return []
 
@@ -210,7 +271,8 @@ export namespace ResourceProvider {
       }
 
       // jump to arkts file
-      const callExpressions = this.getReadonlySourceFiles().flatMap(sourceFile => this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r'))
+      const sourceFiles = this.getReadonlySourceFiles()
+      const callExpressions = sourceFiles.flatMap(sourceFile => this.globalCallExpressionFinder.findGlobalCallExpression(sourceFile, '$r'))
 
       for (const callExpression of callExpressions) {
         const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(callExpression)
@@ -340,7 +402,7 @@ export namespace ResourceProvider {
       ]
     }
 
-    provideDefinition(document: TextDocument, position: Position): NullableProviderResult<LocationLink[]> {
+    async provideDefinition(document: TextDocument, position: Position): Promise<LocationLink[] | null> {
       const decodedUri = this.contextUtil.decodeTextDocumentUri(document)
       if (!decodedUri) return null
 

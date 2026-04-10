@@ -30,10 +30,14 @@ export class ContextUtil {
 
   private documentRegistries: [boolean, string, ets.DocumentRegistry][] = []
 
+  getDocumentRegistries(): [boolean, string, ets.DocumentRegistry][] {
+    return this.documentRegistries
+  }
+
   getDocumentRegistry(
     ets: typeof import('ohos-typescript'),
-    useCaseSensitiveFileNames: boolean,
-    currentDirectory: string,
+    useCaseSensitiveFileNames: boolean = this.context.project.typescript?.sys.useCaseSensitiveFileNames ?? false,
+    currentDirectory: string = this.context.project.typescript?.languageServiceHost.getCurrentDirectory() ?? '',
   ): ets.DocumentRegistry {
     let documentRegistry = this.documentRegistries.find(item =>
       item[0] === useCaseSensitiveFileNames && item[1] === currentDirectory,
@@ -59,11 +63,7 @@ export class ContextUtil {
     if (!this.context.project.typescript?.languageServiceHost) return null
     this._standaloneLanguageService = ets.createLanguageService(
       this.context.project.typescript.languageServiceHost as any,
-      this.getDocumentRegistry(
-        ets,
-        this.context.project.typescript.sys.useCaseSensitiveFileNames,
-        this.context.project.typescript.languageServiceHost.getCurrentDirectory(),
-      ),
+      this.getDocumentRegistry(ets),
     )
     return this._standaloneLanguageService
   }

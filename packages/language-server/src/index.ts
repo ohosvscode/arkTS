@@ -71,7 +71,7 @@ connection.onInitialize(async (params) => {
               else if (fileName.endsWith('.jsx')) return ets.ScriptKind.JSX
               else if (fileName.endsWith('.ts')) return ets.ScriptKind.TS
               else if (fileName.endsWith('.tsx')) return ets.ScriptKind.TSX
-              else if (fileName.endsWith('.json') || fileName.endsWith('.json5')) return ets.ScriptKind.JSON
+              else if (fileName.endsWith('.json') || fileName.endsWith('.json5') || fileName.endsWith('.jsonc')) return ets.ScriptKind.JSON
               else return ets.ScriptKind.Unknown
             }) as (fileName: string) => import('typescript').ScriptKind
           },
