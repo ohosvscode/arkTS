@@ -1,5 +1,15 @@
 # vscode-naily-ets
 
+## 1.3.9
+
+### Patch Changes
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - refactor: redesign hdc manager, using [hdckit](https://github.com/liriliri/hdckit) to capture the screen snapshot and the UI layout, thanks [@liriliri](https://github.com/liriliri) organization for the great work!
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix when goto extension's .d.ts/.d.ets files using to internal arkts language server
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: refactor to using vite-plus for build
+
 ## 1.3.8
 
 ### Patch Changes

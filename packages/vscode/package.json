@@ -2,7 +2,7 @@
   "publisher": "NailyZero",
   "name": "vscode-naily-ets",
   "displayName": "Naily's ArkTS Support",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "private": true,
   "description": "功能最全鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/SDK下载管理/模拟器下载管理/调试运行, 欢迎PR!",
   "author": "Naily Zero <zero@naily.cc>",
