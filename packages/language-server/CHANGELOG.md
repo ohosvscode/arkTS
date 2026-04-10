@@ -1,5 +1,15 @@
 # @arkts/language-server
 
+## 1.3.9
+
+### Patch Changes
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix check default library logic on Windows platform
+
+- Updated dependencies [[`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013), [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013), [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013)]:
+  - @arkts/language-service@1.3.9
+  - @arkts/shared@1.3.9
+
 ## 1.3.8
 
 ### Patch Changes

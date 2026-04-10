@@ -1,5 +1,21 @@
 # @arkts/language-service
 
+## 1.3.9
+
+### Patch Changes
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix UriUtil.isContains checker bug on Windows platform
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: refactor to using vite-plus for build
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - fix: fix `json`/`json5` -> `.ets` goto definition
+
+  > Principle: Use a Set to collect all LanguageService instances and obtain all SourceFile objects.
+  > Because the volar language server creates multiple LanguageService/LanguageServiceHost instances, but not expose API to get all LanguageService/LanguageServiceHost instances, so we need create a Set by ourselves to collect all LanguageService instances.
+
+- Updated dependencies [[`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013)]:
+  - @arkts/shared@1.3.9
+
 ## 1.3.8
 
 ### Patch Changes

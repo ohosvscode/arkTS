@@ -1,5 +1,11 @@
 # @arkts/shared
 
+## 1.3.9
+
+### Patch Changes
+
+- [#299](https://github.com/ohosvscode/arkTS/pull/299) [`bcf51cb`](https://github.com/ohosvscode/arkTS/commit/bcf51cb001d4f55d13ce28ad5f918c442efa9013) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - chore: refactor to using vite-plus for build
+
 ## 1.3.8
 
 ### Patch Changes
