@@ -4,13 +4,6 @@
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "strict": true,
-    "skipLibCheck": true,
-    "allowNonTsExtensions": true
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.ets",
-    "**/*.json",
-    "**/*.json5"
-  ]
+    "skipLibCheck": true
+  }
 }

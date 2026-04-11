@@ -20,6 +20,14 @@ export interface ETSLanguagePluginOptions {
    * should be specified for the `tsdk` path to eliminate incompatibility.
    */
   tsdk?: string
+  /**
+   * The compiler options.
+   */
+  compilerOptions?: ets.CompilerOptions
+  /**
+   * The system.
+   */
+  sys?: ets.System
 }
 
 /**
