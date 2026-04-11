@@ -32,11 +32,28 @@ export class ConnectDeviceCommand implements Command {
       if (!ip) return
       const hdcPath = await this.hdcManager.getHdcPath()
       if (!hdcPath) return
-      vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: connecting }, async () => {
+      const abortController = new AbortController()
+      vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: connecting, cancellable: true }, async (_, token) => {
+        if (token.isCancellationRequested) return
+        token.onCancellationRequested(() => abortController.abort())
+
         await timeout(async () => {
-          const output = child_process.execFileSync(hdcPath, ['tconn', ip], { encoding: 'utf-8' }).trim()
-          if (output === 'Connect OK') vscode.window.showInformationMessage(this.translator.t('hdcManager.connectDeviceDialog.connectByIP.success', ip))
-          else vscode.window.showErrorMessage(this.translator.t('hdcManager.connectDeviceDialog.connectByIP.error', ip, output))
+          return new Promise((resolve, reject) => {
+            child_process.execFile(hdcPath, ['tconn', ip], { signal: abortController.signal }, (error, stdout, stderr) => {
+              if (error) {
+                vscode.window.showErrorMessage(this.translator.t('hdcManager.connectDeviceDialog.connectByIP.error', ip, String(error)))
+                return reject(error)
+              }
+              else if (stdout.includes('Connect OK') || stderr.includes('Connect OK')) {
+                vscode.window.showInformationMessage(this.translator.t('hdcManager.connectDeviceDialog.connectByIP.success', ip))
+                return resolve(true)
+              }
+              else {
+                vscode.window.showErrorMessage(this.translator.t('hdcManager.connectDeviceDialog.connectByIP.error', ip, `${stdout} ${stderr}`))
+                return reject(new Error(`${stdout} ${stderr}`))
+              }
+            })
+          })
         }, 10000, new Error('Connect timeout'))
       })
     }
