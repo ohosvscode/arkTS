@@ -16,7 +16,7 @@
     "release": "pnpm -F \"{packages/*}\" build && tsx ./scripts/publish.ts",
     "test": "vp test --watch --ui",
     "lint": "eslint --fix && tsc --noEmit --ignoreDeprecations 6.0 && vp test",
-    "prepare": "pnpm -F \"{packages/*}\" build"
+    "prepare": "vp config && pnpm -F \"{packages/*}\" build"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "catalog:frontend",
