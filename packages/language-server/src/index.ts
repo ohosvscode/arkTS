@@ -8,6 +8,7 @@ const require = createRequire(fileUri)
 globalThis.require = require
 logger.getConsola().info(`Current file URI: ${fileUri}`)
 
+import process from 'node:process'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createArkTServices } from '@arkts/language-service'
 import { format } from '@ohos-rs/oxk'
@@ -51,7 +52,6 @@ connection.onInitialize(async (params) => {
   }
 
   const mergedSettings = await configuration.toCompilationSettings()
-  logger.getConsola().info(`Merged settings: ${JSON.stringify(mergedSettings, null, 2)}`)
 
   return server.initialize(
     params,
@@ -99,4 +99,4 @@ connection.onInitialized(() => {
 connection.onShutdown(server.shutdown)
 logger.getConsola().info('ETS Language Server is starting...')
 connection.listen()
-logger.getConsola().info('ETS Language Server is started!')
+logger.getConsola().info(`ETS Language Server is started! PID: ${process.pid}`)

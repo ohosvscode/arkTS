@@ -91,6 +91,7 @@ export default defineConfig({
   build: {
     outDir: 'build',
     assetsDir: '.',
+    chunkSizeWarningLimit: 1500,
   },
 
   base: './',
@@ -132,7 +133,10 @@ export default defineConfig({
     },
     format: 'cjs',
     sourcemap: __DEV__,
-    external: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector', '@ohos-rs/oxk'],
+    deps: {
+      neverBundle: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector', '@ohos-rs/oxk'],
+      onlyBundle: false,
+    },
     tsconfig: './tsconfig.json',
     clean: false,
     outDir: '.',

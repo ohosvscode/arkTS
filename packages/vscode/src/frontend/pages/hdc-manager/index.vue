@@ -14,14 +14,14 @@ provide('currentTab', currentTab)
 watch(currentTab, () => connection.setCurrentTab?.(currentTab.value), { immediate: true })
 
 const devices = ref<string[]>([])
-onLoop(async () => {
-  try {
-    devices.value = await connection.getConnectedDevices?.() ?? []
-  }
-  finally {
-    if (devices.value.length > 0 && !currentDevice.value) currentDevice.value = devices.value[0]
-    if (devices.value.length === 0) currentDevice.value = undefined
-  }
+onLoop(() => {
+  connection.getConnectedDevices?.()
+    .then(connectedDevices => connectedDevices ?? [])
+    .then(connectedDevices => devices.value = connectedDevices)
+    .finally(() => {
+      if (devices.value.length > 0 && !currentDevice.value) currentDevice.value = devices.value[0]
+      if (devices.value.length === 0) currentDevice.value = undefined
+    })
 }, true)
 
 const deviceOptions = computed<SelectMixedOption[]>(

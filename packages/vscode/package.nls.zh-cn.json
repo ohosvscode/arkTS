@@ -16,6 +16,7 @@
   "command.resourceExplorer.openResourceQualifierEditor.error": "无法从命令面板打开资源限定符编辑器, 请转到Hvigor资源管理器中选择某个资源, 并点击加号按钮。",
   "command.resourceExplorer.refresh": "刷新 Hvigor 资源管理器",
   "command.restartServer": "重启 ArkTS 服务器",
+  "command.openHilogSettings": "打开 Hilog 设置",
   "submenus.applicationViewTypeMenu": "切换应用视图类型",
   "configuration.ets.baseSdkPath.description": "默认其它版本 OpenHarmony SDK 安装路径路径。所有版本的 SDK 都将安装在此路径下。(此路经对应deveco studio 设置中的 OpenHarmony SDK 位置)",
   "configuration.ets.deployedEmulatorPath.description": "部署的模拟器存放位置。\n\n在 Windows 下, 默认路径为 `%APPDATA%\\Local\\Huawei\\Emulator\\deployed`; 在其他平台下, 默认路径为 `~/.huawei/Emulator/deployed`.",

@@ -56,8 +56,7 @@
     "consola": "catalog:prod",
     "kleur": "catalog:prod",
     "ohos-typescript": "workspace:*",
-    "vscode-languageserver-textdocument": "catalog:prod",
-    "vscode-uri": "catalog:prod"
+    "vscode-languageserver-textdocument": "catalog:prod"
   },
   "devDependencies": {
     "@types/node": "catalog:types",

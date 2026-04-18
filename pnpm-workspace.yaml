@@ -8,6 +8,8 @@ catalog:
 catalogs:
   build:
     tsdown: 0.16.5
+    vite-plus: ^0.1.18
+    vite: npm:@voidzero-dev/vite-plus-core@^0.1.18
   dev:
     baseline-browser-mapping: latest
     fast-glob: ^3.3.3
@@ -20,7 +22,7 @@ catalogs:
     '@iconify-json/ph': ^1.2.2
     '@intlify/unplugin-vue-i18n': ^11.0.3
     '@vitejs/plugin-vue': ^6.0.1
-    '@vitejs/plugin-vue-jsx': ^5.1.1
+    '@vitejs/plugin-vue-jsx': ^5.1.5
     '@vueuse/core': 13.9.0
     markdown-it: ^14.1.0
     naive-ui: ^2.44.1
@@ -30,7 +32,6 @@ catalogs:
     unplugin-auto-import: ^20.2.0
     unplugin-vue-components: ^30.0.0
     unplugin-vue-router: ^0.16.1
-    vite: ^8.0.0
     vite-plugin-vue-layouts: ^0.11.0
     vite-ssg: ^28.2.2
     vue: ^3.5.21
@@ -82,7 +83,6 @@ catalogs:
     '@ohos-rs/oxk-win32-arm64-msvc': ^0.2.2
     '@ohos-rs/oxk-win32-ia32-msvc': ^0.2.2
     '@ohos-rs/oxk-win32-x64-msvc': ^0.2.2
-    '@types/lodash': ^4.17.20
     '@types/unzipper': 0.10.11
     '@volar/language-core': ~2.4.23
     '@volar/language-server': ~2.4.23
@@ -101,7 +101,6 @@ catalogs:
     handlebars: ^4.7.8
     json5: ^2.2.3
     kleur: ^4.1.5
-    lodash: ^4.17.21
     mitt: ^3.0.1
     nanoid: ^5.1.6
     readdirp: ^4.1.2
@@ -118,10 +117,8 @@ catalogs:
     vscode-languageserver-textdocument: ^1.0.12
     vscode-languageserver-types: ^3.17.5
     vscode-nls: ^5.2.0
-    vscode-uri: ^3.1.0
     vscode-fs: ^0.1.4
   scripts:
-    '@antfu/nip': ^0.1.0
     '@changesets/changelog-github': ^0.5.1
     '@changesets/cli': ^2.29.7
     '@vscode/vsce': latest
@@ -133,9 +130,6 @@ catalogs:
     oxc-walker: ^0.5.2
     pnpm: ^10.31.0
     tsx: ^4.20.5
-  test:
-    '@vitest/coverage-v8': ^4.1.2
-    '@vitest/ui': ^4.1.2
   types:
     '@types/markdown-it': ^14.1.2
     '@types/node': latest
@@ -144,6 +138,9 @@ catalogs:
     '@types/vscode': ^1.104.0
     '@vscode/debugprotocol': ^1.68.0
     '@types/which': ^2.0.2
+  test:
+    '@vitest/coverage-v8': ^4.1.4
+    '@vitest/ui': ^4.1.4
 
 dedupeInjectedDeps: false
 

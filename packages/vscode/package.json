@@ -283,6 +283,11 @@
           "command": "ets.switchApplicationViewType",
           "group": "navigation@8",
           "when": "view == ets.hdcManager && ets.hdcManagerTab == 'application'"
+        },
+        {
+          "command": "ets.openHilogSettings",
+          "group": "navigation@9",
+          "when": "view == workbench.panel.output && activeOutputChannel =~ /Hilog/"
         }
       ],
       "view/item/context": [
@@ -482,6 +487,12 @@
         "command": "ets.disconnectDevice",
         "title": "%command.disconnectDevice%",
         "icon": "$(debug-disconnect)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.openHilogSettings",
+        "title": "%command.openHilogSettings%",
+        "icon": "$(settings-gear)",
         "category": "ETS"
       }
     ],

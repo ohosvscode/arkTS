@@ -1,19 +1,27 @@
 import type { Arrayable } from '@vueuse/core'
 import * as child_process from 'node:child_process'
 import { Autowired } from 'unioc'
-import { Disposable } from 'unioc/vscode'
+import { Command, Disposable, ExtensionContext } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { HdcManager } from './hdc-manager'
 
 @Disposable
-export class HilogController implements Disposable {
+@Command('ets.openHilogSettings')
+export class HilogController implements Command, Disposable {
   @Autowired
   private readonly hdcManager: HdcManager
+
+  @Autowired(ExtensionContext)
+  readonly extensionContext: ExtensionContext
 
   private outputChannel = vscode.window.createOutputChannel('Hilog', 'log')
   private child_process: child_process.ChildProcess | undefined
   private logLevel: Arrayable<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'> | undefined
   private connectKey: string | undefined
+
+  onExecuteCommand(): void {
+    vscode.commands.executeCommand('workbench.view.extension.ets-hdc-manager')
+  }
 
   async setLogLevel(logLevel: Arrayable<'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'>, connectKey: string): Promise<void> {
     if (Array.isArray(logLevel) && logLevel.length === 0) {
@@ -35,10 +43,10 @@ export class HilogController implements Disposable {
       this.outputChannel.appendLine(`[ERROR:${connectKey}] HDC path not found`)
       return
     }
-    const args = ['-t', connectKey, 'shell', 'hilog', '-L', Array.isArray(logLevel) ? logLevel.join(',') : logLevel]
+    const args: readonly string[] = ['-t', connectKey, 'shell', 'hilog', '-L', Array.isArray(logLevel) ? logLevel.join(',') : logLevel]
     this.outputChannel.appendLine(`[INFO:${connectKey}] Executing: ${hdcPath} ${args.join(' ')}`)
     // 使用 spawn 而非 exec：exec() 会缓冲全部 stdout/stderr，超过 maxBuffer（默认约 1MB）时 Node 会发 SIGTERM 杀进程；hilog 持续输出会触发
-    this.child_process = child_process.spawn(hdcPath, args, { stdio: ['ignore', 'pipe', 'pipe'] })
+    this.child_process = child_process.execFile(hdcPath, args, { maxBuffer: Infinity })
     this.child_process.stdout?.on('data', chunk => this.outputChannel.append(chunk.toString()))
     this.child_process.stderr?.on('data', chunk => this.outputChannel.append(chunk.toString()))
     this.child_process.on('close', (code, signal) => this.outputChannel.appendLine(`[WARNING:${connectKey}] Hilog closed with code ${code} ${signal ? `and signal ${signal}` : ''}`))

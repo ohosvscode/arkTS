@@ -37,11 +37,13 @@ export function createEmptyVirtualCode<T extends Record<string, any>>(snapshot: 
 }
 
 export class ETSVirtualCode extends TsmVirtualCode {
-  readonly filePath: string
-
-  constructor(filePath: string, sourceFile: ts.SourceFile, languageId: string, plugins: TsmLanguagePlugin[]) {
+  constructor(
+    readonly filePath: string,
+    sourceFile: ts.SourceFile,
+    languageId: string,
+    plugins: TsmLanguagePlugin[],
+  ) {
     super(filePath, sourceFile, languageId, plugins)
-    this.filePath = filePath
   }
 }
 
