@@ -8,6 +8,7 @@ const require = createRequire(fileUri)
 globalThis.require = require
 logger.getConsola().info(`Current file URI: ${fileUri}`)
 
+import process from 'node:process'
 import { ETSLanguagePlugin } from '@arkts/language-plugin'
 import { createArkTServices } from '@arkts/language-service'
 import { format } from '@ohos-rs/oxk'
@@ -15,12 +16,16 @@ import { createConnection, createServer, createTypeScriptProject } from '@volar/
 import { Uri } from '@vstils/core'
 import { createFileSystemRegistry } from '@vstils/fs'
 import { createNodeFileSystemProvider } from '@vstils/fs/node'
-import * as ets from 'ohos-typescript'
+import * as ETS from 'ohos-typescript'
 import { create as createTypeScriptServices } from 'volar-service-typescript'
 import { ConfigResolver } from './classes/config-resolver'
 import { ProjectDetectorManagerService } from './classes/project-manager'
+import { patchResolver } from './patches/patch-resolver'
 import { patchSemantic } from './patches/patch-semantic'
 import { resolveDiagnosticMessages } from './utils/diagnostic-messages-resolver'
+
+const ets = Object.assign({}, ETS)
+patchResolver(ets)
 
 const connection = createConnection()
 const server = createServer(connection)
@@ -46,14 +51,14 @@ connection.onInitialize(async (params) => {
     return instance
   }
 
+  const mergedSettings = await configuration.toCompilationSettings()
+
   return server.initialize(
     params,
     createTypeScriptProject(
       ets as unknown as typeof import('typescript'),
       diagnosticMessages,
       async (ctx) => {
-        const mergedSettings = await configuration.toCompilationSettings()
-        logger.getConsola().info(`Merged settings: ${JSON.stringify(mergedSettings, null, 2)}`)
         ctx.projectHost.getCompilationSettings = () => mergedSettings as import('typescript').CompilerOptions
 
         return {
@@ -61,11 +66,13 @@ connection.onInitialize(async (params) => {
             ETSLanguagePlugin(ets as unknown as typeof import('typescript'), {
               excludePaths: [configuration.getSdkPath(), configuration.getHmsSdkPath()].filter(Boolean) as string[],
               tsdk: configuration.getTsdkPath(),
+              compilerOptions: mergedSettings,
+              sys: ctx.sys,
             }),
           ],
           setup: async (options) => {
             if (!options.project || !options.project.typescript || !options.project.typescript.languageServiceHost) return
-            options.project.typescript.languageServiceHost.getScriptKind = ((fileName: string): ets.ScriptKind => {
+            options.project.typescript.languageServiceHost.getScriptKind = ((fileName: string): ETS.ScriptKind => {
               if (fileName.endsWith('.ets')) return ets.ScriptKind.ETS
               else if (fileName.endsWith('.js')) return ets.ScriptKind.JS
               else if (fileName.endsWith('.jsx')) return ets.ScriptKind.JSX
@@ -92,4 +99,4 @@ connection.onInitialized(() => {
 connection.onShutdown(server.shutdown)
 logger.getConsola().info('ETS Language Server is starting...')
 connection.listen()
-logger.getConsola().info('ETS Language Server is started!')
+logger.getConsola().info(`ETS Language Server is started! PID: ${process.pid}`)

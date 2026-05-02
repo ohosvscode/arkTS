@@ -7,7 +7,7 @@ struct Index {
     RelativeContainer() {
       Text(this.message)
         .id("HelloWorld")
-        .fontSize($r("app.color.start_window_background"))
+        .fontSize($r("app.float.page_text_font_size"))
         .fontWeight(FontWeight.Bold)
         .alignRules({
           center: { anchor: "__container__", align: VerticalAlign.Center },
@@ -21,3 +21,4 @@ struct Index {
     .width("100%")
   }
 }
+

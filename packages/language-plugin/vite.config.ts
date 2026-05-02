@@ -10,7 +10,9 @@ export default defineConfig({
     clean: true,
     shims: true,
     tsconfig: './tsconfig.build.json',
-    external: [],
     fixedExtension: false,
+    deps: {
+      neverBundle: ['typescript', 'ohos-typescript'],
+    },
   },
 })

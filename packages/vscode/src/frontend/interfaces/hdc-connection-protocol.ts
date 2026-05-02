@@ -1,27 +1,32 @@
 import type { Arrayable } from '@vstils/core'
 import type { ProtocolContext } from '../../context/protocol-context'
 import type { WebviewContext } from '../../context/webview-context'
+import type { CurrentConnectKey } from '../../hdc-manager'
 
 export namespace HdcManagerConnectionProtocol {
   export interface ClientFunction extends WebviewContext.ClientFunction {
     /**
      * Refresh the layouts.
      */
-    onRefreshLayouts(): Promise<void>
+    refreshLayouts(): Promise<void>
     /**
      * Collapse all layouts.
      */
-    onCollapseAllLayouts(): Promise<void>
+    collapseAllLayouts(): Promise<void>
     /**
      * Expand all layouts.
      */
-    onExpandAllLayouts(): Promise<void>
+    expandAllLayouts(): Promise<void>
     /**
      * Set current application view type.
      *
      * @param viewType The view type to set.
      */
     setApplicationViewType(viewType: ClientFunction.ApplicationViewType): Promise<void>
+    /**
+     * Refresh the current loop.
+     */
+    refreshCurrentLoop(): Promise<void>
   }
 
   export namespace ClientFunction {
@@ -36,7 +41,7 @@ export namespace HdcManagerConnectionProtocol {
     /**
      * Set the current connect key.
      */
-    setCurrentConnectKey(connectKey: string | -1): void
+    setCurrentConnectKey(connectKey: CurrentConnectKey): void
     /**
      * Get the list of connected devices.
      */

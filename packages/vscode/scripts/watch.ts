@@ -1,8 +1,8 @@
 import child_process from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
-import { createNodeFileSystem, RelativePattern } from 'vscode-fs'
-import { URI, Utils } from 'vscode-uri'
+import { createFileSystemRegistry, createRelativePattern, Uri } from '@vstils/core'
+import { createNodeFileSystemProvider } from '@vstils/core/fs/node'
 
 const FRONTEND_ROOT = path.resolve('..', 'vscode', 'src', 'frontend')
 
@@ -10,9 +10,10 @@ async function main() {
   let build_child_process: child_process.ChildProcess | undefined
   await createBuildProcess(`pnpm build`)
 
-  const fs = await createNodeFileSystem()
-  const watcher = await fs.createWatcher(new RelativePattern(Utils.resolvePath(URI.parse(import.meta.url), '../../..'), '.'), {
-    ignore: [/node_modules/g, /\.git/g, /\.d\.ts/g, /\.d\.mts/g, /\.d\.cts/g, /dist/g, /build/g, /\.vite-ssg/g],
+  const fsRegistry = await createFileSystemRegistry()
+  fsRegistry.registerFileSystemProvider('file', await createNodeFileSystemProvider())
+  const watcher = await fsRegistry.fs.createFileSystemWatcher(createRelativePattern(Uri.resolvePath(Uri.parse(import.meta.url), '../../..'), '**/*'), {
+    excludes: [/node_modules/g, /\.git/g, /\.d\.ts/g, /\.d\.mts/g, /\.d\.cts/g, /dist/g, /build/g, /\.vite-ssg/g],
   })
 
   async function kill() {
@@ -36,7 +37,7 @@ async function main() {
     return new Promise<void>(resolve => build_child_process?.on('exit', resolve))
   }
 
-  async function onFileChange(uri: URI) {
+  async function onFileChange(uri: Uri) {
     console.log(`File changed: ${uri.toString()}, building...`)
     if (uri.toString().endsWith('.vue')) {
       await createBuildProcess(`pnpm build --webview --no-clean`)

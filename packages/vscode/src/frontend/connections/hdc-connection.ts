@@ -9,6 +9,7 @@ export interface HdcConnection extends Connection<HdcManagerConnectionProtocol.S
   readonly onCollapseAllLayouts: Event<void>
   readonly onExpandAllLayouts: Event<void>
   readonly onSetApplicationViewType: Event<HdcManagerConnectionProtocol.ClientFunction.ApplicationViewType>
+  readonly onRefreshCurrentLoop: Event<void>
 }
 
 export function useHdcConnection(): HdcConnection {
@@ -16,12 +17,14 @@ export function useHdcConnection(): HdcConnection {
   const onCollapseAllLayoutsEmitter = createEventEmitter<void>()
   const onExpandAllLayoutsEmitter = createEventEmitter<void>()
   const onSetApplicationViewTypeEmitter = createEventEmitter<HdcManagerConnectionProtocol.ClientFunction.ApplicationViewType>()
+  const onRefreshCurrentLoopEmitter = createEventEmitter<void>()
 
   const connection = createConnection<HdcManagerConnectionProtocol.ServerFunction, HdcManagerConnectionProtocol.ClientFunction>({
-    onRefreshLayouts: async () => onRefreshLayoutsEmitter.fire(),
-    onCollapseAllLayouts: async () => onCollapseAllLayoutsEmitter.fire(),
-    onExpandAllLayouts: async () => onExpandAllLayoutsEmitter.fire(),
+    refreshLayouts: async () => onRefreshLayoutsEmitter.fire(),
+    collapseAllLayouts: async () => onCollapseAllLayoutsEmitter.fire(),
+    expandAllLayouts: async () => onExpandAllLayoutsEmitter.fire(),
     setApplicationViewType: async viewType => onSetApplicationViewTypeEmitter.fire(viewType),
+    refreshCurrentLoop: async () => onRefreshCurrentLoopEmitter.fire(),
   })
 
   return {
@@ -30,5 +33,6 @@ export function useHdcConnection(): HdcConnection {
     onCollapseAllLayouts: onCollapseAllLayoutsEmitter.event,
     onExpandAllLayouts: onExpandAllLayoutsEmitter.event,
     onSetApplicationViewType: onSetApplicationViewTypeEmitter.event,
+    onRefreshCurrentLoop: onRefreshCurrentLoopEmitter.event,
   }
 }

@@ -2,6 +2,7 @@ import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { LanguageServicePlugin } from '@volar/language-server'
 import type { ProjectDetectorManager } from '../interfaces/project-detector-manager'
 import { createETS$$ThisService } from './arkts-$$this'
+import { createArkTSColors } from './arkts-color'
 import { createArkTSLinter } from './arkts-linter'
 import { createArkTSResource } from './arkts-resource'
 
@@ -14,5 +15,6 @@ export async function createArkTServices(options: CreateArkTServiceOptions, ets:
     createArkTSResource(options, ets),
     createETS$$ThisService(options, ets),
     createArkTSLinter(options, ets),
+    createArkTSColors(options),
   ]
 }

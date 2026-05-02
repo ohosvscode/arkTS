@@ -10,9 +10,17 @@ export default defineConfig({
     outDir: OUT_DIR,
     format: ['cjs', 'esm'],
     sourcemap: true,
-    dts: true,
+    dts: false,
     clean: true,
     shims: true,
+    minify: {
+      compress: {
+        keepNames: {
+          class: true,
+          function: true,
+        },
+      },
+    },
     inputOptions: {
       checks: {
         eval: false,

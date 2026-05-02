@@ -72,6 +72,7 @@
     "mitt": "catalog:prod",
     "ohos-typescript": "workspace:*",
     "ts-macro": "catalog:dev",
+    "vscode-json-languageservice": "^5.7.2",
     "vscode-languageserver-textdocument": "catalog:prod",
     "vscode-languageserver-types": "catalog:prod"
   },

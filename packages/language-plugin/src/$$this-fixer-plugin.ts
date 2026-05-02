@@ -1,5 +1,4 @@
 import type { ETSMacroPlugin, ETSVirtualCode } from './ets-code'
-import { replaceRange } from 'ts-macro'
 
 export function $$thisFixerPlugin(): ETSMacroPlugin {
   const $$thisRegex = /\$\$this/g
@@ -12,9 +11,9 @@ export function $$thisFixerPlugin(): ETSMacroPlugin {
       for (const match of matches) {
         const start = match.index ?? 0
         const end = start + match[0].length
-        replaceRange(virtualCode.codes, start, end, [
+        virtualCode.codes.replaceRange(start, end, [
           'this',
-          match[0],
+          virtualCode.filePath,
           start + 2,
           {
             completion: true,

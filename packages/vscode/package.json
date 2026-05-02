@@ -250,34 +250,44 @@
           "when": "view == ets.hdcManager"
         },
         {
-          "command": "ets.copyHdcPathToClipboard",
+          "command": "ets.disconnectDevice",
           "group": "navigation@2",
-          "when": "view == ets.hdcManager"
+          "when": "view == ets.hdcManager && ets.hasCurrentConnectKey == true"
         },
         {
-          "command": "ets.openDeviceManager",
+          "command": "ets.copyHdcPathToClipboard",
           "group": "navigation@3",
           "when": "view == ets.hdcManager"
         },
         {
-          "command": "ets.refreshLayoutsCheckerTool",
+          "command": "ets.openDeviceManager",
           "group": "navigation@4",
-          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
+          "when": "view == ets.hdcManager"
         },
         {
-          "command": "ets.collapseAllLayoutsCheckerToolTree",
+          "command": "ets.refreshLayoutsCheckerTool",
           "group": "navigation@5",
           "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
         },
         {
-          "command": "ets.expandAllLayoutsCheckerToolTree",
+          "command": "ets.collapseAllLayoutsCheckerToolTree",
           "group": "navigation@6",
           "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
         },
         {
-          "command": "ets.switchApplicationViewType",
+          "command": "ets.expandAllLayoutsCheckerToolTree",
           "group": "navigation@7",
+          "when": "view == ets.hdcManager && ets.hdcManagerTab == 'layouts'"
+        },
+        {
+          "command": "ets.switchApplicationViewType",
+          "group": "navigation@8",
           "when": "view == ets.hdcManager && ets.hdcManagerTab == 'application'"
+        },
+        {
+          "command": "ets.openHilogSettings",
+          "group": "navigation@9",
+          "when": "view == workbench.panel.output && activeOutputChannel =~ /Hilog/"
         }
       ],
       "view/item/context": [
@@ -471,6 +481,18 @@
         "command": "ets.switchApplicationViewType",
         "title": "%command.switchApplicationViewType%",
         "icon": "$(eye)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.disconnectDevice",
+        "title": "%command.disconnectDevice%",
+        "icon": "$(debug-disconnect)",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.openHilogSettings",
+        "title": "%command.openHilogSettings%",
+        "icon": "$(settings-gear)",
         "category": "ETS"
       }
     ],
