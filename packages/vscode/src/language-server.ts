@@ -201,7 +201,6 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
 
     const start = (type: 'restarted' | 'started'): [undefined, LanguageClientOptions] => {
       this._client?.start()
-      this._client?.sendRequest('ets/waitForEtsConfigurationChangedRequested', clientOptions.initializationOptions)
       this.handleDidChangeTextDocumentRequest()
       // support for auto close tag
       if (this._client) activateAutoInsertion('ets', this._client)
