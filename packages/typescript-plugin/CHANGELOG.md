@@ -1,5 +1,12 @@
 # @arkts/typescript-plugin
 
+## 1.3.10
+
+### Patch Changes
+
+- Updated dependencies [[`0a8f793`](https://github.com/ohosvscode/arkTS/commit/0a8f7931c582364c82c033515a6a020bed748f1e)]:
+  - @arkts/language-plugin@1.3.10
+
 ## 1.3.3
 
 ### Patch Changes
