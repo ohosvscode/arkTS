@@ -1,5 +1,11 @@
 # vscode-naily-ets
 
+## 1.3.10
+
+### Patch Changes
+
+- [#301](https://github.com/ohosvscode/arkTS/pull/301) [`0a8f793`](https://github.com/ohosvscode/arkTS/commit/0a8f7931c582364c82c033515a6a020bed748f1e) Thanks [@Groupguanfang](https://github.com/Groupguanfang)! - feat: add disconnect button on hdc manager
+
 ## 1.3.9
 
 ### Patch Changes
