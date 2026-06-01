@@ -611,10 +611,10 @@ importers:
         version: 3.9.1
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.6(@types/vscode@1.116.0)
+        version: 0.0.6(@types/vscode@1.120.0)
       '@vstils/fs':
         specifier: catalog:prod
-        version: 0.0.5(@types/vscode@1.116.0)
+        version: 0.0.5(@types/vscode@1.120.0)
       alien-signals:
         specifier: catalog:prod
         version: 3.0.3
@@ -896,7 +896,7 @@ importers:
         version: 2.4.23
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.6(@types/vscode@1.116.0)
+        version: 0.0.6(@types/vscode@1.120.0)
       ts-macro:
         specifier: catalog:dev
         version: 0.3.6
@@ -926,10 +926,10 @@ importers:
         version: 2.4.23
       '@vstils/core':
         specifier: catalog:prod
-        version: 0.0.6(@types/vscode@1.116.0)
+        version: 0.0.6(@types/vscode@1.120.0)
       '@vstils/fs':
         specifier: catalog:prod
-        version: 0.0.5(@types/vscode@1.116.0)
+        version: 0.0.5(@types/vscode@1.120.0)
       volar-service-typescript:
         specifier: catalog:prod
         version: 0.0.68(@volar/language-service@2.4.23)
@@ -1062,6 +1062,9 @@ importers:
       '@napi-rs/wasm-runtime':
         specifier: ^1.0.7
         version: 1.1.1
+      volar-service-typescript:
+        specifier: catalog:prod
+        version: 0.0.68(@volar/language-service@2.4.23)
     devDependencies:
       '@types/vscode':
         specifier: ^1.22.0
@@ -3251,8 +3254,8 @@ packages:
   '@types/vscode@1.109.0':
     resolution: {integrity: sha512-0Pf95rnwEIwDbmXGC08r0B4TQhAbsHQ5UyTIgVgoieDe4cOnf92usuR5dEczb6bTKEp7ziZH4TV1TRGPPCExtw==}
 
-  '@types/vscode@1.116.0':
-    resolution: {integrity: sha512-sYHp4MO6BqJ2PD7Hjt0hlIS3tMaYsVPJrd0RUjDJ8HtOYnyJIEej0bLSccM8rE77WrC+Xox/kdBwEFDO8MsxNA==}
+  '@types/vscode@1.120.0':
+    resolution: {integrity: sha512-feaT4Rst+FkTch5zz/ZbNCxoIvo55YU80Be2kiL7OJcod4+CUYf2lUBPdIJzozNnSEMq1VRTGrWEcCGFB3fBmA==}
 
   '@types/web-bluetooth@0.0.21':
     resolution: {integrity: sha512-oIQLCGWtcFZy2JW77j9k8nHzAOpqMHLQejDA48XXMWH6tjCQHz5RCFz1bzsmROyL6PUm+LLnUiI4BCn221inxA==}
@@ -10651,7 +10654,7 @@ snapshots:
 
   '@types/vscode@1.109.0': {}
 
-  '@types/vscode@1.116.0': {}
+  '@types/vscode@1.120.0': {}
 
   '@types/web-bluetooth@0.0.21': {}
 
@@ -10947,7 +10950,7 @@ snapshots:
 
   '@unioc/vscode@0.1.16':
     dependencies:
-      '@types/vscode': 1.116.0
+      '@types/vscode': 1.120.0
       '@unioc/core': 0.0.10
       '@unioc/decorator': 0.0.7
       '@vscode/l10n': 0.0.18
@@ -11473,10 +11476,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/vscode'
 
-  '@vstils/core@0.0.6(@types/vscode@1.116.0)':
+  '@vstils/core@0.0.6(@types/vscode@1.120.0)':
     dependencies:
       '@vstils/common': 0.0.1
-      '@vstils/fs': 0.0.5(@types/vscode@1.116.0)
+      '@vstils/fs': 0.0.5(@types/vscode@1.120.0)
     transitivePeerDependencies:
       - '@types/vscode'
 
@@ -11488,9 +11491,9 @@ snapshots:
       tinyglobby: 0.2.15
       trash: 10.1.1
 
-  '@vstils/fs@0.0.5(@types/vscode@1.116.0)':
+  '@vstils/fs@0.0.5(@types/vscode@1.120.0)':
     dependencies:
-      '@types/vscode': 1.116.0
+      '@types/vscode': 1.120.0
       '@vstils/common': 0.0.1
       chokidar: 5.0.0
       tinyglobby: 0.2.15

@@ -8,6 +8,15 @@ async function main() {
   fs.rmSync(path.resolve('node_modules'), { recursive: true, force: true })
   if (fs.existsSync(path.resolve('package-lock.json'))) fs.rmSync(path.resolve('package-lock.json'), { force: true })
   else globalLogger.warn('package-lock.json not found, skipping deletion')
+
+  const pkgJsonPath = path.resolve('package.json')
+  const backupPath = `${pkgJsonPath}.orig`
+  if (fs.existsSync(backupPath)) {
+    globalLogger.info('Restoring original package.json from backup...')
+    fs.copyFileSync(backupPath, pkgJsonPath)
+    fs.rmSync(backupPath)
+  }
+
   globalLogger.info('Reinstalling dependencies using pnpm...')
   execSync('pnpm install', { cwd: path.resolve('..', '..'), stdio: 'inherit' })
   globalLogger.success('✨ Dependencies cleaning process done!')

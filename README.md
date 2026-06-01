@@ -166,6 +166,10 @@ In order to run your app, type:
 Your app code is in demo/entry.
 ```
 
+## 参与开发 👩‍💻
+
+如果你想参与本项目的开发或从源码构建，请查阅 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
 ## Star History 🌟
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ohosvscode/arkTS&type=Date)](https://star-history.com/#ohosvscode/arkTS&Date)
