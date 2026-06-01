@@ -2,6 +2,15 @@ import type { FormRules } from 'naive-ui'
 import type { Ref } from 'vue'
 import path from 'node:path'
 import { ref, watch } from 'vue'
+// [新增] 项目写入路径安全校验工具：
+// - assertWritableProjectDirectoryPath: 校验路径是否可安全写入（防止系统路径/无效路径）
+// - isRootDevEcoStudioProjectsPath: 判断是否为 DevEcoStudioProjects 根目录（用于智能路径替换）
+// - ProjectWritePathError: 路径校验异常类
+import {
+  assertWritableProjectDirectoryPath,
+  isRootDevEcoStudioProjectsPath,
+  ProjectWritePathError,
+} from '../../utils/project-write-path-guard'
 
 export interface Input {
   label: string
@@ -71,11 +80,47 @@ export interface ProjectConfigurationContext {
   currentProject: Ref<ProjectConfiguration | undefined>
 }
 
+// [新增] 根据用户主目录和项目名构建默认保存路径 ~/DevEcoStudioProjects/<projectName>
+function buildDefaultSavePath(homeDirectory: string, projectName: string): string {
+  return path.join(homeDirectory, 'DevEcoStudioProjects', projectName)
+}
+
+// [新增] 将 ProjectWritePathError 转换为用户可读的 i18n 错误消息
+function formatProjectWritePathValidationError(error: ProjectWritePathError, t: (key: string, ...args: string[]) => string): string {
+  switch (error.code) {
+    case 'BLOCKED_SYSTEM_PATH':
+      return t('project.writePath.blockedSystemPath')
+    case 'INVALID_PATH':
+      return t('project.writePath.invalid')
+    default:
+      return t('project.createProject.savePathRequired')
+  }
+}
+
 export function createProjectConfigContext(homeDirectory: Ref<string | null>): ProjectConfigurationContext {
   const { t } = useI18n()
   const { connection, createOpenDialog } = useProjectConnection()
-  const defaultBasePath = path.join(homeDirectory.value ?? '/', 'DevEcoStudioProjects')
+  const lastAutoSavePath = ref<string>()
   const subscriptions = new Set<() => void>()
+
+  // [新增] 智能应用默认保存路径：仅在用户尚未手动修改路径、或路径仍为 DevEcoStudioProjects 根目录时自动更新
+  // 场景：用户修改项目名后自动同步保存路径，但保留用户已手动选择的路径
+  function applyDefaultSavePath(project: Ref<ProjectConfiguration>, projectName: string): void {
+    const home = homeDirectory.value
+    if (!home) return
+
+    const savePathInput = project.value.input.savePath as TextButtonGroupInput
+    const nextSavePath = buildDefaultSavePath(home, projectName)
+    const currentSavePath = savePathInput.value
+    if (
+      !currentSavePath
+      || currentSavePath === lastAutoSavePath.value
+      || isRootDevEcoStudioProjectsPath(currentSavePath)
+    ) {
+      savePathInput.value = nextSavePath
+      lastAutoSavePath.value = nextSavePath
+    }
+  }
   const modelVersionToSdkVersionMap = new Map(
     [
       ['6.0.0', 20],
@@ -102,6 +147,16 @@ export function createProjectConfigContext(homeDirectory: Ref<string | null>): P
         savePath: {
           async asyncValidator(_rule, value: TextInput, callback) {
             if (!value.value) return callback(t('project.createProject.savePathRequired'))
+            // [新增] 保存路径写入安全性前置校验：拦截系统目录、无效路径等不安全的写入目标
+            try {
+              assertWritableProjectDirectoryPath(value.value, homeDirectory.value ?? '')
+            }
+            catch (error) {
+              if (error instanceof ProjectWritePathError) {
+                return callback(formatProjectWritePathValidationError(error, t))
+              }
+              throw error
+            }
             const stat = await connection.stat?.(value.value)
             if (stat && !stat.isDirectory) return callback(t('project.createProject.savePathNotDirectory'))
             let directoryFileNames = await connection.readDirectory?.(value.value)
@@ -131,7 +186,8 @@ export function createProjectConfigContext(homeDirectory: Ref<string | null>): P
         },
         savePath: {
           type: 'text-button-group',
-          value: path.join(defaultBasePath, 'MyApplication'),
+          // [变更] 初始值从预填空字符串改为空，由 watch(homeDirectory) 回调动态填充默认路径
+          value: '',
           placeholder: t('project.createProject.savePathPlaceholder'),
           label: t('project.createProject.savePath'),
           labelIcon: 'i-ph-folder-duotone',
@@ -189,7 +245,21 @@ export function createProjectConfigContext(homeDirectory: Ref<string | null>): P
           value: ['phone'],
         },
       },
-      onInit: project => (
+      onInit: (project) => {
+        // [新增] 监听 homeDirectory 加载完成，自动填充默认保存路径（immediate 确保首次即有值）
+        subscriptions.add(
+          watch(homeDirectory, () => {
+            const projectName = project.value.input.projectName.value as string || 'MyApplication'
+            applyDefaultSavePath(project as Ref<ProjectConfiguration>, projectName)
+          }, { immediate: true }),
+        )
+        // [新增] 监听项目名称变化，自动同步更新保存路径（如 MyApplication → ~/DevEcoStudioProjects/MyApplication）
+        subscriptions.add(
+          watch(() => project.value.input.projectName.value as string, (projectName) => {
+            if (!projectName) return
+            applyDefaultSavePath(project as Ref<ProjectConfiguration>, projectName)
+          }),
+        )
         subscriptions.add(
           watch(() => project.value.input.compatibleSdkVersion.value as number, (value) => {
             if (value < 12) {
@@ -229,7 +299,7 @@ export function createProjectConfigContext(homeDirectory: Ref<string | null>): P
             }
           }, { immediate: true }),
         )
-      ),
+      },
       onDestroy: () => {
         subscriptions.forEach(subscription => subscription())
         subscriptions.clear()

@@ -3,12 +3,17 @@ import type { Ref } from 'vue'
 import type { ProjectConfiguration } from '../../composables/project-configuration'
 
 const { connection } = useProjectConnection()
-const { data: homeDirectory } = useAsyncData(async () => connection.getHomeDirectory?.())
+// [新增] 加 loading 状态：homeDirectory 异步获取完成前禁用创建按钮，避免用户在数据就绪前操作
+const { data: homeDirectory, loading: homeDirectoryLoading } = useAsyncData(async () => connection.getHomeDirectory?.())
 const { projectConfigurations, currentProjectId, currentProject } = createProjectConfigContext(homeDirectory)
 const formRef = useTemplateRef<import('naive-ui').FormInst>('formRef')
+// [新增] homeDirectory 未加载完成或为空时，禁止创建项目（按钮置灰 + loading 态）
+const canCreateProject = computed(() => !homeDirectoryLoading.value && !!homeDirectory.value)
 
 async function handleSubmit(e: Event) {
   e.preventDefault()
+  // [新增] 前置守卫：homeDirectory 未就绪时阻止提交，防止空路径引发错误
+  if (!canCreateProject.value) return
   await formRef.value?.validate()
   await currentProject.value?.onSubmit?.(currentProject as Ref<ProjectConfiguration>)
 }
@@ -29,7 +34,8 @@ function callItemOnClick(item: import('../../composables/project-configuration')
         </NIcon>
         {{ $t('project.templateMarket.title') }}
       </NButton>
-      <NButton type="primary" @click="handleSubmit">
+      <!-- [新增] 创建按钮在 homeDirectory 加载期间显示 loading 状态且禁用，防止用户在数据未就绪时提交 -->
+      <NButton type="primary" :disabled="!canCreateProject" :loading="homeDirectoryLoading" @click="handleSubmit">
         <NIcon mr-1>
           <div i-ph-plus-circle-duotone />
         </NIcon>

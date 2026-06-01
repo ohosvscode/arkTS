@@ -1,4 +1,4 @@
-import * as fs from 'node:fs'
+import type { ProjectWritePathErrorCode } from '../../utils/project-write-path-guard'
 import os from 'node:os'
 import path from 'node:path'
 import { effect, signal } from 'alien-signals'
@@ -11,6 +11,17 @@ import { ExtensionContext, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { ProtocolContext } from '../../context/protocol-context'
 import { InitialCallbackEvent } from '../../context/webview-context'
+import {
+  assertProjectFilesCanBeCreated,
+  ensureEmptyProjectDirectory,
+  validateProjectWriteDirectory,
+  writeFileExclusive,
+} from '../../utils/project-write-path-fs'
+import {
+  ProjectWritePathError,
+
+  resolveArchiveEntryPath,
+} from '../../utils/project-write-path-guard'
 import { ProjectConnectionProtocol } from '../interfaces/project-connection-protocol'
 
 hbs.registerHelper('equal', (a: number | string, b: number | string) => Number(a) === Number(b) || String(a) === String(b))
@@ -24,24 +35,54 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
   protected readonly extensionContext: vscode.ExtensionContext
 
   async stat(path: string): Promise<false | ProjectConnectionProtocol.File.Stat> {
-    const isExists = fs.existsSync(path)
-    if (!isExists) return false
-
-    return {
-      isFile: fs.statSync(path).isFile(),
-      isDirectory: fs.statSync(path).isDirectory(),
+    try {
+      const uri = vscode.Uri.file(path)
+      const stat = await vscode.workspace.fs.stat(uri)
+      return {
+        isFile: stat.type === vscode.FileType.File,
+        isDirectory: stat.type === vscode.FileType.Directory,
+      }
+    }
+    catch {
+      return false
     }
   }
 
   async readDirectory(path: string): Promise<false | string[]> {
-    if (!fs.existsSync(path)) return false
-    const isDirectory = fs.statSync(path).isDirectory()
-    if (!isDirectory) return false
-    return fs.readdirSync(path)
+    try {
+      const uri = vscode.Uri.file(path)
+      const stat = await vscode.workspace.fs.stat(uri)
+      if (stat.type !== vscode.FileType.Directory) return false
+      const entries = await vscode.workspace.fs.readDirectory(uri)
+      return entries.map(([name]) => name)
+    }
+    catch {
+      return false
+    }
   }
 
   async getHomeDirectory(): Promise<string> {
     return os.homedir()
+  }
+
+  private formatProjectWritePathError(error: ProjectWritePathError): string {
+    const keys: Record<ProjectWritePathErrorCode, string> = {
+      INVALID_PATH: 'project.writePath.invalid',
+      NOT_DIRECTORY: 'project.createProject.savePathNotDirectory',
+      NOT_EMPTY: 'project.createProject.savePathHasFiles',
+      FILE_EXISTS: 'project.writePath.fileExists',
+      ZIP_SLIP: 'project.writePath.zipSlip',
+      BLOCKED_SYSTEM_PATH: 'project.writePath.blockedSystemPath',
+    }
+    const key = keys[error.code]
+    return error.detail ? this.translator.t(key, error.detail) : this.translator.t(key)
+  }
+
+  private rethrowProjectWritePathError(error: unknown): never {
+    if (error instanceof ProjectWritePathError) {
+      throw new Error(this.formatProjectWritePathError(error))
+    }
+    throw error
   }
 
   async requestTemplateMarketList(request: ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Request): Promise<ProjectConnectionProtocol.ServerFunction.RequestTemplateMarketList.Response> {
@@ -79,7 +120,7 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
 
   async createOpenDialog(options?: ProjectConnectionProtocol.ServerFunction.CreateOpenDialog.Options): Promise<string> {
     const dialogId = nanoid()
-    ServerFunctionImpl.openDialog(
+    ProjectServerFunctionImpl.openDialog(
       [
         dialogId,
         vscode.window.showOpenDialog(options),
@@ -105,6 +146,14 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
       title: this.translator.t('project.templateMarket.downloadTo'),
     }) ?? []
     if (!uri) return
+
+    let resolvedExtractRoot: string
+    try {
+      resolvedExtractRoot = await validateProjectWriteDirectory(uri.fsPath, os.homedir())
+    }
+    catch (error) {
+      this.rethrowProjectWritePathError(error)
+    }
 
     const response = await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
@@ -144,14 +193,26 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
       title: this.translator.t('project.templateMarket.extracting'),
       cancellable: false,
     }, async () => {
-      if (!fs.existsSync(uri.fsPath)) fs.mkdirSync(uri.fsPath, { recursive: true })
+      const writes: { outputPath: string, content: Uint8Array }[] = []
       for (const [filePath, file] of Object.entries(extractedFileList)) {
-        const outputPath = path.resolve(uri.fsPath, filePath)
-        fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-        if (!file) continue
-        if (file.length === 0) continue
-        fs.writeFileSync(outputPath, file)
+        if (!file || file.length === 0) continue
+        writes.push({
+          outputPath: resolveArchiveEntryPath(resolvedExtractRoot, filePath),
+          content: file,
+        })
       }
+
+      try {
+        await assertProjectFilesCanBeCreated(writes.map(write => write.outputPath))
+        await ensureEmptyProjectDirectory(resolvedExtractRoot)
+        for (const { outputPath, content } of writes) {
+          await writeFileExclusive(outputPath, content)
+        }
+      }
+      catch (error) {
+        this.rethrowProjectWritePathError(error)
+      }
+
       this.getConsola().info('[ServerFunction.DownloadAndExtractTemplate] Success!')
     })
 
@@ -169,6 +230,15 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
   async createProject(context: Record<string, string | number | boolean | string[]>, templateName: string, savePath: string): Promise<void> {
     this.getConsola().info('[ServerFunction.CreateProject] Creating project...', JSON.stringify(context))
     if (!this.extensionContext) return this.getConsola().error('[ServerFunction.CreateProject] Extension context not found, cannot create project.')
+
+    let resolvedSavePath: string
+    try {
+      resolvedSavePath = await validateProjectWriteDirectory(savePath, os.homedir())
+    }
+    catch (error) {
+      this.rethrowProjectWritePathError(error)
+    }
+
     const templatePath = vscode.Uri.joinPath(this.extensionContext.extensionUri, 'templates', templateName)
     const templateFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(templatePath, '**/*'))
 
@@ -180,12 +250,21 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
       }),
     )
 
-    if (!fs.existsSync(savePath)) fs.mkdirSync(savePath, { recursive: true })
-    for (const [filePath, fileContent] of templateContents) {
-      const outputPath = path.resolve(savePath, path.relative(templatePath.fsPath, filePath))
-      this.getConsola().info('[ServerFunction.CreateProject] Creating project file:', outputPath)
-      if (!fs.existsSync(path.dirname(outputPath))) fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-      fs.writeFileSync(outputPath, fileContent)
+    const writes = templateContents.map(([filePath, fileContent]) => ({
+      outputPath: path.resolve(resolvedSavePath, path.relative(templatePath.fsPath, filePath)),
+      content: fileContent,
+    }))
+
+    try {
+      await assertProjectFilesCanBeCreated(writes.map(write => write.outputPath))
+      await ensureEmptyProjectDirectory(resolvedSavePath)
+      for (const { outputPath, content } of writes) {
+        this.getConsola().info('[ServerFunction.CreateProject] Creating project file:', outputPath)
+        await writeFileExclusive(outputPath, content)
+      }
+    }
+    catch (error) {
+      this.rethrowProjectWritePathError(error)
     }
 
     this.getConsola().info('[ServerFunction.CreateProject] Project created successfully!')
@@ -197,6 +276,6 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
       open,
       cancel,
     )
-    if (result === open) await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(savePath))
+    if (result === open) await vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(resolvedSavePath))
   }
 }

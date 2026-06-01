@@ -31,7 +31,6 @@
     "Linters",
     "Snippets",
     "Formatters",
-    "Themes",
     "Debuggers"
   ],
   "main": "./dist/client.js",
@@ -122,17 +121,15 @@
         "properties": {
           "projectRoot": {
             "type": "string",
-            "description": "Hvigor 项目根目录。"
+            "description": "Hvigor 项目根目录"
           },
           "moduleName": {
             "type": "string",
-            "description": "模块名称。",
-            "default": "entry"
+            "description": "模块名称，必填"
           },
           "productName": {
             "type": "string",
-            "description": "产品名称。",
-            "default": "default"
+            "description": "产品名称，默认 default"
           },
           "requiredDeviceType": {
             "type": "string",
@@ -591,6 +588,14 @@
             "media": {
               "markdown": "%walkthroughs.ArkTS-Walkthrough.steps.installOpenHarmonySDK.media.markdown%"
             }
+          },
+          {
+            "id": "ArkTS-Walkthrough-CreateProject",
+            "title": "%walkthroughs.ArkTS-Walkthrough.steps.createProject%",
+            "description": "%walkthroughs.ArkTS-Walkthrough.steps.createProject.description%",
+            "media": {
+              "markdown": "%walkthroughs.ArkTS-Walkthrough.steps.createProject.media.markdown%"
+            }
           }
         ]
       }
@@ -599,14 +604,15 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "watch": "tsx scripts/watch.ts",
-    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package",
+    "pack": "tsx scripts/pre-process.ts && pnpm run build && vsce package --no-dependencies",
     "postpack": "tsx scripts/clean-process.ts",
     "update": "vscode-ext-gen --output src/generated/meta.ts --locale zh-cn && vscode-ext-gen --output src/generated/meta.ts --locale zh-cn --readme ../../README.md && vscode-ext-gen --output src/generated/meta.ts --locale --readme ../../README-en.md",
     "ovsx": "ovsx",
     "vsce": "vsce"
   },
   "dependencies": {
-    "@napi-rs/wasm-runtime": "^1.0.7"
+    "@napi-rs/wasm-runtime": "^1.0.7",
+    "volar-service-typescript": "catalog:prod"
   },
   "devDependencies": {
     "@types/vscode": "^1.22.0"

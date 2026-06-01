@@ -106,7 +106,7 @@ PR address: [https://github.com/material-extensions/vscode-material-icon-theme/p
 | `ets.lspDebugMode`                       | Enable ETS Language Server debug logging.                                | `boolean` | `false`                       |
 | `ets.ignoreWorkspaceLocalPropertiesFile` | Ignore auto infer the base SDK path from `local.properties` file in the local workspace.          | `boolean` | `false`                       |
 | `ets.linterVersion`                      | The version of the ArkTS linter to use. Set to 'off' to disable the linter. | `string`  | `"1.1"`                       |
-| `ets.resourceReferenceDiagnostic`        | 未匹配到的 $r() 资源引用的诊断级别                                                        | `string`  | `"error"`                     |
+| `ets.resourceReferenceDiagnostic`        | Diagnostic level for unmatched $r() resource references                                                        | `string`  | `"error"`                     |
 | `ets.localImagePath`                     | The path of the local image folder. The local image folder is used to store the images of the devices.
 
 In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default path is `%APPDATA%\Local\Huawei\Sdk`.                              | `string`  | ``                            |
@@ -139,6 +139,10 @@ In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default pa
 
 <!-- commands -->
 
+## Contributing 👩‍💻
+
+If you'd like to contribute to this project or build from source, please refer to [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 ## Star History 🌟
 
 [![Star History Chart](https://api.star-history.com/svg?repos=ohosvscode/arkTS&type=Date)](https://star-history.com/#ohosvscode/arkTS&Date)
@@ -149,7 +153,7 @@ In MacOS, the default path is `~/Library/Huawei/Sdk`; in Windows, the default pa
 
 - Telegram: [@GCZ_Zero](https://t.me/GCZ_Zero)
 - X (Twitter): [@GCZ_Zero](https://x.com/GCZ_Zero)
-- QQ: 1203970284，QQ Group: 746153004
+- QQ: 1203970284, QQ Group: 746153004
 - WeChat: gcz-zero
 
 ### Coffee ☕️

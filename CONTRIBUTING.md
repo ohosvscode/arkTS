@@ -32,7 +32,22 @@ git submodule update --init --recursive
 pnpm install
 ```
 
-使用`vscode`打开文件夹打开项目根目录，点击键盘上的`F5`即可启动一个扩展开发宿主进程，打开另一个`vscode`窗口，开始调试项目。
+> **💡 关于依赖安装:**
+>
+> 本项目使用 pnpm workspace + `nodeLinker: isolated`（严格隔离模式），每个包的依赖装在各自的 `node_modules` 下，不会向上 hoist。
+>
+> 但 `vp pack` 构建时会将 `packages/language-server` 的入口打包为 `packages/vscode/dist/server.js`，运行时从这个产物 `require` 的各种依赖**必须能被 `packages/vscode` 的模块解析路径找到**。
+>
+> 因此，有些 language-server 用到的依赖（如 `volar-service-typescript`）需要在 `packages/vscode/package.json` 的 `dependencies` 中**显式重复声明**，否则运行时会出现 `MODULE_NOT_FOUND` 错误。如果你新加了某个 language-server 依赖后遇到这种错误，大概率是这个原因。
+
+使用`VSCode`打开文件夹打开项目根目录。
+
+1. 在左侧栏找到「运行和调试」面板（`Cmd+Shift+D`）
+2. 选择 "Launch Client" 配置
+3. 点击绿色的 ▶ 按钮（或使用键盘快捷键`F5`）
+4. 即可启动一个扩展开发宿主进程，打开另一个`vscode`窗口，开始调试项目。
+
+
 
 ## `volar labs` 插件
 
