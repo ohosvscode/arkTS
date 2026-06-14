@@ -15,7 +15,7 @@ catalogs:
     fast-glob: ^3.3.3
     rimraf: ^6.0.1
     ts-macro: ^0.3.6
-    type-fest: ^4.41.0
+    type-fest: ^5.7.0
     vscode-ext-gen: ^1.6.0
   frontend:
     '@css-render/vue3-ssr': ^0.15.14
