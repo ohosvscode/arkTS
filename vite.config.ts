@@ -4,6 +4,7 @@ import typescriptPluginPackageJson from './arkts-typescript-plugin/package.json'
 export default defineConfig({
   staged: {
     '*': 'eslint . --fix',
+    '**/*.{ts,vue}': () => 'vue-tsc -b --noEmit',
   },
 
   pack: [
