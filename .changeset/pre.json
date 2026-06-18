@@ -1,0 +1,12 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@arkts/language-server": "3.0.0",
+    "ohos-typescript": "4.9.5-r4",
+    "@arkts/typescript-plugin": "1.3.3",
+    "@arkts/vfs": "3.0.0",
+    "vscode-naily-ets": "1.3.9"
+  },
+  "changesets": []
+}
