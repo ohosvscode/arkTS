@@ -92,7 +92,7 @@ export default defineConfig({
       entry: {
         'dist/browser': 'arkts-vscode-language-features/src/browser.ts',
         'dist/node': 'arkts-vscode-language-features/src/node.ts',
-        'node_modules/ets-typescript-plugin/index': 'arkts-typescript-plugin/src/index.ts',
+        'node_modules/arkts-typescript-plugin/index': 'arkts-typescript-plugin/src/index.ts',
       },
       outDir: 'arkts-vscode-language-features',
       format: 'cjs',

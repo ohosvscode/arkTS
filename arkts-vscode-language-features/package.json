@@ -86,7 +86,13 @@
           "default": ""
         }
       }
-    }
+    },
+    "typescriptServerPlugins": [
+      {
+        "enableForWorkspaceTypeScriptVersions": true,
+        "name": "arkts-typescript-plugin"
+      }
+    ]
   },
   "scripts": {
     "pack": "vsce package"
