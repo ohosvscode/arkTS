@@ -98,7 +98,10 @@ export default defineConfig({
       format: 'cjs',
       minify: true,
       dts: false,
-      clean: false,
+      clean: [
+        'dist',
+        'node_modules/arkts-typescript-plugin',
+      ],
       outExtensions: ctx => ctx.format === 'cjs' ? { js: '.js' } : undefined,
       deps: {
         neverBundle: ['vscode'],
