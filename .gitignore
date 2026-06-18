@@ -13,3 +13,4 @@ out
 .appanalyzer
 local.properties
 .idea
+*.vsix
