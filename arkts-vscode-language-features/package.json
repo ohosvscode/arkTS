@@ -2,7 +2,7 @@
   "publisher": "NailyZero",
   "name": "vscode-naily-ets",
   "displayName": "Naily's ArkTS Language Features",
-  "version": "3.0.0-alpha.0",
+  "version": "3.0.0",
   "private": true,
   "description": "ArkTS基础语言特性支持: 代码补全、诊断与高亮。",
   "author": "Naily Zero <zero@naily.cc>",
