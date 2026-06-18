@@ -7,7 +7,5 @@
   "access": "public",
   "baseBranch": "v3",
   "updateInternalDependencies": "patch",
-  "ignore": [
-    "ohos-typescript"
-  ]
+  "ignore": ["ohos-typescript"]
 }
