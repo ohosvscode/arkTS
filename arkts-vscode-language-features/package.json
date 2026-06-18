@@ -4,7 +4,7 @@
   "displayName": "Naily's ArkTS Language Features",
   "version": "3.0.0",
   "private": true,
-  "description": "ArkTS基础语言特性支持: 代码补全、诊断与高亮。",
+  "description": "提供完整的ArkTS基础语言特性支持: 代码补全、诊断与高亮。",
   "author": "Naily Zero <zero@naily.cc>",
   "license": "MIT",
   "repository": {

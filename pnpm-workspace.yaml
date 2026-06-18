@@ -12,6 +12,8 @@ packages:
   - arkts-vfs
   - arkts-ohos-typescript
   - arkts-typescript-plugin
+  - arkts-vscode-emulator-manager
+  - arkts-vscode-hdc-manager
 catalogs:
   common:
     '@changesets/cli': ^2.31.0
@@ -28,3 +30,8 @@ catalogs:
     '@volar/vscode': ^2.4.28
     volar-service-typescript: ^0.0.71
     vscode-uri: ^3.1.0
+  webview:
+    naive-ui: ^2.44.1
+    vue: ^3.5.38
+    vue-router: ^5.1.0
+    vue-tsc: ^3.3.5

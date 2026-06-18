@@ -1,6 +1,6 @@
 import type { ArkTSInitializationOptions } from '@arkts/language-server'
 import type { BaseLanguageClient, LabsInfo } from '@volar/vscode'
-import type { UserInstance } from '../types'
+import type { UserInstance } from './types'
 import { createLabsInfo } from '@volar/vscode'
 import * as vscode from 'vscode'
 import { BaseOutputChannel } from './output-channel'

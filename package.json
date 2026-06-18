@@ -5,7 +5,8 @@
   "scripts": {
     "build": "vp pack",
     "watch": "vp pack --watch",
-    "pack": "vp pack && pnpm -F vscode-naily-ets run pack"
+    "pack": "vp pack && pnpm -F vscode-naily-ets run pack",
+    "type-check": "vue-tsc -b --noEmit"
   },
   "devDependencies": {
     "@arkts/language-server": "workspace:*",
@@ -16,11 +17,15 @@
     "@vscode/vsce": "catalog:common",
     "defu": "catalog:common",
     "naily-eslint-config": "catalog:common",
+    "naive-ui": "catalog:webview",
     "ohos-typescript": "workspace:*",
     "pnpm": "catalog:common",
     "typescript": "catalog:common",
     "vite-plus": "catalog:common",
     "volar-service-typescript": "catalog:vscode",
-    "vscode-uri": "catalog:vscode"
+    "vscode-uri": "catalog:vscode",
+    "vue": "catalog:webview",
+    "vue-router": "catalog:webview",
+    "vue-tsc": "catalog:webview"
   }
 }

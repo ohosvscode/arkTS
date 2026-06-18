@@ -6,6 +6,7 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "jsxImportSource": "vue",
+    "lib": ["ESNext"],
     "module": "ES2022",
     "moduleResolution": "Bundler",
     "strict": true,

@@ -1,6 +1,6 @@
 import type { LabsInfo } from '@volar/vscode'
 import type * as vscode from 'vscode'
-import type { UserInstance, UserModule } from '../types'
+import type { UserInstance, UserModule } from './types'
 import { AbstractLanguageServer } from './abstract-language-server'
 
 export interface Extension {

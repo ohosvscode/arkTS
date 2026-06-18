@@ -1,0 +1,15 @@
+{
+  "publisher": "NailyZero",
+  "name": "vscode-naily-arkts-emulator-manager",
+  "displayName": "Naily's ArkTS Emulator Manager",
+  "version": "3.0.0",
+  "description": "提供完整的鸿蒙DevEco Studio模拟器管理功能: 模拟器启动、停止、重启、查看模拟器列表等。",
+  "main": "",
+  "engines": {
+    "vscode": "^1.61.0"
+  },
+  "activationEvents": [],
+  "devDependencies": {
+    "@types/vscode": "^1.61.0"
+  }
+}

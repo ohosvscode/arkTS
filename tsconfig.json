@@ -1,18 +1,27 @@
 {
   "compilerOptions": {
     "composite": true,
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
     "noEmit": true,
-    "isolatedDeclarations": true
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true
   },
   "references": [
     {
-      "path": "./tsconfig.app.json"
+      "path": "./tsconfig.server.json"
     },
     {
       "path": "./tsconfig.config.json"
     },
     {
-      "path": "./tsconfig.test.json"
+      "path": "./tsconfig.client.json"
     }
+  ],
+  "files": [],
+  "exclude": [
+    "./arkts-ohos-typescript/**/*",
+    "**/dist/**/*",
+    "**/oh_modules/**/*",
+    "**/hvigorfile.ts"
   ]
 }

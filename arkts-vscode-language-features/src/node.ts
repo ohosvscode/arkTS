@@ -1,5 +1,5 @@
 import type { Extension } from './common/entry-exporter'
-import type { UserModule } from './types'
+import type { UserModule } from './common/types'
 import { createExtension } from './common/entry-exporter'
 
 // eslint-disable-next-line ts/ban-ts-comment

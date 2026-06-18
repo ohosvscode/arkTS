@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.server.tsbuildinfo",
+    "types": ["vite-plus/client", "node"],
+    "isolatedDeclarations": true
+  },
+  "include": [
+    "./arkts-language-server/src",
+    "./arkts-vscode-language-features/src/node.ts",
+    "./arkts-vscode-language-features/src/node/**/*",
+    "./arkts-vscode-language-features/src/common/**/*",
+    "./arkts-vfs/src",
+    "./arkts-typescript-plugin/src",
+    "./arkts-vscode-emulator-manager/src/extension.ts"
+  ]
+}

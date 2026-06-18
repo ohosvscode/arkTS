@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.client.tsbuildinfo",
+    "lib": ["DOM", "ESNext", "WebWorker"],
+    "types": ["vite-plus/client"]
+  },
+  "include": [
+    "./arkts-vscode-emulator-manager/src",
+    "./arkts-vscode-language-features/src/browser/**/*",
+    "./arkts-vscode-language-features/src/common/**/*"
+  ]
+}

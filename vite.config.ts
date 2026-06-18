@@ -18,7 +18,9 @@ export default defineConfig({
       format: 'esm',
       platform: 'node',
       shims: true,
-      dts: true,
+      dts: {
+        oxc: true,
+      },
       checks: {
         eval: false,
         importIsUndefined: false,
@@ -49,7 +51,9 @@ export default defineConfig({
       format: 'esm',
       platform: 'node',
       shims: true,
-      dts: true,
+      dts: {
+        oxc: true,
+      },
       deps: {
         neverBundle: Object.keys(typescriptPluginPackageJson.dependencies).map(k => new RegExp(`^${k}`)).concat(/^typescript/),
       },
