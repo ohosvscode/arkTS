@@ -1,7 +1,7 @@
 {
   "name": "@arkts/vfs",
   "type": "module",
-  "version": "3.0.0",
+  "version": "3.0.0-alpha.0",
   "description": "A Map based ArkTS Virtual File System.",
   "author": "Naily Zero <zero@naily.cc> (https://naily.cc)",
   "license": "MIT",
