@@ -1,11 +1,13 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": ["@changesets/changelog-github", { "repo": "ohosvscode/arkTS" }],
   "commit": false,
   "fixed": [],
   "linked": [],
-  "access": "restricted",
-  "baseBranch": "main",
+  "access": "public",
+  "baseBranch": "v3",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "ohos-typescript"
+  ]
 }
