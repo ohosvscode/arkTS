@@ -6,12 +6,12 @@
     "isolatedDeclarations": true
   },
   "include": [
-    "./arkts-language-server/src",
-    "./arkts-vscode-language-features/src/node.ts",
-    "./arkts-vscode-language-features/src/node/**/*",
-    "./arkts-vscode-language-features/src/common/**/*",
-    "./arkts-vfs/src",
-    "./arkts-typescript-plugin/src",
-    "./arkts-vscode-emulator-manager/src/extension.ts"
+    "packages/arkts-language-server/src",
+    "extensions/arkts-vscode-language-features/src/node.ts",
+    "extensions/arkts-vscode-language-features/src/node/**/*",
+    "extensions/arkts-vscode-language-features/src/common/**/*",
+    "packages/arkts-vfs/src",
+    "packages/arkts-typescript-plugin/src",
+    "extensions/arkts-vscode-emulator-manager/src/extension.ts"
   ]
 }

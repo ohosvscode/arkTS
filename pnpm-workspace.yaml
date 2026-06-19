@@ -7,13 +7,9 @@ trustPolicy: no-downgrade
 trustPolicyExclude:
   - semver
 packages:
-  - arkts-language-server
-  - arkts-vscode-language-features
-  - arkts-vfs
-  - arkts-ohos-typescript
-  - arkts-typescript-plugin
-  - arkts-vscode-emulator-manager
-  - arkts-vscode-hdc-manager
+  - packages/*
+  - extensions/*
+  - externals/*
 catalogs:
   common:
     '@changesets/cli': ^2.31.0

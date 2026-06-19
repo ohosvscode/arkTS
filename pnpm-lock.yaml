@@ -66,7 +66,7 @@ importers:
     devDependencies:
       '@arkts/language-server':
         specifier: workspace:*
-        version: link:arkts-language-server
+        version: link:packages/arkts-language-server
       '@changesets/cli':
         specifier: catalog:common
         version: 2.31.0(@types/node@25.9.3)
@@ -93,7 +93,7 @@ importers:
         version: 2.44.1(vue@3.5.38(typescript@6.0.3))
       ohos-typescript:
         specifier: workspace:*
-        version: link:arkts-ohos-typescript
+        version: link:externals/arkts-ohos-typescript
       pnpm:
         specifier: catalog:common
         version: 11.7.0
@@ -119,9 +119,19 @@ importers:
         specifier: catalog:webview
         version: 3.3.5(typescript@6.0.3)
 
-  arkts-language-server: {}
+  extensions/arkts-vscode-emulator-manager:
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.61.0
+        version: 1.125.0
 
-  arkts-ohos-typescript:
+  extensions/arkts-vscode-language-features:
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.61.0
+        version: 1.125.0
+
+  externals/arkts-ohos-typescript:
     devDependencies:
       '@octokit/rest':
         specifier: 19.0.5
@@ -244,29 +254,19 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
 
-  arkts-typescript-plugin:
+  packages/arkts-language-server: {}
+
+  packages/arkts-typescript-plugin:
     dependencies:
       '@volar/typescript':
         specifier: catalog:vscode
         version: 2.4.28
 
-  arkts-vfs:
+  packages/arkts-vfs:
     dependencies:
       typescript:
         specifier: catalog:common
         version: 6.0.3
-
-  arkts-vscode-emulator-manager:
-    devDependencies:
-      '@types/vscode':
-        specifier: ^1.61.0
-        version: 1.125.0
-
-  arkts-vscode-language-features:
-    devDependencies:
-      '@types/vscode':
-        specifier: ^1.61.0
-        version: 1.125.0
 
 packages:
 
