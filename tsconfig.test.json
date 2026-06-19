@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "include": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "./arkts-language-server/src",
+    "./arkts-vscode-language-features/src",
+    "./arkts-vfs/src"
+  ]
+}

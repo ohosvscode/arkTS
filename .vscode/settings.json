@@ -1,31 +1,62 @@
 {
-  // This repo is using antfu's eslint config, so we need to disable prettier and let eslint handle the formatting
-  // Why?
-  // You can see antfu's blog:
-  // English: https://antfu.me/posts/why-not-prettier
-  // 中文: https://antfu.me/posts/why-not-prettier-zh
-  //
-  // Yes, I am the fan of antfu 😁
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "bun.test.enable": false,
+  "cSpell.words": [
+    "alnum",
+    "appanalyzer",
+    "arkts",
+    "asyncgenerator",
+    "asynciterable",
+    "defu",
+    "esbuild",
+    "fetchlike",
+    "harmonyos",
+    "hvigor",
+    "importscripts",
+    "keytar",
+    "libize",
+    "lzstring",
+    "lzzip",
+    "Naily",
+    "nightlies",
+    "ohos",
+    "ohpm",
+    "openharmony",
+    "prioritised",
+    "smallres",
+    "storelike",
+    "storer",
+    "tsserverlibrary",
+    "TSVFS",
+    "twoslash",
+    "typedarrays",
+    "vite",
+    "weakref"
+  ],
+
+  // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
 
-  // Silent the stylistic rules in you IDE, but still auto fix them
+  // Auto fix
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
+  },
+
+  // Silent the stylistic rules in your IDE, but still auto fix them
   "eslint.rules.customizations": [
-    { "rule": "style/*", "severity": "off" },
-    { "rule": "*-indent", "severity": "off" },
-    { "rule": "*-spacing", "severity": "off" },
-    { "rule": "*-spaces", "severity": "off" },
-    { "rule": "*-order", "severity": "off" },
-    { "rule": "*-dangle", "severity": "off" },
-    { "rule": "*-newline", "severity": "off" },
-    { "rule": "*quotes", "severity": "off" },
-    { "rule": "*semi", "severity": "off" }
+    { "rule": "style/*", "severity": "off", "fixable": true },
+    { "rule": "format/*", "severity": "off", "fixable": true },
+    { "rule": "*-indent", "severity": "off", "fixable": true },
+    { "rule": "*-spacing", "severity": "off", "fixable": true },
+    { "rule": "*-spaces", "severity": "off", "fixable": true },
+    { "rule": "*-order", "severity": "off", "fixable": true },
+    { "rule": "*-dangle", "severity": "off", "fixable": true },
+    { "rule": "*-newline", "severity": "off", "fixable": true },
+    { "rule": "*quotes", "severity": "off", "fixable": true },
+    { "rule": "*semi", "severity": "off", "fixable": true }
   ],
 
+  // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -36,29 +67,21 @@
     "markdown",
     "json",
     "jsonc",
-    "yaml"
+    "yaml",
+    "toml",
+    "xml",
+    "gql",
+    "graphql",
+    "astro",
+    "svelte",
+    "css",
+    "less",
+    "scss",
+    "pcss",
+    "postcss"
   ],
 
-  // Exclude ohos-typescript from eslint.
-  "eslint.workingDirectories": [
-    {
-      "pattern": "."
-    }
-  ],
-  "material-icon-theme.folders.associations": {
-    "AppScope": "app",
-    "hvigor": "tools",
-    "ohosTest": "test",
-    "ets": "typescript",
-    "composables": "hook",
-    "vfs": "other",
-    "language-service": "controller",
-    "language-plugin": "plugin",
-    "language-server": "server",
-    "typescript-plugin": "plugin"
-  },
-  "oxc.enable": true,
-  "i18n-ally.localesPaths": "./packages/vscode",
+  "i18n-ally.localesPaths": ["./arkts-vscode-language-features"],
   "i18n-ally.sortKeys": true,
   "i18n-ally.keystyle": "flat",
   "i18n-ally.enabledFrameworks": [
@@ -68,6 +91,5 @@
   ],
   "i18n-ally.dirStructure": "file",
   "i18n-ally.pathMatcher": "package.nls.?{locale?}.json",
-  "i18n-ally.sourceLanguage": "en",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "i18n-ally.sourceLanguage": "en"
 }

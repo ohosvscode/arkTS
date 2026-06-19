@@ -1,63 +1,112 @@
 import { defineConfig } from 'vite-plus'
+import typescriptPluginPackageJson from './arkts-typescript-plugin/package.json'
 
 export default defineConfig({
   staged: {
-    '*': 'eslint --fix',
+    '*': 'eslint . --fix',
   },
 
-  test: {
-    projects: [
-      'packages/*',
-      {
-        // Root project for e2e tests
-        test: {
-          include: ['e2e/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
-          name: 'e2e',
-          globals: true,
-        },
+  pack: [
+    {
+      name: '@arkts/language-server',
+      entry: [
+        'arkts-language-server/src/node.ts',
+        'arkts-language-server/src/browser.ts',
+        'arkts-language-server/src/index.ts',
+      ],
+      outDir: 'arkts-language-server/dist',
+      format: 'esm',
+      platform: 'node',
+      shims: true,
+      dts: true,
+      checks: {
+        eval: false,
+        importIsUndefined: false,
       },
-    ],
-    globals: true,
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/out/**',
-      '**/cypress/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,eslint,prettier,tsdown,uno}.config.*',
-      'ohos-typescript/**',
-      'sample/**/*',
-      './packages/vscode/scripts/**',
-      './packages/language-server/bin/**',
-    ],
-    coverage: {
-      exclude: [
-        'coverage/**',
-        'dist/**',
-        '**/dist/**',
-        'out/**',
-        'scripts/**',
-        '**/out/**',
-        '**/[.]**',
-        'packages/*/test?(s)/**',
-        '**/*.d.ts',
-        '**/*virtual:*',
-        '**/__x00__*',
-        '**/\x00*',
-        'cypress/**',
-        'test?(s)/**',
-        'test?(-*).?(c|m)[jt]s?(x)',
-        '**/*{.,-}{test,spec}?(-d).?(c|m)[jt]s?(x)',
-        '**/*__tests__/**',
-        '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build,tsdown,uno,eslint}.config.*',
-        '**/*vitest.{workspace,projects}.[jt]s?(on)',
-        '**/.{eslint,mocha,prettier}rc.{?(c|m)js,yml}',
-        'ohos-typescript/**',
-        'sample/**/*',
-        './packages/vscode/scripts/**',
-        './packages/language-server/bin/**',
+      deps: {
+        onlyBundle: false,
+      },
+      copy: [
+        { from: 'arkts-ohos-typescript/lib/**/diagnosticMessages.generated.json', flatten: false },
+        {
+          from: [
+            'arkts-ohos-typescript/lib/*.d.ts',
+            '!**/typescript.d.ts',
+            '!**/tsserverlibrary.d.ts',
+            '!**/lib.webworker.d.ts',
+            '!**/lib.webworker.*.d.ts',
+            '!**/lib.dom.d.ts',
+            '!**/lib.dom.*.d.ts',
+          ],
+          flatten: false,
+        },
       ],
     },
-  },
+    {
+      name: '@arkts/typescript-plugin',
+      entry: 'arkts-typescript-plugin/src/index.ts',
+      outDir: 'arkts-typescript-plugin/dist',
+      format: 'esm',
+      platform: 'node',
+      shims: true,
+      dts: true,
+      deps: {
+        neverBundle: Object.keys(typescriptPluginPackageJson.dependencies).map(k => new RegExp(`^${k}`)).concat(/^typescript/),
+      },
+    },
+    {
+      name: 'arkts-language-server -> NailyZero.vscode-naily-ets',
+      entry: {
+        'arkts-server-node': 'arkts-language-server/src/node.ts',
+        'arkts-server-browser': 'arkts-language-server/src/browser.ts',
+      },
+      outDir: 'arkts-vscode-language-features/dist',
+      format: 'cjs',
+      dts: false,
+      minify: true,
+      outExtensions: ctx => ctx.format === 'cjs' ? { js: '.js' } : undefined,
+      deps: {
+        onlyBundle: false,
+      },
+      checks: {
+        eval: false,
+      },
+      copy: [
+        { from: 'arkts-ohos-typescript/lib/**/diagnosticMessages.generated.json', flatten: false },
+        {
+          from: [
+            'arkts-ohos-typescript/lib/*.d.ts',
+            '!**/typescript.d.ts',
+            '!**/tsserverlibrary.d.ts',
+            '!**/lib.webworker.d.ts',
+            '!**/lib.webworker.*.d.ts',
+            '!**/lib.dom.d.ts',
+            '!**/lib.dom.*.d.ts',
+          ],
+          flatten: false,
+        },
+      ],
+    },
+    {
+      name: 'NailyZero.vscode-naily-ets',
+      entry: {
+        'dist/browser': 'arkts-vscode-language-features/src/browser.ts',
+        'dist/node': 'arkts-vscode-language-features/src/node.ts',
+        'node_modules/ets-typescript-plugin/index': 'arkts-typescript-plugin/src/index.ts',
+      },
+      outDir: 'arkts-vscode-language-features',
+      format: 'cjs',
+      minify: true,
+      dts: false,
+      clean: false,
+      outExtensions: ctx => ctx.format === 'cjs' ? { js: '.js' } : undefined,
+      deps: {
+        neverBundle: ['vscode'],
+        onlyBundle: false,
+      },
+      outputOptions: {
+        chunkFileNames: 'dist/[name]-[hash].js',
+      },
+    },
+  ],
 })

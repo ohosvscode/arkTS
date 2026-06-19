@@ -1,4 +1,7 @@
 [submodule "ohos-typescript"]
-	path = ohos-typescript
+	path = arkts-ohos-typescript
 	url = https://gitcode.com/openharmony/third_party_typescript
 	shallow = true
+[submodule "arkts-ohos-typescript"]
+	path = arkts-ohos-typescript
+	url = https://gitcode.com/openharmony/third_party_typescript

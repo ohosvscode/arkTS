@@ -1,29 +1,16 @@
 {
   "compilerOptions": {
     "composite": true,
-    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
-    "target": "ES2021",
-    "lib": ["ES2021"],
-    "baseUrl": "./",
-    "module": "Preserve",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
+    "target": "ES2022",
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "jsxImportSource": "vue",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
     "strict": true,
-    "strictPropertyInitialization": false,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "declaration": true,
-    "noEmit": true,
-    "sourceMap": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
-  },
-  "exclude": [
-    "**/ohos-typescript/**/*",
-    "**/out/**/*",
-    "**/node_modules/**/*",
-    "**/dist/**/*",
-    "**/*.d.ts",
-    "**/packages/*/out/**/*"
-  ]
+  }
 }

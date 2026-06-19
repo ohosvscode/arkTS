@@ -1,3 +1,0 @@
-<div>
-  <text>Hello World {{ message }}</text>
-</div>

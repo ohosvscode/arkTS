@@ -1,0 +1,51 @@
+{
+  "name": "@arkts/language-server",
+  "type": "module",
+  "version": "3.0.0",
+  "description": "ArkTS Language Server.",
+  "author": "Naily Zero <zero@naily.cc>",
+  "license": "MIT",
+  "homepage": "https://github.com/ohosvscode/arkTS/tree/v3/arkts-language-server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ohosvscode/arkTS",
+    "directory": "arkts-language-server"
+  },
+  "bugs": {
+    "url": "https://github.com/ohosvscode/arkTS/issues",
+    "email": "zero@naily.cc"
+  },
+  "keywords": [
+    "language-server",
+    "language-server-protocol",
+    "harmonyos",
+    "arkts",
+    "ets"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.mts",
+      "import": "./dist/browser.mjs"
+    },
+    "./node": {
+      "types": "./dist/node.d.mts",
+      "import": "./dist/node.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "browser": "./dist/browser.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": {
+    "ets-language-server": "./dist/node.mjs"
+  },
+  "files": [
+    "out"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "publisher": "NailyZero",
+  "name": "vscode-naily-ets",
+  "displayName": "Naily's ArkTS Language Features",
+  "version": "1.3.9",
+  "private": true,
+  "description": "ArkTS基础语言特性支持: 代码补全、诊断与高亮。",
+  "author": "Naily Zero <zero@naily.cc>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Groupguanfang/arkTS",
+    "directory": "arkts-vscode-language-features"
+  },
+  "bugs": {
+    "url": "https://github.com/Groupguanfang/arkTS/issues",
+    "email": "zero@naily.cc"
+  },
+  "keywords": [
+    "ArkTS",
+    "ets",
+    "huawei",
+    "hvigor",
+    "harmonyos",
+    "openharmony",
+    "ohos",
+    "hdc"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Themes"
+  ],
+  "main": "./dist/node.js",
+  "browser": "./dist/browser.js",
+  "icon": "assets/icon.png",
+  "engines": {
+    "vscode": "^1.61.0"
+  },
+  "galleryBanner": {
+    "theme": "dark",
+    "color": "#37337a"
+  },
+  "activationEvents": [
+    "workspaceContains:**/*.ets",
+    "workspaceContains:**/build-profile.json5",
+    "workspaceContains:**/oh-package.json5"
+  ],
+  "contributes": {
+    "snippets": [
+      {
+        "language": "arkts",
+        "path": "./snippets/arkts.code-snippets"
+      }
+    ],
+    "languages": [
+      {
+        "id": "arkts",
+        "extensions": [
+          ".ets",
+          ".d.ets"
+        ],
+        "aliases": [
+          "ArkTS",
+          "ets"
+        ],
+        "configuration": "./language/language-configuration.json",
+        "bases": ["typescript"]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "arkts",
+        "scopeName": "source.arkts",
+        "path": "./syntaxes/arkts.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "%extension.name%",
+      "properties": {
+        "ets.sdkPath": {
+          "type": "string",
+          "description": "%configuration.ets.sdkPath.description%",
+          "default": ""
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.125.0"
+  }
+}

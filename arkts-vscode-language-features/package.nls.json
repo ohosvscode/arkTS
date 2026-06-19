@@ -1,0 +1,4 @@
+{
+  "extension.name": "Naily's ArkTS Language Features",
+  "configuration.ets.sdkPath.description": "OpenHarmony SDK path. The ETS Language Server will be restarted when this setting is changed. (This path corresponds to the `sdk/default/openharmony` path in the DevEco Studio installation directory)"
+}

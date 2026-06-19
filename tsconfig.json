@@ -1,18 +1,18 @@
-// Only using type check.
 {
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo"
+    "composite": true,
+    "noEmit": true,
+    "isolatedDeclarations": true
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "out",
-    "ohos-typescript",
-    "oh_modules",
-    "sample",
-    "packages/vscode/src/qualifier-editor/main.ts",
-    "packages/vscode/src/project/main.ts",
-    "e2e/apps/**/*"
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.config.json"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    }
   ]
 }

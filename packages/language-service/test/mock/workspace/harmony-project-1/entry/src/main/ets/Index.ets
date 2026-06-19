@@ -1,3 +1,0 @@
-@Entry
-@Component
-struct Index {}

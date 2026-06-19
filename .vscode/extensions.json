@@ -1,8 +1,7 @@
 {
   "recommendations": [
-    "antfu.pnpm-catalog-lens",
-    "vitest.explorer",
-    "dbaeumer.vscode-eslint",
-    "lokalise.i18n-ally"
+    "lokalise.i18n-ally",
+    "vue.volar",
+    "vitest.explorer"
   ]
 }
