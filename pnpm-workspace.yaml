@@ -39,7 +39,7 @@ catalogs:
     vue-router: ^4.6.3
   lint:
     naily-eslint-config: ^0.0.2
-    eslint: ^9
+    eslint: ^10.6.0
     oxlint: ^1.16.0
   polyfill:
     path-browserify: ^1.0.1
