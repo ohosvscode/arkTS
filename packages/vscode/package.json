@@ -37,7 +37,7 @@
   "main": "./dist/client.js",
   "icon": "assets/icon.png",
   "engines": {
-    "vscode": "^1.61.0"
+    "vscode": "^1.126.0"
   },
   "galleryBanner": {
     "theme": "dark",
@@ -606,9 +606,9 @@
     "vsce": "vsce"
   },
   "dependencies": {
-    "@napi-rs/wasm-runtime": "^1.0.7"
+    "@napi-rs/wasm-runtime": "^1.1.6"
   },
   "devDependencies": {
-    "@types/vscode": "^1.22.0"
+    "@types/vscode": "^1.125.0"
   }
 }
