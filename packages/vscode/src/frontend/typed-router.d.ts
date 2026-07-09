@@ -99,55 +99,55 @@ declare module 'vue-router/auto-routes' {
    * @internal
    */
   export interface _RouteFileInfoMap {
-    'packages/vscode/src/frontend/pages/device-manager/index.vue': {
+    'src/frontend/pages/device-manager/index.vue': {
       routes:
         | '/device-manager/'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/device-manager/create-device.vue': {
+    'src/frontend/pages/device-manager/create-device.vue': {
       routes:
         | '/device-manager/create-device'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/device-manager/image-manager.vue': {
+    'src/frontend/pages/device-manager/image-manager.vue': {
       routes:
         | '/device-manager/image-manager'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/hdc-manager/index.vue': {
+    'src/frontend/pages/hdc-manager/index.vue': {
       routes:
         | '/hdc-manager/'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/project/index.vue': {
+    'src/frontend/pages/project/index.vue': {
       routes:
         | '/project/'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/project/template-detail.vue': {
+    'src/frontend/pages/project/template-detail.vue': {
       routes:
         | '/project/template-detail'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/project/template-market.vue': {
+    'src/frontend/pages/project/template-market.vue': {
       routes:
         | '/project/template-market'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/qualifier-editor/index.vue': {
+    'src/frontend/pages/qualifier-editor/index.vue': {
       routes:
         | '/qualifier-editor/'
       views:
         | never
     }
-    'packages/vscode/src/frontend/pages/snapshot-previewer/index.vue': {
+    'src/frontend/pages/snapshot-previewer/index.vue': {
       routes:
         | '/snapshot-previewer/'
       views:
