@@ -1,7 +1,7 @@
 import type { LanguageServerConfigurator } from '@arkts/shared'
 import type { CompletionContext, CompletionItem, CompletionList, Diagnostic, DocumentLink, FileStat, Hover, LanguageServicePluginInstance, LocationLink, NullableProviderResult, TextDocument } from '@volar/language-server'
 import type * as ets from 'ohos-typescript'
-import type { Product, ProjectDetectorManager } from '../interfaces'
+import type { Module, Product, ProjectDetectorManager } from '../interfaces'
 import type { ContextUtil } from '../utils/context-util'
 import type { LocaleStorage } from '../utils/i18n'
 import type { GlobalCallExpressionFinder } from './global-call-finder'
@@ -137,6 +137,37 @@ export namespace ResourceProvider {
         ?.findByUri(uri.toString())
         ?.findByUri(uri.toString())
         ?.findByUri(uri.toString())
+    }
+
+    /**
+     * Parse a cross-module resource reference like `[basic].color.xxx`.
+     * Returns the module name, resource type, and resource name, or null if the
+     * value does not match the cross-module pattern.
+     */
+    static parseCrossModuleReference(resourceValue: string): { moduleName: string, type: string, name: string } | null {
+      const match = /^\[(.+?)\]\.(.+?)\.(.+)$/.exec(resourceValue)
+      if (!match) return null
+      return { moduleName: match[1]!, type: match[2]!, name: match[3]! }
+    }
+
+    /**
+     * Find a module by its name (directory name) within the same project as the
+     * given product. Returns the matching Module or undefined.
+     */
+    findModuleByName(product: Product, moduleName: string): Module | undefined {
+      const project = product.getModule().getProject()
+      return project.findAll().find(module => {
+        const moduleUri = module.getUnderlyingModule().getUri()
+        return Uri.basename(moduleUri) === moduleName
+      })
+    }
+
+    /**
+     * Collect all references from all products within a given module.
+     * Used for cross-module resource lookups.
+     */
+    findReferencesInModule(module: Module): ReturnType<Product['findReference']> {
+      return module.findAll().flatMap(product => product.findReference())
     }
 
     getReadonlySourceFiles(): readonly ets.SourceFile[] {
@@ -357,6 +388,35 @@ export namespace ResourceProvider {
       if (!currentCallExpression) return null
       const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, sourceFile)
       if (!firstArgumentText) return null
+
+      // Check for cross-module reference: [moduleName].type.name
+      const crossModuleRef = ResourceProviderImpl.parseCrossModuleReference(firstArgumentText)
+      if (crossModuleRef) {
+        const product = this.findProductByUri(decodedUri)
+        if (!product) return null
+        const targetModule = this.findModuleByName(product, crossModuleRef.moduleName)
+        if (!targetModule) return null
+
+        const references = this.findReferencesInModule(targetModule)
+        if (!references.length) return null
+        const originSelectionRange = Reference.toRange(currentCallExpression.arguments[0], document, true)
+        const appEtsFormat = `app.${crossModuleRef.type}.${crossModuleRef.name}`
+        const definitions: LocationLink[] = []
+
+        for (const reference of references) {
+          if (reference.toEtsFormat() !== appEtsFormat) continue
+          const targetRange = Reference.toRange(reference, true)
+          definitions.push({
+            targetUri: reference.getUri().toString(),
+            targetRange,
+            targetSelectionRange: targetRange,
+            originSelectionRange,
+          })
+        }
+
+        return definitions
+      }
+
       const [scope, type, name] = firstArgumentText.split('.')
       if (!scope || !type || !name) return null
 
@@ -535,6 +595,55 @@ export namespace ResourceProvider {
 
       const items: CompletionItem[] = []
 
+      // Cross-module completion: [moduleName].type.name
+      if (firstArgumentText.startsWith('[')) {
+        const closeBracketIdx = firstArgumentText.indexOf(']')
+        if (closeBracketIdx === -1) {
+          // User is typing module name: `[basic`
+          const partialModuleName = firstArgumentText.slice(1)
+          const project = product.getModule().getProject()
+          for (const module of project.findAll()) {
+            const moduleName = Uri.basename(module.getUnderlyingModule().getUri())
+            if (!moduleName.startsWith(partialModuleName)) continue
+            const references = this.findReferencesInModule(module)
+            const uniqueEtsFormats = [...new Set(references.map(ref => ref.toEtsFormat()))]
+            for (const etsFormat of uniqueEtsFormats) {
+              // Convert app.type.name to [moduleName].type.name
+              const crossModuleFormat = `[${moduleName}].${etsFormat.slice(4)}`
+              const split = crossModuleFormat.split(firstArgumentText)
+              if (split.length < 2) continue
+              items.push({
+                label: crossModuleFormat,
+                kind: CompletionItemKind.Value,
+                detail: crossModuleFormat,
+                insertText: (firstArgumentText && split.length > 1) ? split[1] : crossModuleFormat,
+              })
+            }
+          }
+          return items
+        }
+
+        // User has complete module name: `[basic].` or `[basic].color.`
+        const moduleName = firstArgumentText.slice(1, closeBracketIdx)
+        const targetModule = this.findModuleByName(product, moduleName)
+        if (!targetModule) return items
+        const references = this.findReferencesInModule(targetModule)
+        const uniqueEtsFormats = [...new Set(references.map(ref => ref.toEtsFormat()))]
+        for (const etsFormat of uniqueEtsFormats) {
+          // Convert app.type.name to [moduleName].type.name
+          const crossModuleFormat = `[${moduleName}].${etsFormat.slice(4)}`
+          const split = crossModuleFormat.split(firstArgumentText)
+          if (split.length < 2) continue
+          items.push({
+            label: crossModuleFormat,
+            kind: CompletionItemKind.Value,
+            detail: crossModuleFormat,
+            insertText: (firstArgumentText && split.length > 1) ? split[1] : crossModuleFormat,
+          })
+        }
+        return items
+      }
+
       if (!firstArgumentText.startsWith('app')) {
         for (const sysEtsFormat of sysEtsFormats) {
           const split = sysEtsFormat.split(firstArgumentText)
@@ -651,16 +760,54 @@ export namespace ResourceProvider {
           })
         }
         else {
-          diagnostics.push({
-            message: `Invalid resource scope: ${resourceValue}, expected starts with \`sys\` or \`app\``,
-            range: Reference.toRange(resourceCallExpression.arguments[0], sourceFile, true),
-            severity: DiagnosticSeverity.Error,
-            code: 'INVALID_RESOURCE_SCOPE',
-            codeDescription: {
-              href: 'https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#资源访问',
-            },
-            source: 'ets',
-          })
+          // Check for cross-module reference: [moduleName].type.name
+          const crossModuleRef = ResourceProviderImpl.parseCrossModuleReference(resourceValue)
+          if (crossModuleRef) {
+            const product = this.findProductByUri(decodedUri)
+            if (!product) continue
+            const targetModule = this.findModuleByName(product, crossModuleRef.moduleName)
+            if (!targetModule) {
+              diagnostics.push({
+                message: `Module "${crossModuleRef.moduleName}" not found in current project. Available modules: ${product.getModule().getProject().findAll().map(m => Uri.basename(m.getUnderlyingModule().getUri())).join(', ')}`,
+                range: Reference.toRange(resourceCallExpression.arguments[0], sourceFile, true),
+                severity: DiagnosticSeverity.Error,
+                code: 'MODULE_NOT_FOUND',
+                codeDescription: {
+                  href: 'https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#资源访问',
+                },
+                source: 'ets',
+              })
+              continue
+            }
+
+            const references = this.findReferencesInModule(targetModule)
+            const appEtsFormat = `app.${crossModuleRef.type}.${crossModuleRef.name}`
+            const reference = references.find(ref => ref.toEtsFormat() === appEtsFormat)
+            if (reference) continue
+
+            diagnostics.push({
+              message: `Resource ${resourceValue} not found in module "${crossModuleRef.moduleName}".`,
+              range: Reference.toRange(resourceCallExpression.arguments[0], sourceFile, true),
+              severity: DiagnosticSeverity.Error,
+              code: 'CROSS_MODULE_RESOURCE_NOT_FOUND',
+              codeDescription: {
+                href: 'https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#资源访问',
+              },
+              source: 'ets',
+            })
+          }
+          else {
+            diagnostics.push({
+              message: `Invalid resource scope: ${resourceValue}, expected starts with \`sys\`, \`app\` or \`[moduleName]\``,
+              range: Reference.toRange(resourceCallExpression.arguments[0], sourceFile, true),
+              severity: DiagnosticSeverity.Error,
+              code: 'INVALID_RESOURCE_SCOPE',
+              codeDescription: {
+                href: 'https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/resource-categories-and-access#资源访问',
+              },
+              source: 'ets',
+            })
+          }
         }
       }
 
@@ -849,11 +996,33 @@ export namespace ResourceProvider {
       if (!currentCallExpression) return null
       const firstArgumentText = this.globalCallExpressionFinder.getFirstArgumentText(currentCallExpression, decodedSourceFile)
       if (!firstArgumentText) return null
-      if (!firstArgumentText.startsWith('app.media.')) return null
       const decodedUri = this.contextUtil.decodeTextDocumentUri(document)
       if (!decodedUri) return null
       const product = this.findProductByUri(decodedUri)
-      const references = product?.findReference()
+      if (!product) return null
+
+      // Handle cross-module media reference: [moduleName].media.name
+      const crossModuleRef = ResourceProviderImpl.parseCrossModuleReference(firstArgumentText)
+      if (crossModuleRef && crossModuleRef.type === 'media') {
+        const targetModule = this.findModuleByName(product, crossModuleRef.moduleName)
+        if (!targetModule) return null
+        const appEtsFormat = `app.media.${crossModuleRef.name}`
+        const references = this.findReferencesInModule(targetModule)
+          .filter(reference => MediaReference.is(reference))
+          .filter(reference => reference.toEtsFormat() === appEtsFormat) ?? []
+        if (!references.length) return null
+        const value = references.map(reference => this.buildDollarResourceHoverText(reference)).join('---\n')
+        return {
+          contents: {
+            kind: MarkupKind.Markdown,
+            value,
+          },
+          range: Reference.toRange(currentCallExpression.arguments[0], decodedSourceFile, true),
+        }
+      }
+
+      if (!firstArgumentText.startsWith('app.media.')) return null
+      const references = product.findReference()
         .filter(reference => MediaReference.is(reference))
         .filter(reference => reference.toEtsFormat() === firstArgumentText) ?? []
       if (!references.length) return null
