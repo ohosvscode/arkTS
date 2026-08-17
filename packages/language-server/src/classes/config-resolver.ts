@@ -12,6 +12,7 @@ import { createRelativePattern, Uri } from '@vstils/core'
 import { FileType } from '@vstils/fs'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
+import { addHmsPathMapping, hmsDeclarationToModuleNames, hmsEtsWildcardTargets, stripDeclarationExtension } from '../utils/hms-paths'
 
 export class ConfigResolver {
   constructor(
@@ -153,39 +154,51 @@ export class ConfigResolver {
     const declarationsUri = Uri.joinPath(Uri.file(this.getEtsLoaderPath()), 'declarations')
     const globalFiles = await this.fs.glob(createRelativePattern(declarationsUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
 
-    return [...dtsFiles, ...detsFiles, ...globalFiles, ...await this.getTsdkLib()].filter((item, index, self) => self.indexOf(item) === index && Boolean(item))
+    return [...dtsFiles, ...detsFiles, ...globalFiles, ...await this.getHmsComponentLib(), ...await this.getTsdkLib()].filter((item, index, self) => self.indexOf(item) === index && Boolean(item))
   }
 
-  private getFileNameWithoutExtension(fileNameWithExtension: string): string {
-    if (fileNameWithExtension.endsWith('.d.ts') || fileNameWithExtension.endsWith('.d.ets')) {
-      return fileNameWithExtension.replace(/\.d\.ts$/, '').replace(/\.d\.ets$/, '')
+  /**
+   * HMS UI components (e.g. `HdsNavigationAttribute.titleBar`) live in
+   * `ets/component`, same as OpenHarmony built-ins. Without these files in
+   * `lib`, `@kit.UIDesignKit` resolves but chained attributes stay unresolved.
+   */
+  private async getHmsComponentLib(): Promise<string[]> {
+    const hmsSdkPath = this.getHmsSdkPath()
+    if (!hmsSdkPath) return []
+    const hmsComponentFolderUri = Uri.joinPath(Uri.file(hmsSdkPath), 'ets', 'component')
+    if (!await this.isDirectory(hmsComponentFolderUri)) return []
+    const dtsFiles = await this.fs.glob(createRelativePattern(hmsComponentFolderUri, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    const detsFiles = await this.fs.glob(createRelativePattern(hmsComponentFolderUri, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
+    return [...dtsFiles, ...detsFiles]
+  }
+
+  private async globHmsDeclarationFiles(folder: Uri): Promise<string[]> {
+    if (!await this.isDirectory(folder)) return []
+    const dtsFiles = await this.fs.glob(createRelativePattern(folder, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    const detsFiles = await this.fs.glob(createRelativePattern(folder, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
+    return [...dtsFiles, ...detsFiles]
+  }
+
+  private async mapHmsDeclarationFolder(folder: Uri, paths: import('typescript').MapLike<string[]>): Promise<void> {
+    const files = await this.globHmsDeclarationFiles(folder)
+    const folderPath = folder.fsPath
+    for (const filePath of files) {
+      const relativePath = path.relative(folderPath, filePath)
+      const wildcardTarget = Uri.joinPath(Uri.file(stripDeclarationExtension(filePath)), '*').fsPath
+      for (const moduleName of hmsDeclarationToModuleNames(relativePath))
+        addHmsPathMapping(paths, moduleName, filePath, wildcardTarget)
     }
-    return path.basename(fileNameWithExtension, path.extname(fileNameWithExtension))
   }
 
   private async hmsToTypeScriptCompilerOptionsPaths(): Promise<import('typescript').MapLike<string[]>> {
     try {
       const hmsSdkPath = this.getHmsSdkPath()
       if (!hmsSdkPath) return {}
-      const hmsApiFolder = Uri.joinPath(Uri.file(hmsSdkPath), 'ets', 'api')
-      const hmsKitsFolder = Uri.joinPath(Uri.file(hmsSdkPath), 'ets', 'kits')
-      if (!hmsApiFolder || !hmsKitsFolder) return {}
-
+      const hmsEtsFolder = Uri.joinPath(Uri.file(hmsSdkPath), 'ets')
       const paths: import('typescript').MapLike<string[]> = {}
-      const apiFiles = await this.fs.readDirectory(hmsApiFolder)
-      const kitsFiles = await this.fs.readDirectory(hmsKitsFolder)
-      for (const [fileNameWithExtension, fileType] of apiFiles) {
-        if (fileType !== FileType.File) continue
-        const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-        paths[fileName] = [Uri.joinPath(hmsApiFolder, fileNameWithExtension).fsPath]
-        paths[`${fileName}/*`] = [Uri.joinPath(hmsApiFolder, fileNameWithExtension, '*').fsPath]
-      }
-      for (const [fileNameWithExtension, fileType] of kitsFiles) {
-        if (fileType !== FileType.File) continue
-        const fileName = this.getFileNameWithoutExtension(fileNameWithExtension)
-        paths[fileName] = [Uri.joinPath(hmsKitsFolder, fileNameWithExtension).fsPath]
-        paths[`${fileName}/*`] = [Uri.joinPath(hmsKitsFolder, fileNameWithExtension, '*').fsPath]
-      }
+      await this.mapHmsDeclarationFolder(Uri.joinPath(hmsEtsFolder, 'api'), paths)
+      await this.mapHmsDeclarationFolder(Uri.joinPath(hmsEtsFolder, 'kits'), paths)
+      await this.mapHmsDeclarationFolder(Uri.joinPath(hmsEtsFolder, 'arkts'), paths)
       return paths
     }
     catch (error) {
@@ -197,11 +210,16 @@ export class ConfigResolver {
   }
 
   async getPaths(): Promise<ets.MapLike<string[]>> {
+    const hmsSdkPath = this.getHmsSdkPath()
+    const hmsWildcards = hmsSdkPath
+      ? hmsEtsWildcardTargets(Uri.joinPath(Uri.file(hmsSdkPath), 'ets').fsPath)
+      : []
     return {
       '*': [
         './api/*',
         './kits/*',
         './arkts/*',
+        ...hmsWildcards,
       ].filter(Boolean) as string[],
       '@internal/full/*': ['./api/@internal/full/*'],
       ...await this.hmsToTypeScriptCompilerOptionsPaths(),
