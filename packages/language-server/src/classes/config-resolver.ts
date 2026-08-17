@@ -12,6 +12,7 @@ import { createRelativePattern, Uri } from '@vstils/core'
 import { FileType } from '@vstils/fs'
 import defu from 'defu'
 import * as ets from 'ohos-typescript'
+import { addOhosPathMapping, ohosDeclarationToModuleNames, stripDeclarationExtension } from '../utils/ohos-paths'
 
 export class ConfigResolver {
   constructor(
@@ -163,6 +164,50 @@ export class ConfigResolver {
     return path.basename(fileNameWithExtension, path.extname(fileNameWithExtension))
   }
 
+  private async globOhosDeclarationFiles(folder: Uri): Promise<string[]> {
+    if (!await this.isDirectory(folder)) return []
+    const dtsFiles = await this.fs.glob(createRelativePattern(folder, '**/*.d.ts')).then(uris => uris.map(uri => uri.fsPath))
+    const detsFiles = await this.fs.glob(createRelativePattern(folder, '**/*.d.ets')).then(uris => uris.map(uri => uri.fsPath))
+    return [...dtsFiles, ...detsFiles]
+  }
+
+  private async mapOhosDeclarationFolder(folder: Uri, paths: import('typescript').MapLike<string[]>): Promise<void> {
+    const files = await this.globOhosDeclarationFiles(folder)
+    const folderPath = folder.fsPath
+    for (const filePath of files) {
+      const relativePath = path.relative(folderPath, filePath)
+      const wildcardTarget = Uri.joinPath(Uri.file(stripDeclarationExtension(filePath)), '*').fsPath
+      for (const moduleName of ohosDeclarationToModuleNames(relativePath))
+        addOhosPathMapping(paths, moduleName, filePath, wildcardTarget)
+    }
+  }
+
+  /**
+   * Index OpenHarmony `ets/api`, `ets/kits`, and `ets/arkts` so `@kit.*`
+   * barrels and the `@ohos.*` modules they re-export resolve for
+   * jump-to-definition and exported member types.
+   */
+  private async ohosToTypeScriptCompilerOptionsPaths(): Promise<import('typescript').MapLike<string[]>> {
+    try {
+      const sdkPath = this.getSdkPath()
+      if (!sdkPath) return {}
+      const etsFolder = Uri.joinPath(Uri.file(sdkPath), 'ets')
+      const kitsFolder = Uri.joinPath(etsFolder, 'kits')
+      const paths: import('typescript').MapLike<string[]> = {}
+      await this.mapOhosDeclarationFolder(Uri.joinPath(etsFolder, 'api'), paths)
+      await this.mapOhosDeclarationFolder(kitsFolder, paths)
+      await this.mapOhosDeclarationFolder(Uri.joinPath(etsFolder, 'arkts'), paths)
+      const kitsMapped = Object.keys(paths).filter(name => name.startsWith('@kit.') && !name.endsWith('/*')).length
+      this.logger.getConsola().info(`OpenHarmony kits directory: ${kitsFolder.fsPath} (${kitsMapped} kit modules)`)
+      return paths
+    }
+    catch (error) {
+      this.logger.getConsola().error(`Failed to index OpenHarmony ets api/kits/arkts: ${error}`)
+      if (error instanceof Error) this.logger.getConsola().error(error.stack)
+      return {}
+    }
+  }
+
   private async hmsToTypeScriptCompilerOptionsPaths(): Promise<import('typescript').MapLike<string[]>> {
     try {
       const hmsSdkPath = this.getHmsSdkPath()
@@ -204,6 +249,7 @@ export class ConfigResolver {
         './arkts/*',
       ].filter(Boolean) as string[],
       '@internal/full/*': ['./api/@internal/full/*'],
+      ...await this.ohosToTypeScriptCompilerOptionsPaths(),
       ...await this.hmsToTypeScriptCompilerOptionsPaths(),
     }
   }
