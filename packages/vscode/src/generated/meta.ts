@@ -4,9 +4,9 @@
 // Meta info
 export const publisher = "NailyZero"
 export const name = "vscode-naily-ets"
-export const version = "1.2.13"
+export const version = "1.3.10"
 export const displayName = "Naily's ArkTS Support"
-export const description = "功能最全的鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/OpenHarmony SDK下载管理/HarmonyOS模拟器下载管理, 欢迎PR!"
+export const description = "功能最全鸿蒙ArkTS插件, 支持代码跳转、高亮、诊断、格式化/SDK下载管理/模拟器下载管理/调试运行, 欢迎PR!"
 export const extensionId = `${publisher}.${name}`
 
 /**
@@ -21,6 +21,13 @@ export type CommandKey =
   | "ets.resourceExplorer.openResourceQualifierEditor"
   | "ets.openDeviceManager"
   | "ets.copyHdcPathToClipboard"
+  | "ets.connectDevice"
+  | "ets.refreshLayoutsCheckerTool"
+  | "ets.collapseAllLayoutsCheckerToolTree"
+  | "ets.expandAllLayoutsCheckerToolTree"
+  | "ets.switchApplicationViewType"
+  | "ets.disconnectDevice"
+  | "ets.openHilogSettings"
 
 /**
  * Commands map registered by `NailyZero.vscode-naily-ets`
@@ -66,6 +73,41 @@ export const commands = {
    * @value `ets.copyHdcPathToClipboard`
    */
   etsCopyHdcPathToClipboard: "ets.copyHdcPathToClipboard",
+  /**
+   * Connect Device
+   * @value `ets.connectDevice`
+   */
+  etsConnectDevice: "ets.connectDevice",
+  /**
+   * Refresh HDC Layouts Checker
+   * @value `ets.refreshLayoutsCheckerTool`
+   */
+  etsRefreshLayoutsCheckerTool: "ets.refreshLayoutsCheckerTool",
+  /**
+   * Collapse All Layouts Tree
+   * @value `ets.collapseAllLayoutsCheckerToolTree`
+   */
+  etsCollapseAllLayoutsCheckerToolTree: "ets.collapseAllLayoutsCheckerToolTree",
+  /**
+   * Expand All Layouts Tree
+   * @value `ets.expandAllLayoutsCheckerToolTree`
+   */
+  etsExpandAllLayoutsCheckerToolTree: "ets.expandAllLayoutsCheckerToolTree",
+  /**
+   * Switch Application View Type
+   * @value `ets.switchApplicationViewType`
+   */
+  etsSwitchApplicationViewType: "ets.switchApplicationViewType",
+  /**
+   * Disconnect current device
+   * @value `ets.disconnectDevice`
+   */
+  etsDisconnectDevice: "ets.disconnectDevice",
+  /**
+   * Open Hilog Settings
+   * @value `ets.openHilogSettings`
+   */
+  etsOpenHilogSettings: "ets.openHilogSettings",
 } satisfies Record<string, CommandKey>
 
 /**
@@ -86,6 +128,7 @@ export const languages = {
  */
 export type ConfigKey =
   | "ets.sdkPath"
+  | "ets.buildTools.autoDetect"
   | "ets.baseSdkPath"
   | "ets.hmsPath"
   | "ets.lspDebugMode"
@@ -99,6 +142,7 @@ export type ConfigKey =
 
 export interface ConfigKeyTypeMap {
   "ets.sdkPath": string,
+  "ets.buildTools.autoDetect": boolean,
   "ets.baseSdkPath": string,
   "ets.hmsPath": string,
   "ets.lspDebugMode": boolean,
@@ -113,6 +157,7 @@ export interface ConfigKeyTypeMap {
 
 export interface ConfigShorthandMap {
   etsSdkPath: "ets.sdkPath",
+  etsBuildToolsAutoDetect: "ets.buildTools.autoDetect",
   etsBaseSdkPath: "ets.baseSdkPath",
   etsHmsPath: "ets.hmsPath",
   etsLspDebugMode: "ets.lspDebugMode",
@@ -127,6 +172,7 @@ export interface ConfigShorthandMap {
 
 export interface ConfigShorthandTypeMap {
   etsSdkPath: string,
+  etsBuildToolsAutoDetect: boolean,
   etsBaseSdkPath: string,
   etsHmsPath: string,
   etsLspDebugMode: boolean,
@@ -159,6 +205,16 @@ export const configs = {
     key: "ets.sdkPath",
     default: "",
   } as ConfigItem<"ets.sdkPath">,
+  /**
+   * Automatically detect Command-line-tools or DevEco Studio and fill `ets.sdkPath` when it is empty.
+   * @key `ets.buildTools.autoDetect`
+   * @default `true`
+   * @type `boolean`
+   */
+  etsBuildToolsAutoDetect: {
+    key: "ets.buildTools.autoDetect",
+    default: true,
+  } as ConfigItem<"ets.buildTools.autoDetect">,
   /**
    *
    * @key `ets.baseSdkPath`
@@ -281,6 +337,9 @@ export const scopedConfigs = {
 export interface NestedConfigs {
   "ets": {
     "sdkPath": string,
+    "buildTools": {
+      "autoDetect": boolean,
+    },
     "baseSdkPath": string,
     "hmsPath": string,
     "lspDebugMode": boolean,

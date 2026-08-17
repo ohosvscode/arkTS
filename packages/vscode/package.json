@@ -505,6 +505,11 @@
           "description": "%configuration.ets.sdkPath.description%",
           "default": ""
         },
+        "ets.buildTools.autoDetect": {
+          "type": "boolean",
+          "description": "%configuration.ets.buildTools.autoDetect.description%",
+          "default": true
+        },
         "ets.baseSdkPath": {
           "type": "string",
           "markdownDescription": "%configuration.ets.baseSdkPath.description%",
@@ -606,9 +611,9 @@
     "vsce": "vsce"
   },
   "dependencies": {
-    "@napi-rs/wasm-runtime": "^1.0.7"
+    "@napi-rs/wasm-runtime": "^1.2.3"
   },
   "devDependencies": {
-    "@types/vscode": "^1.22.0"
+    "@types/vscode": "^1.125.0"
   }
 }
