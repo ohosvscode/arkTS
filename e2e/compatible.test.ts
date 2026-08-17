@@ -4,6 +4,7 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
+import { findEsmOnlyCjsRequires } from '../packages/vscode/scripts/cjs-compat'
 
 // ============================================================================
 // 常量定义
@@ -247,6 +248,18 @@ describe('package Compatibility Tests', () => {
       const size = testVscodePackage()
       expect(size).toBeGreaterThan(0)
       expect(size).toBeTypeOf('number')
+    })
+
+    it('should not require ESM-only native JS loaders from CJS artifacts', () => {
+      const vscodePackagePath = path.join(projectRoot, 'packages', 'vscode')
+      const artifacts = ['dist/client.js', 'dist/server.js', 'dist/client.cjs', 'dist/server.cjs']
+        .map(file => path.join(vscodePackagePath, file))
+        .filter(filePath => existsSync(filePath))
+
+      expect(artifacts.length).toBeGreaterThan(0)
+      for (const filePath of artifacts) {
+        expect(findEsmOnlyCjsRequires(readFileSync(filePath, 'utf-8')), filePath).toEqual([])
+      }
     })
   })
 
