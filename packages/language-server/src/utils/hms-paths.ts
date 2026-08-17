@@ -22,12 +22,10 @@ export function stripDeclarationExtension(fileName: string): string {
 export function hmsDeclarationToModuleNames(relativePath: string): string[] {
   const moduleName = stripDeclarationExtension(relativePath)
   const posixRelative = relativePath.replace(/\\/g, '/')
-  if (!moduleName || moduleName === posixRelative)
-    return []
+  if (!moduleName || moduleName === posixRelative) return []
 
   const names = new Set<string>([moduleName])
-  if (moduleName.includes('/'))
-    names.add(moduleName.replaceAll('/', '.'))
+  if (moduleName.includes('/')) names.add(moduleName.replaceAll('/', '.'))
   return [...names]
 }
 
@@ -38,10 +36,8 @@ export function addHmsPathMapping(
   wildcardTarget: string,
 ): void {
   const existing = paths[moduleName]
-  if (!existing)
-    paths[moduleName] = [filePath]
-  else if (!existing.includes(filePath))
-    existing.push(filePath)
+  if (!existing) paths[moduleName] = [filePath]
+  else if (!existing.includes(filePath)) existing.push(filePath)
 
   paths[`${moduleName}/*`] = [wildcardTarget]
 }
