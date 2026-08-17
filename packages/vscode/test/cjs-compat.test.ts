@@ -1,13 +1,13 @@
 import { execFileSync } from 'node:child_process'
-import { createRequire } from 'node:module'
 import { existsSync, readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vite-plus/test'
 import {
-  CJS_NEVER_BUNDLE,
   ESM_ONLY_NATIVE_JS_PACKAGES,
   findEsmOnlyCjsRequires,
+  isCjsNeverBundle,
   isEsmOnlyNativeJsPackage,
   isNativePlatformPackage,
 } from '../scripts/cjs-compat'
@@ -18,7 +18,7 @@ const vscodeRoot = path.resolve(fileURLToPath(import.meta.url), '../..')
 describe('cjs native package compatibility', () => {
   it('does not treat ESM-only JS loaders as bundle externals', () => {
     for (const pkg of ESM_ONLY_NATIVE_JS_PACKAGES) {
-      expect(CJS_NEVER_BUNDLE.some(item => item === pkg)).toBe(false)
+      expect(isCjsNeverBundle(pkg)).toBe(false)
       expect(isEsmOnlyNativeJsPackage(pkg)).toBe(true)
       expect(isNativePlatformPackage(pkg)).toBe(false)
     }

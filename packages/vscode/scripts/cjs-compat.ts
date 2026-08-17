@@ -38,6 +38,10 @@ export function isNativePlatformPackage(id: string): boolean {
   return NATIVE_PLATFORM_EXTERNAL_PATTERNS.some(pattern => pattern.test(id))
 }
 
+export function isCjsNeverBundle(id: string): boolean {
+  return CJS_NEVER_BUNDLE.some(item => typeof item === 'string' ? item === id : item.test(id))
+}
+
 /** Return `require('…')` specifiers that old VS Code / Node cannot load from CJS. */
 export function findEsmOnlyCjsRequires(source: string): string[] {
   const found = new Set<string>()
