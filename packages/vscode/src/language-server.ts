@@ -9,6 +9,7 @@ import defu from 'defu'
 import { Autowired } from 'unioc'
 import { Command, Disposable, ExtensionContext, Translator, WatchConfiguration } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { HarmonyToolsDetector } from './build-tools/harmony-tools-detector'
 import { FileSystemContext } from './context/file-system-context'
 import { LanguageServerContext } from './context/server-context'
 import { SdkVersionGuesser } from './sdk/sdk-guesser'
@@ -22,6 +23,7 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
   @Autowired protected readonly fsx: FileSystemContext
   @Autowired protected readonly sdkManager: SdkManager
   @Autowired protected readonly sdkVersionGuesser: SdkVersionGuesser
+  @Autowired protected readonly harmonyToolsDetector: HarmonyToolsDetector
 
   onExecuteCommand(): void {
     this.restart().catch(e => this.handleLanguageServerError(e))
@@ -49,10 +51,16 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
     return [textEdit]
   }
 
+  private isStarting = false
+  private lastAutoFilledSdkPath: string | undefined
+
   @WatchConfiguration()
   async onConfigurationChanged(e: vscode.ConfigurationChangeEvent): Promise<unknown> {
     // 如果 SDK 路径发生变化，重启语言服务器
     if (e.affectsConfiguration('ets.sdkPath')) {
+      if (this.isStarting) return
+      const configuredSdkPath = vscode.workspace.getConfiguration('ets').get<string>('sdkPath')
+      if (configuredSdkPath && configuredSdkPath === this.lastAutoFilledSdkPath) return
       if (!this.getCurrentLanguageClient()?.isRunning()) {
         this.getConsola().info(`[underwrite] sdk path changed, start language server...`)
         return this.run()
@@ -88,7 +96,10 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
   }
 
   async run(): Promise<LabsInfo | undefined> {
+    if (this.isStarting) return
+    this.isStarting = true
     try {
+      this.lastAutoFilledSdkPath = await this.harmonyToolsDetector.maybeAutoFillSdkPath()
       // First start it will be return LabsInfo object for volar.js labs extension
       const [labsInfo] = await this.start(true)
       return labsInfo!
@@ -96,6 +107,9 @@ export class EtsLanguageServer extends LanguageServerContext implements Command,
     catch (error) {
       this.handleLanguageServerError(error)
       return undefined
+    }
+    finally {
+      this.isStarting = false
     }
   }
 
