@@ -200,6 +200,8 @@
   "sdk.install.alreadyDownloading": "OpenHarmony SDK {0} is already downloading.",
   "sdk.install.cancelled": "OpenHarmony SDK {0} installation cancelled.",
   "sdk.install.checkingSha256": "Checking OpenHarmony SDK {0} is complete...",
+  "sdk.install.downloadError": "Failed to download OpenHarmony SDK: {0}",
+  "sdk.install.downloadError.unknown": "Unknown error",
   "sdk.install.extractingTar": "Extracting OpenHarmony SDK tar.gz: {0}",
   "sdk.install.extractingZip": "Extracting OpenHarmony SDK zip: {0}",
   "sdk.install.incomplete": "⚠️ Incomplete <The SDK maybe not installed correctly, you can try to install it again.>",
