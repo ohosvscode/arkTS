@@ -16,6 +16,7 @@ import { VueRouterAutoImports } from 'unplugin-vue-router'
 import vueRouter from 'unplugin-vue-router/vite'
 import layouts from 'vite-plugin-vue-layouts'
 import { defineConfig } from 'vite-plus'
+import { CJS_NEVER_BUNDLE } from './scripts/cjs-compat'
 import { transformHtmlString } from './scripts/compiled-html-plugin'
 
 const EXTENSION_ROOT = __dirname
@@ -134,7 +135,9 @@ export default defineConfig({
     format: 'cjs',
     sourcemap: __DEV__,
     deps: {
-      neverBundle: ['vscode', '@aws-sdk/client-s3', '@arkts/project-detector', '@ohos-rs/oxk'],
+      // Inline ESM-only `@arkts/project-detector`. VS Code 1.92.2 / Node 20.14
+      // cannot require() that package (ERR_REQUIRE_ESM). `@ohos-rs/oxk` is CJS.
+      neverBundle: [...CJS_NEVER_BUNDLE],
       onlyBundle: false,
     },
     tsconfig: './tsconfig.json',
