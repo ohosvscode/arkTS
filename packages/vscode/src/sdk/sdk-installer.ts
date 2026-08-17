@@ -1,10 +1,11 @@
 import path from 'node:path'
 import process from 'node:process'
-import { createDownloader, DownloadError, getSdkUrl, getSdkUrls, SdkArch, SdkOS, SdkVersion } from '@arkts/sdk-downloader'
+import { createDownloader, getSdkUrl, getSdkUrls, SdkArch, SdkOS, SdkVersion } from '@arkts/sdk-downloader'
 import { ExtensionLogger } from '@arkts/shared/vscode'
 import { Autowired } from 'unioc'
 import { Command, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
+import { formatDownloadErrorDetail, isDownloadCancellation } from './is-download-cancellation'
 import { SdkManager } from './sdk-manager'
 
 interface SdkQuickPickItem extends vscode.QuickPickItem {
@@ -123,18 +124,20 @@ export class SdkInstaller implements Command {
     })
 
     // Step 1: Download the SDK
-    await vscode.window.withProgress({
+    const downloadOutcome = await vscode.window.withProgress({
       location: vscode.ProgressLocation.Notification,
       title: this.translator.t('sdk.install.installing', version),
       cancellable: true,
-    }, async (progress, token) => {
-      if (token.isCancellationRequested) return
+    }, async (progress, token): Promise<'downloaded' | 'cancelled'> => {
+      if (token.isCancellationRequested) {
+        vscode.window.showInformationMessage(this.translator.t('sdk.install.cancelled', version))
+        return 'cancelled'
+      }
 
       try {
         const abortController = new AbortController()
         token.onCancellationRequested(() => {
           abortController.abort()
-          vscode.window.showInformationMessage(this.translator.t('sdk.install.cancelled', version))
         })
         downloader.on('download-progress', (e) => {
           progress.report({
@@ -145,20 +148,24 @@ export class SdkInstaller implements Command {
         })
 
         await downloader.startDownload({ signal: abortController.signal })
+        return 'downloaded'
       }
       catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') return console.warn(`ArkTS SDK download has been canceled!`)
-        if (error instanceof DownloadError) {
-          vscode.window.showErrorMessage(`下载错误: ${error.code} ${error.message}`)
-        }
-        else {
-          vscode.window.showErrorMessage(`下载错误: ${(error && typeof error === 'object' && 'message' in error) ? error.message : '未知错误'}`)
+        if (isDownloadCancellation(error, token)) {
+          this.logger.getConsola().warn('ArkTS SDK download has been canceled!')
+          vscode.window.showInformationMessage(this.translator.t('sdk.install.cancelled', version))
+          return 'cancelled'
         }
 
+        const detail = formatDownloadErrorDetail(error, this.translator.t('sdk.install.downloadError.unknown'))
+        vscode.window.showErrorMessage(this.translator.t('sdk.install.downloadError', detail))
         console.error(error)
         throw error
       }
     })
+
+    if (downloadOutcome !== 'downloaded')
+      return
 
     // Step 2: Check the SHA256 of the SDK
     await vscode.window.withProgress({

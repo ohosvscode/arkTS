@@ -200,6 +200,8 @@
   "sdk.install.alreadyDownloading": "OpenHarmony SDK {0} 正在下载中。",
   "sdk.install.cancelled": "OpenHarmony SDK {0} 安装已取消。",
   "sdk.install.checkingSha256": "正在检查 OpenHarmony SDK {0} 是否完整...",
+  "sdk.install.downloadError": "下载 OpenHarmony SDK 失败: {0}",
+  "sdk.install.downloadError.unknown": "未知错误",
   "sdk.install.extractingTar": "正在解压 OpenHarmony SDK tar.gz: {0}",
   "sdk.install.extractingZip": "正在解压 OpenHarmony SDK zip: {0}",
   "sdk.install.incomplete": "⚠️ 不完整 <SDK 可能安装不正确，您可以尝试重新安装>",
