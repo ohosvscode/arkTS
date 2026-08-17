@@ -16,6 +16,7 @@ export type CommandKey =
   | "ets.restartServer"
   | "ets.installSDK"
   | "ets.createProject"
+  | "ets.createPage"
   | "ets.resourceExplorer.refresh"
   | "ets.resourceExplorer.openFile"
   | "ets.resourceExplorer.openResourceQualifierEditor"
@@ -41,6 +42,11 @@ export const commands = {
    * @value `ets.createProject`
    */
   etsCreateProject: "ets.createProject",
+  /**
+   * Create ArkTS Page
+   * @value `ets.createPage`
+   */
+  etsCreatePage: "ets.createPage",
   /**
    * Refresh Hvigor Resource Explorer
    * @value `ets.resourceExplorer.refresh`
