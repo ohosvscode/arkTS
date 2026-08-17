@@ -4,8 +4,8 @@ import JSON5 from 'json5'
 import { normalizePageName, renderPageTemplate } from './page-template'
 
 export interface FileAccess {
-  exists: (filePath: string) => boolean
-  readFile: (filePath: string) => string | undefined
+  exists(filePath: string): boolean
+  readFile(filePath: string): string | undefined
 }
 
 export interface PlannedFileWrite {
@@ -19,7 +19,7 @@ export interface CreatePagePlan {
   registerTarget: PageRegisterTarget
 }
 
-const PROFILE_REF_PATTERN = /^\$profile:([0-9A-Za-z_.]+)$/
+const PROFILE_REF_PATTERN = /^\$profile:([\w.]+)$/
 
 export function toPosixPath(filePath: string): string {
   return filePath.replace(/\\/g, '/')

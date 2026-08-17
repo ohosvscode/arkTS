@@ -102,7 +102,7 @@ export function findPageTemplate(id: string, customTemplates: readonly CustomPag
   return getPageTemplates(customTemplates).find(template => template.id === id)
 }
 
-const PAGE_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/
+const PAGE_NAME_PATTERN = /^[A-Z_]\w*$/i
 
 export function normalizePageName(input: string): string {
   const trimmed = input.trim().replace(/\\/g, '/').replace(/\.ets$/i, '')

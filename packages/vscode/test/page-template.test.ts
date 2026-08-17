@@ -99,7 +99,7 @@ describe('page templates', () => {
     expect(blankV2).not.toContain('@State message')
 
     expect(navV1).toContain('Navigation()')
-    expect(navV1).toContain(".title('RootNav')")
+    expect(navV1).toContain('.title(\'RootNav\')')
 
     expect(ndV2).toContain('export function DetailBuilder()')
     expect(ndV2).toContain('@ComponentV2')

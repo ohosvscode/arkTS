@@ -6,7 +6,6 @@ import { Command, Translator } from 'unioc/vscode'
 import * as vscode from 'vscode'
 import { FileSystemContext } from '../context/file-system-context'
 import {
-  findPageTemplate,
   getPageTemplates,
   normalizePageName,
   planCreatePage,
