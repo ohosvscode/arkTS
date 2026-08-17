@@ -1,4 +1,3 @@
-import path from 'node:path'
 import hbs from 'handlebars'
 import { describe, expect, it } from 'vite-plus/test'
 import { compileTemplateRelativePath } from '../src/frontend/utils/project-template-path'
@@ -20,11 +19,8 @@ describe('compileTemplateRelativePath', () => {
 
     const relativeOutputPath = compileTemplateRelativePath(templateRoot, filePath, context)
     expect(relativeOutputPath).toBe('entry/src/main/ets/pages/Index.ets')
-
-    const savePath = 'C:\\Users\\me\\DevEcoStudioProjects\\MyApplication'
-    const outputPath = path.win32.resolve(savePath, relativeOutputPath)
-    expect(outputPath).toBe(path.win32.join(savePath, 'entry', 'src', 'main', 'ets', 'pages', 'Index.ets'))
-    expect(outputPath).not.toContain('empty-ability{{moduleName}}')
+    expect(relativeOutputPath).not.toContain('empty-ability{{moduleName}}')
+    expect(relativeOutputPath.startsWith('..')).toBe(false)
   })
 
   it('keeps files without placeholders inside the chosen directory', () => {
@@ -37,24 +33,12 @@ describe('compileTemplateRelativePath', () => {
 })
 
 describe('create-project windows path bug (issue #219)', () => {
-  it('compiling a full windows fsPath escapes \\{{ and resolves as a sibling of savePath', () => {
+  it('compiling a full windows fsPath escapes \\{{ so the module name is never substituted', () => {
     const templateRoot = 'C:\\Users\\me\\.vscode\\extensions\\arkts\\templates\\empty-ability'
     const filePath = `${templateRoot}\\{{moduleName}}\\src\\main\\ets\\pages\\Index.ets.hbs`
-    const compiled = hbs.compile(filePath)(context)
 
-    expect(compiled).toBe('C:\\Users\\me\\.vscode\\extensions\\arkts\\templates\\empty-ability{{moduleName}}\\src\\main\\ets\\pages\\Index.ets.hbs')
-
-    const relative = path.win32.relative(templateRoot, compiled.replace(/\.hbs$/, ''))
-    const savePath = 'C:\\Users\\me\\DevEcoStudioProjects\\MyApplication'
-    const outputPath = path.win32.resolve(savePath, relative)
-    expect(outputPath).toBe(path.win32.join(
-      'C:\\Users\\me\\DevEcoStudioProjects',
-      'empty-ability{{moduleName}}',
-      'src',
-      'main',
-      'ets',
-      'pages',
-      'Index.ets',
-    ))
+    expect(hbs.compile(filePath)(context)).toBe(
+      'C:\\Users\\me\\.vscode\\extensions\\arkts\\templates\\empty-ability{{moduleName}}\\src\\main\\ets\\pages\\Index.ets.hbs',
+    )
   })
 })
