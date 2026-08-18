@@ -311,6 +311,13 @@
         {
           "command": "ets.restartServer"
         }
+      ],
+      "explorer/context": [
+        {
+          "command": "ets.createPage",
+          "group": "navigation@10",
+          "when": "explorerResourceIsFolder || resourceExtname == .ets"
+        }
       ]
     },
     "viewsWelcome": [
@@ -421,6 +428,11 @@
       {
         "command": "ets.createProject",
         "title": "%command.createProject%",
+        "category": "ETS"
+      },
+      {
+        "command": "ets.createPage",
+        "title": "%command.createPage%",
         "category": "ETS"
       },
       {
@@ -569,6 +581,51 @@
           "type": "string",
           "description": "%configuration.ets.emulatorLogPath.description%",
           "markdownDescription": "%configuration.ets.emulatorLogPath.description%"
+        },
+        "ets.autoRegisterCreatedPage": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.ets.autoRegisterCreatedPage.description%"
+        },
+        "ets.customPageTemplates": {
+          "type": "array",
+          "default": [],
+          "description": "%configuration.ets.customPageTemplates.description%",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "source"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "%configuration.ets.customPageTemplates.id.description%"
+              },
+              "label": {
+                "type": "string",
+                "description": "%configuration.ets.customPageTemplates.label.description%"
+              },
+              "description": {
+                "type": "string",
+                "description": "%configuration.ets.customPageTemplates.itemDescription.description%"
+              },
+              "source": {
+                "type": "string",
+                "description": "%configuration.ets.customPageTemplates.source.description%"
+              },
+              "register": {
+                "type": "string",
+                "enum": [
+                  "main_pages",
+                  "route_map",
+                  "none"
+                ],
+                "default": "none",
+                "description": "%configuration.ets.customPageTemplates.register.description%"
+              }
+            }
+          }
         }
       }
     },
