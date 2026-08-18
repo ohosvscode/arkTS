@@ -108,6 +108,7 @@
   "project.createProject.compatibleSdkVersionPlaceholder": "请选择 SDK 版本",
   "project.createProject.deviceType": "设备类型",
   "project.createProject.emptyAbilityDescription": "此模板实现基础的Hello World功能。",
+  "project.createProject.nativeCppDescription": "此模板实现 Hello World，并包含 Native C++（NAPI）。",
   "project.createProject.moduleName": "模块名",
   "project.createProject.moduleNamePlaceholder": "请输入模块名称",
   "project.createProject.projectCreated": "项目创建成功，是否打开该文件夹？",

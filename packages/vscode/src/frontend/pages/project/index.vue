@@ -43,7 +43,7 @@ function callItemOnClick(item: import('../../composables/project-configuration')
           {{ $t('project.createProject.application') }}
         </h2>
         <ul v-for="(item, index) in projectConfigurations" :key="index">
-          <li :key="index">
+          <li :key="index" @click="currentProjectId = item.id">
             <ProjectChoice
               :title="item.title"
               :description="item.description"
