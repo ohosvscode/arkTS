@@ -1,0 +1,22 @@
+[package]
+name = "{{moduleName}}"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi-ohos = { version = "1.0", default-features = false, features = [
+  "napi8",
+  "async",
+] }
+napi-derive-ohos = { version = "1.0" }
+
+[build-dependencies]
+napi-build-ohos = { version = "1.0" }
+
+[profile.release]
+lto = true

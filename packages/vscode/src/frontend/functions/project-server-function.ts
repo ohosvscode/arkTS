@@ -12,6 +12,7 @@ import * as vscode from 'vscode'
 import { ProtocolContext } from '../../context/protocol-context'
 import { InitialCallbackEvent } from '../../context/webview-context'
 import { ProjectConnectionProtocol } from '../interfaces/project-connection-protocol'
+import { resolveProjectTemplateLayers } from '../utils/project-template-layers'
 
 hbs.registerHelper('equal', (a: number | string, b: number | string) => Number(a) === Number(b) || String(a) === String(b))
 
@@ -169,23 +170,27 @@ export class ProjectServerFunctionImpl extends ProtocolContext<ProjectConnection
   async createProject(context: Record<string, string | number | boolean | string[]>, templateName: string, savePath: string): Promise<void> {
     this.getConsola().info('[ServerFunction.CreateProject] Creating project...', JSON.stringify(context))
     if (!this.extensionContext) return this.getConsola().error('[ServerFunction.CreateProject] Extension context not found, cannot create project.')
-    const templatePath = vscode.Uri.joinPath(this.extensionContext.extensionUri, 'templates', templateName)
-    const templateFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(templatePath, '**/*'))
-
-    const templateContents: ([string, string | Uint8Array<ArrayBufferLike>])[] = await Promise.all(
-      templateFiles.map(async (fileUri) => {
-        const fileContent = await vscode.workspace.fs.readFile(fileUri)
-        if (path.extname(fileUri.fsPath) !== '.hbs') return [hbs.compile(fileUri.fsPath)(context), fileContent]
-        return [hbs.compile(fileUri.fsPath)(context).replace(/\.hbs$/, ''), hbs.compile(fileContent.toString())(context)]
-      }),
-    )
-
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath, { recursive: true })
-    for (const [filePath, fileContent] of templateContents) {
-      const outputPath = path.resolve(savePath, path.relative(templatePath.fsPath, filePath))
-      this.getConsola().info('[ServerFunction.CreateProject] Creating project file:', outputPath)
-      if (!fs.existsSync(path.dirname(outputPath))) fs.mkdirSync(path.dirname(outputPath), { recursive: true })
-      fs.writeFileSync(outputPath, fileContent)
+
+    // Later layers overwrite earlier ones (e.g. native-rust overlays empty-ability).
+    for (const layerName of resolveProjectTemplateLayers(templateName)) {
+      const templatePath = vscode.Uri.joinPath(this.extensionContext.extensionUri, 'templates', layerName)
+      const templateFiles = await vscode.workspace.findFiles(new vscode.RelativePattern(templatePath, '**/*'))
+
+      const templateContents: ([string, string | Uint8Array<ArrayBufferLike>])[] = await Promise.all(
+        templateFiles.map(async (fileUri) => {
+          const fileContent = await vscode.workspace.fs.readFile(fileUri)
+          if (path.extname(fileUri.fsPath) !== '.hbs') return [hbs.compile(fileUri.fsPath)(context), fileContent]
+          return [hbs.compile(fileUri.fsPath)(context).replace(/\.hbs$/, ''), hbs.compile(fileContent.toString())(context)]
+        }),
+      )
+
+      for (const [filePath, fileContent] of templateContents) {
+        const outputPath = path.resolve(savePath, path.relative(templatePath.fsPath, filePath))
+        this.getConsola().info('[ServerFunction.CreateProject] Creating project file:', outputPath)
+        if (!fs.existsSync(path.dirname(outputPath))) fs.mkdirSync(path.dirname(outputPath), { recursive: true })
+        fs.writeFileSync(outputPath, fileContent)
+      }
     }
 
     this.getConsola().info('[ServerFunction.CreateProject] Project created successfully!')
