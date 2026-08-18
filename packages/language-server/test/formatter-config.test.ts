@@ -185,6 +185,26 @@ describe('resolveFormatterConfig', () => {
   })
 })
 
+describe('oxk format options', () => {
+  it('applies prettier-style options from a resolved config file', async () => {
+    const { format } = await import('@ohos-rs/oxk')
+    const result = await formatEtsDocument(
+      {
+        uri: 'file:///tmp/fmt-oxk/src/entry.ets',
+        text: 'const name = "arkts"; const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];',
+      },
+      format,
+      createMemoryFs({
+        '/tmp/fmt-oxk/.prettierrc.json': '{"singleQuote":true,"printWidth":40}',
+      }),
+    )
+
+    expect(result.errors).toEqual([])
+    expect(result.code).toContain('const name = \'arkts\'')
+    expect(result.code).toContain('\n')
+  })
+})
+
 describe('formatEtsDocument', () => {
   it('passes resolved options and a filesystem path to oxk format', async () => {
     const calls: unknown[] = []

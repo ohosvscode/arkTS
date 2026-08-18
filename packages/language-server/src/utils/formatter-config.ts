@@ -84,7 +84,7 @@ export function toDocumentFsPath(documentUri: string): string | undefined {
 export function stripJsonComments(text: string): string {
   let result = ''
   let index = 0
-  let inString: '"' | "'" | '`' | null = null
+  let inString: '"' | '\'' | '`' | null = null
   let escaped = false
 
   while (index < text.length) {
@@ -100,7 +100,7 @@ export function stripJsonComments(text: string): string {
       continue
     }
 
-    if (char === '"' || char === "'" || char === '`') {
+    if (char === '"' || char === '\'' || char === '`') {
       inString = char
       result += char
       index++
