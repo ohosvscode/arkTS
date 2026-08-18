@@ -25,6 +25,7 @@ declare global {
   const computedWithControl: typeof import('@vueuse/core').computedWithControl
   const controlledComputed: typeof import('@vueuse/core').controlledComputed
   const controlledRef: typeof import('@vueuse/core').controlledRef
+  const createAbilityProjectConfiguration: typeof import('./composables/project-configuration').createAbilityProjectConfiguration
   const createApp: typeof import('vue').createApp
   const createEventHook: typeof import('@vueuse/core').createEventHook
   const createGlobalState: typeof import('@vueuse/core').createGlobalState
@@ -339,7 +340,7 @@ declare global {
   export type { HdcLoop } from './composables/hdc-loop'
   import('./composables/hdc-loop')
   // @ts-ignore
-  export type { Input, TextInput, SelectInput, CheckboxInput, TextButtonContent, IconButtonContent, ButtonContent, TextButtonGroupInput, BaseInput, ProjectInput, ProjectConfiguration, ProjectConfigurationContext } from './composables/project-configuration'
+  export type { Input, TextInput, SelectInput, CheckboxInput, TextButtonContent, IconButtonContent, ButtonContent, TextButtonGroupInput, BaseInput, ProjectInput, ProjectConfiguration, ProjectConfigurationContext, AbilityTemplateOptions } from './composables/project-configuration'
   import('./composables/project-configuration')
   // @ts-ignore
   export type { UseAsyncDataReturn } from './composables/use-async-data'
