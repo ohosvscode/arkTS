@@ -82,9 +82,9 @@ export interface AbilityTemplateOptions {
 export function createAbilityProjectConfiguration(
   options: AbilityTemplateOptions,
   deps: {
-    t: (key: string, plural?: string[]) => string
-    connection: { createProject?: (...args: unknown[]) => unknown, stat?: (path: string) => Promise<false | { isDirectory: boolean } | undefined>, readDirectory?: (path: string) => Promise<false | string[] | undefined> }
-    createOpenDialog: (options: { canSelectFiles: boolean, canSelectFolders: boolean, canSelectMany: boolean, onClose: (uri: string[] | undefined) => void }) => unknown
+    t(key: string, plural?: string[]): string
+    connection: { createProject?(...args: unknown[]): void | Promise<void>, stat?(path: string): Promise<false | { isDirectory: boolean } | undefined>, readDirectory?(path: string): Promise<false | string[] | undefined> }
+    createOpenDialog(options: { canSelectFiles: boolean, canSelectFolders: boolean, canSelectMany: boolean, onClose(uri: string[] | undefined): void }): unknown
     defaultBasePath: string
     subscriptions: Set<() => void>
     modelVersionToSdkVersionMap: Map<string, number>
@@ -233,7 +233,7 @@ export function createAbilityProjectConfiguration(
       subscriptions.forEach(subscription => subscription())
       subscriptions.clear()
     },
-    onSubmit: async project => (
+    onSubmit: async (project) => {
       await connection.createProject?.({
         moduleName: project.value.input.moduleName.value as string,
         projectName: project.value.input.projectName.value as string,
@@ -242,7 +242,7 @@ export function createAbilityProjectConfiguration(
         deviceType: project.value.input.deviceType.value as string[],
         modelVersion: Array.from(modelVersionToSdkVersionMap.entries()).find(([_, sdkVersion]) => sdkVersion === project.value.input.compatibleSdkVersion.value as number)?.[0] as string,
       }, options.templateName, project.value.input.savePath.value as string)
-    ),
+    },
   }
 }
 

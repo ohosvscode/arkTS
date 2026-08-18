@@ -72,10 +72,10 @@ describe('native-cpp template overlay', () => {
     expect(files.get('entry/src/main/cpp/types/libentry/oh-package.json5')).toContain('"name": "libentry.so"')
     expect(files.get('entry/oh-package.json5')).toContain('"libentry.so": "file:./src/main/cpp/types/libentry"')
     expect(files.get('entry/build-profile.json5')).toContain('"path": "./src/main/cpp/CMakeLists.txt"')
-    expect(files.get('entry/src/main/ets/pages/Index.ets')).toContain("import testNapi from 'libentry.so'")
+    expect(files.get('entry/src/main/ets/pages/Index.ets')).toContain('import testNapi from \'libentry.so\'')
     expect(files.get('entry/src/main/ets/pages/Index.ets')).toContain('testNapi.add(2, 3)')
     expect(files.get('entry/src/mock/mock-config.json5')).toContain('"libentry.so"')
-    expect(files.get('entry/src/mock/Libentry.mock.ets')).toContain("'add'")
+    expect(files.get('entry/src/mock/Libentry.mock.ets')).toContain('\'add\'')
   })
 
   it('does not add native files to empty-ability', () => {
@@ -93,6 +93,6 @@ describe('native-cpp template overlay', () => {
     expect(files.get('feature/src/main/cpp/napi_init.cpp')).toContain('.nm_modname = "feature"')
     expect(files.get('feature/src/main/cpp/CMakeLists.txt')).toContain('add_library(feature SHARED napi_init.cpp)')
     expect(files.get('feature/oh-package.json5')).toContain('"libfeature.so": "file:./src/main/cpp/types/libfeature"')
-    expect(files.get('feature/src/main/ets/pages/Index.ets')).toContain("import testNapi from 'libfeature.so'")
+    expect(files.get('feature/src/main/ets/pages/Index.ets')).toContain('import testNapi from \'libfeature.so\'')
   })
 })
