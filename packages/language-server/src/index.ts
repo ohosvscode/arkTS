@@ -23,6 +23,7 @@ import { ProjectDetectorManagerService } from './classes/project-manager'
 import { patchResolver } from './patches/patch-resolver'
 import { patchSemantic } from './patches/patch-semantic'
 import { resolveDiagnosticMessages } from './utils/diagnostic-messages-resolver'
+import { formatEtsDocument } from './utils/formatter-config'
 
 const ets = Object.assign({}, ETS)
 patchResolver(ets)
@@ -30,7 +31,7 @@ patchResolver(ets)
 const connection = createConnection()
 const server = createServer(connection)
 
-connection.onRequest('ets/formatDocument', async e => format(e.textDocument.uri, e.textDocument.text))
+connection.onRequest('ets/formatDocument', async e => formatEtsDocument(e.textDocument, format))
 
 connection.onInitialize(async (params) => {
   const diagnosticMessages = await resolveDiagnosticMessages(params, logger, fileUri)
