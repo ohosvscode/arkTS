@@ -69,6 +69,7 @@ export namespace ProjectConnectionProtocol {
      *
      * @param context - The context object for compile handlebars template.
      * @param templateName - The template name in the `packages/vscode/templates` directory.
+     *   `native-cpp` is layered on `empty-ability`.
      * @param savePath - The save path for the project.
      * @returns The response object.
      */

@@ -41,6 +41,7 @@
   "project.createProject.compatibleSdkVersionPlaceholder": "Please select the compatible SDK version",
   "project.createProject.deviceType": "Device Type",
   "project.createProject.emptyAbilityDescription": "This template implements the basic Hello World functionality.",
+  "project.createProject.nativeCppDescription": "This template implements Hello World with Native C++ (NAPI).",
   "project.createProject.moduleName": "Module Name",
   "project.createProject.moduleNamePlaceholder": "Please enter the module name",
   "project.createProject.projectCreated": "Project created successfully, open the folder?",
