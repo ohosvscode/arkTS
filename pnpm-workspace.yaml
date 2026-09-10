@@ -137,7 +137,7 @@ catalogs:
     '@types/progress-stream': ^2.0.5
     '@types/vscode': ^1.104.0
     '@vscode/debugprotocol': ^1.68.0
-    '@types/which': ^2.0.2
+    '@types/which': ^3.0.4
   test:
     '@vitest/coverage-v8': ^4.1.4
     '@vitest/ui': ^4.1.4
